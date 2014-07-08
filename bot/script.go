@@ -4,9 +4,11 @@ import (
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
 	"log"
+	"os"
 )
 
 type Script struct {
+	Name     string
 	L        *lua.State
 	Tetra    *Tetra
 	Log      *log.Logger
@@ -14,9 +16,21 @@ type Script struct {
 	Handlers []*Handler
 }
 
-func (s *Script) Register() {
-	luar.Register(s.L, "tetra", luar.Map{
-		"script": s,
-		"log":    s.Log,
+func (tetra *Tetra) LoadScript(name string) (script *Script) {
+	script = &Script{
+		Name:     name,
+		L:        luar.Init(),
+		Tetra:    tetra,
+		Log:      log.New(os.Stdout, name+" ", log.LstdFlags),
+		Commands: nil,
+		Handlers: nil,
+	}
+
+	luar.Register(script.L, "tetra", luar.Map{
+		"script": script,
+		"log":    script.Log,
+		"bot":    tetra,
 	})
+
+	return
 }

@@ -1,9 +1,9 @@
-package cod
+package tetra
 
 import (
 	"bufio"
 	"errors"
-	"github.com/cod-services/cod/1459"
+	"github.com/Xe/Tetra/1459"
 	"log"
 	"net"
 	"net/textproto"
@@ -14,7 +14,7 @@ import (
 type Clients struct {
 	ByNick map[string]Client
 	ByUID  map[string]Client
-	Cod    *Cod
+	Tetra    *Tetra
 }
 
 func (clients *Clients) AddClient(client Client) {
@@ -26,7 +26,7 @@ func (clients *Clients) DelClient(client Client) (err error) {
 	return
 }
 
-type Cod struct {
+type Tetra struct {
 	Conn     *Connection
 	Info     *Server
 	Clients  *Clients
@@ -39,20 +39,20 @@ type Cod struct {
 	//Config *Config
 }
 
-func NewCod() (cod *Cod) {
-	cod = &Cod{
+func NewTetra() (tetra *Tetra) {
+	tetra = &Tetra{
 		Conn: &Connection{
 			Log: log.New(os.Stdout, "", log.LstdFlags),
 		},
 		Info: &Server{
-			Name:  "cod.int",
+			Name:  "tetra.int",
 			Sid:   "420",
-			Gecos: "Cod in Go!",
+			Gecos: "Tetra in Go!",
 		},
 		Clients: &Clients{
 			ByNick: make(map[string]Client),
 			ByUID:  make(map[string]Client),
-			Cod:    cod,
+			Tetra:    tetra,
 		},
 		Channels: make(map[string]*Channel),
 		Handlers: make(map[string]map[string]*Handler),
@@ -62,7 +62,7 @@ func NewCod() (cod *Cod) {
 		nextuid:  100000,
 	}
 
-	cod.AddHandler("EUID", func(line *r1459.RawLine) {
+	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
 		// :47G EUID xena 1 1404369238 +ailoswxz xena staff.yolo-swag.com 0::1 47GAAAABK 0::1 * :Xena
 		nick := line.Args[0]
 		user := line.Args[4]
@@ -79,39 +79,39 @@ func NewCod() (cod *Cod) {
 			Ip:      ip,
 			account: line.Args[9],
 			gecos:   line.Args[10],
-			cod:     cod,
+			tetra:     tetra,
 		}
 
-		cod.Clients.AddClient(*client)
+		tetra.Clients.AddClient(*client)
 	})
 
-	cod.AddHandler("SJOIN", func(line *r1459.RawLine) {
+	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
 		// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
 	})
 
-	cod.AddService("cod", "Cod", "user", "yolo-swag.com", "Cod in Go!")
+	tetra.AddService("tetra", "Tetra", "user", "yolo-swag.com", "Tetra in Go!")
 
 	return
 }
 
-func (cod *Cod) NextUID() string {
-	cod.nextuid ++
-	return cod.Info.Sid + strconv.Itoa(cod.nextuid)
+func (tetra *Tetra) NextUID() string {
+	tetra.nextuid ++
+	return tetra.Info.Sid + strconv.Itoa(tetra.nextuid)
 }
 
-func (cod *Cod) Connect(host, port string) (err error) {
-	cod.Conn.Conn, err = net.Dial("tcp", host+":"+port)
+func (tetra *Tetra) Connect(host, port string) (err error) {
+	tetra.Conn.Conn, err = net.Dial("tcp", host+":"+port)
 	if err != nil {
 		panic(err)
 	}
 
-	cod.Conn.Reader = bufio.NewReader(cod.Conn.Conn)
-	cod.Conn.Tp = textproto.NewReader(cod.Conn.Reader)
+	tetra.Conn.Reader = bufio.NewReader(tetra.Conn.Conn)
+	tetra.Conn.Tp = textproto.NewReader(tetra.Conn.Reader)
 
 	return
 }
 
-func (cod *Cod) AddService(service, nick, user, host, gecos string) (cli *ServiceClient) {
+func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *ServiceClient) {
 	cli = &ServiceClient{
 		nick:  nick,
 		user:  user,
@@ -121,28 +121,28 @@ func (cod *Cod) AddService(service, nick, user, host, gecos string) (cli *Servic
 		account: "*",
 		Ip: "0",
 		ts: 0,
-		uid: cod.NextUID(),
+		uid: tetra.NextUID(),
 	}
 
-	cod.Services[service] = cli
+	tetra.Services[service] = cli
 
-	cod.Clients.AddClient(cli)
+	tetra.Clients.AddClient(cli)
 
 	return
 }
 
-func (cod *Cod) DelService(service string) (err error) {
-	if _, ok := cod.Services[service]; !ok {
+func (tetra *Tetra) DelService(service string) (err error) {
+	if _, ok := tetra.Services[service]; !ok {
 		panic(errors.New("No such service " + service))
 	}
 
-	client := cod.Services[service]
+	client := tetra.Services[service]
 
-	cod.Clients.DelClient(client)
+	tetra.Clients.DelClient(client)
 
 	return
 }
 
-func (cod *Cod) GetConn() *net.Conn {
-	return &cod.Conn.Conn
+func (tetra *Tetra) GetConn() *net.Conn {
+	return &tetra.Conn.Conn
 }

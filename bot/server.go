@@ -1,4 +1,4 @@
-package cod
+package tetra
 
 type Server struct {
 	Sid   string

@@ -1,4 +1,4 @@
-package cod
+package tetra
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ type Channel struct {
 	Lists   map[string][]string
 }
 
-func (cod *Cod) NewChannel(name string, ts int64) (c *Channel) {
+func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 	c = &Channel{
 		Name:    name,
 		Ts:      ts,
@@ -28,7 +28,7 @@ func (cod *Cod) NewChannel(name string, ts int64) (c *Channel) {
 		Modes:   0,
 	}
 
-	cod.Channels[strings.ToUpper(name)] = c
+	tetra.Channels[strings.ToUpper(name)] = c
 
 	return
 }

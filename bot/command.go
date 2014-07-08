@@ -1,4 +1,4 @@
-package cod
+package tetra
 
 import (
 	"code.google.com/p/go-uuid/uuid"
@@ -15,8 +15,8 @@ type Command struct {
 	Perms  int
 }
 
-func (cod *Cod) AddCommand(service, verb string, impl func(*RemoteClient, []string)) (command *Command, err error) {
-	client := cod.Services[service]
+func (tetra *Tetra) AddCommand(service, verb string, impl func(*RemoteClient, []string)) (command *Command, err error) {
+	client := tetra.Services[service]
 
 	command = &Command{
 		Impl:  impl,
@@ -36,8 +36,8 @@ func (cod *Cod) AddCommand(service, verb string, impl func(*RemoteClient, []stri
 	return
 }
 
-func (cod *Cod) DelCommand(service, verb string) (err error) {
-	client := cod.Services[service]
+func (tetra *Tetra) DelCommand(service, verb string) (err error) {
+	client := tetra.Services[service]
 
 	if _, present := client.Commands[verb]; present {
 		return errors.New("No such command " + verb + " for service " + service)

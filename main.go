@@ -7,39 +7,39 @@ import (
 )
 
 func main() {
-	cod := cod.NewCod()
+	tetra := tetra.NewTetra()
 
-	cod.Connect("127.0.0.1", "6667")
-	defer cod.Conn.Conn.Close()
+	tetra.Connect("127.0.0.1", "6667")
+	defer tetra.Conn.Conn.Close()
 
-	cod.Conn.SendLine("PASS shameless TS 6 :420")
-	cod.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
-	cod.Conn.SendLine("SERVER cod.int 1 :Cod in Go!")
+	tetra.Conn.SendLine("PASS shameless TS 6 :420")
+	tetra.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
+	tetra.Conn.SendLine("SERVER tetra.int 1 :Cod in Go!")
 
-	for _, client := range cod.Clients.ByUID {
-		cod.Conn.SendLine(client.Euid())
+	for _, client := range tetra.Clients.ByUID {
+		tetra.Conn.SendLine(client.Euid())
 	}
 
 	for {
-		line, err := cod.Conn.GetLine()
+		line, err := tetra.Conn.GetLine()
 		if err != nil {
 			panic(err)
 		}
 
 		rawline := r1459.NewRawLine(line)
 
-		cod.Conn.Log.Printf("<<< %s", line)
+		tetra.Conn.Log.Printf("<<< %s", line)
 
 		if rawline.Verb == "PING" {
-			if !cod.Bursted {
-				cod.Bursted = true
+			if !tetra.Bursted {
+				tetra.Bursted = true
 			}
-			cod.Conn.SendLine("PONG :%s", rawline.Args[0])
+			tetra.Conn.SendLine("PONG :%s", rawline.Args[0])
 		}
 
-		if _, present := cod.Handlers[rawline.Verb]; present {
-			for _, handler := range cod.Handlers[rawline.Verb] {
-				if cod.Bursted {
+		if _, present := tetra.Handlers[rawline.Verb]; present {
+			for _, handler := range tetra.Handlers[rawline.Verb] {
+				if tetra.Bursted {
 					go handler.Impl(rawline)
 				} else {
 					handler.Impl(rawline)

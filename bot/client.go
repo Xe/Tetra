@@ -1,4 +1,4 @@
-package cod
+package tetra
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ type ServiceClient struct {
 	umodes      int
 	Commands    map[string]*Command
 	Kind        string
-	cod         *Cod
+	tetra         *Tetra
 	ts          int64
 }
 
@@ -75,7 +75,7 @@ func (r ServiceClient) Ts() int64 {
 }
 
 func (r ServiceClient) Join(name string) {
-	channel := r.cod.Channels[strings.ToLower(name)]
+	channel := r.tetra.Channels[strings.ToLower(name)]
 
 	channel.AddChanUser(Client(r))
 }
@@ -100,7 +100,7 @@ type RemoteClient struct {
 	gecos       string
 	permissions int
 	umodes      int
-	cod         *Cod
+	tetra         *Tetra
 	ts          int64
 }
 
@@ -137,7 +137,7 @@ func (r RemoteClient) Gecos() string {
 }
 
 func (r RemoteClient) message(source Client, kind, destination, message string) {
-	r.cod.Conn.SendLine(":%s %s %s :%s", source.Uid(), kind, destination, message)
+	r.tetra.Conn.SendLine(":%s %s %s :%s", source.Uid(), kind, destination, message)
 }
 
 func (r RemoteClient) Privmsg(source *Client, destination, message string) {

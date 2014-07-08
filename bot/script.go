@@ -1,4 +1,4 @@
-package cod
+package tetra
 
 import (
 	lua "github.com/aarzilli/golua/lua"
@@ -8,14 +8,14 @@ import (
 
 type Script struct {
 	L        *lua.State
-	Cod      *Cod
+	Tetra      *Tetra
 	Log      *log.Logger
 	Commands []*Command
 	Handlers []*Handler
 }
 
 func (s *Script) Register() {
-	luar.Register(s.L, "cod", luar.Map{
+	luar.Register(s.L, "tetra", luar.Map{
 		"script": s,
 		"log": s.Log,
 	})

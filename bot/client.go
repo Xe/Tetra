@@ -34,7 +34,7 @@ type ServiceClient struct {
 	umodes      int
 	Commands    map[string]*Command
 	Kind        string
-	tetra         *Tetra
+	tetra       *Tetra
 	ts          int64
 }
 
@@ -100,7 +100,7 @@ type RemoteClient struct {
 	gecos       string
 	permissions int
 	umodes      int
-	tetra         *Tetra
+	tetra       *Tetra
 	ts          int64
 }
 
@@ -153,9 +153,8 @@ func (r RemoteClient) Euid() string {
 		r.VHost, r.host, r.uid, r.Ip, r.gecos)
 }
 
-func (r RemoteClient) Join(name string) { }
+func (r RemoteClient) Join(name string) {}
 
-func (r RemoteClient) Ts() (int64) {
+func (r RemoteClient) Ts() int64 {
 	return r.ts
 }
-

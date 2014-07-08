@@ -8,7 +8,7 @@ import (
 
 type Script struct {
 	L        *lua.State
-	Tetra      *Tetra
+	Tetra    *Tetra
 	Log      *log.Logger
 	Commands []*Command
 	Handlers []*Handler
@@ -17,7 +17,6 @@ type Script struct {
 func (s *Script) Register() {
 	luar.Register(s.L, "tetra", luar.Map{
 		"script": s,
-		"log": s.Log,
+		"log":    s.Log,
 	})
 }
-

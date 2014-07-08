@@ -2,8 +2,8 @@ package main
 
 import (
 	_ "fmt"
-	"github.com/Xe/Tetra/bot"
 	"github.com/Xe/Tetra/1459"
+	"github.com/Xe/Tetra/bot"
 )
 
 func main() {

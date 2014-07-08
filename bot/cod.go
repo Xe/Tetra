@@ -14,7 +14,7 @@ import (
 type Clients struct {
 	ByNick map[string]Client
 	ByUID  map[string]Client
-	Tetra    *Tetra
+	Tetra  *Tetra
 }
 
 func (clients *Clients) AddClient(client Client) {
@@ -52,7 +52,7 @@ func NewTetra() (tetra *Tetra) {
 		Clients: &Clients{
 			ByNick: make(map[string]Client),
 			ByUID:  make(map[string]Client),
-			Tetra:    tetra,
+			Tetra:  tetra,
 		},
 		Channels: make(map[string]*Channel),
 		Handlers: make(map[string]map[string]*Handler),
@@ -79,7 +79,7 @@ func NewTetra() (tetra *Tetra) {
 			Ip:      ip,
 			account: line.Args[9],
 			gecos:   line.Args[10],
-			tetra:     tetra,
+			tetra:   tetra,
 		}
 
 		tetra.Clients.AddClient(*client)
@@ -95,7 +95,7 @@ func NewTetra() (tetra *Tetra) {
 }
 
 func (tetra *Tetra) NextUID() string {
-	tetra.nextuid ++
+	tetra.nextuid++
 	return tetra.Info.Sid + strconv.Itoa(tetra.nextuid)
 }
 
@@ -113,15 +113,15 @@ func (tetra *Tetra) Connect(host, port string) (err error) {
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *ServiceClient) {
 	cli = &ServiceClient{
-		nick:  nick,
-		user:  user,
-		host:  host,
-		VHost: host,
-		gecos: gecos,
+		nick:    nick,
+		user:    user,
+		host:    host,
+		VHost:   host,
+		gecos:   gecos,
 		account: "*",
-		Ip: "0",
-		ts: 0,
-		uid: tetra.NextUID(),
+		Ip:      "0",
+		ts:      0,
+		uid:     tetra.NextUID(),
 	}
 
 	tetra.Services[service] = cli

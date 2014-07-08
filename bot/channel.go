@@ -45,11 +45,10 @@ func (c *Channel) AddChanUser(client Client) (cu *ChanUser) {
 
 func (c *Channel) DelChanUser(client Client) (err error) {
 	if _, ok := c.Clients[client.Uid()]; !ok {
-		return errors.New("Tried to delete nonexistent chanuser with uid "+client.Uid()+" from "+c.Name)
+		return errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid() + " from " + c.Name)
 	}
 
 	delete(c.Clients, client.Uid())
 
 	return nil
 }
-

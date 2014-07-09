@@ -23,6 +23,9 @@ func (clients *Clients) AddClient(client Client) {
 }
 
 func (clients *Clients) DelClient(client Client) (err error) {
+	delete(clients.ByNick, client.Nick())
+	delete(clients.ByUID, client.Uid())
+
 	return
 }
 

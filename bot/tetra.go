@@ -3,7 +3,6 @@ package tetra
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/modes"
 	"log"

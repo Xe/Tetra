@@ -3,7 +3,9 @@ package tetra
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"github.com/Xe/Tetra/1459"
+	"github.com/Xe/Tetra/modes"
 	"log"
 	"net"
 	"net/textproto"
@@ -68,10 +70,20 @@ func NewTetra() (tetra *Tetra) {
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
 		// :47G EUID xena 1 1404369238 +ailoswxz xena staff.yolo-swag.com 0::1 47GAAAABK 0::1 * :Xena
 		nick := line.Args[0]
+		umodes := line.Args[3]
 		user := line.Args[4]
 		host := line.Args[5]
 		ip := line.Args[8]
 		uid := line.Args[7]
+
+		// TODO: make this its own function somewhere?
+		modeflags := 0
+
+		for _, char := range umodes {
+			if _, ok := modes.UMODES[string(char)]; ok {
+				modeflags = modeflags | modes.UMODES[string(char)]
+			}
+		}
 
 		client := &Client{
 			Nick:    nick,
@@ -83,6 +95,7 @@ func NewTetra() (tetra *Tetra) {
 			Account: line.Args[9],
 			Gecos:   line.Args[10],
 			tetra:   tetra,
+			Umodes:  modeflags,
 		}
 
 		tetra.Clients.AddClient(client)

@@ -12,19 +12,19 @@ import (
 )
 
 type Clients struct {
-	ByNick map[string]Client
-	ByUID  map[string]Client
+	ByNick map[string]*Client
+	ByUID  map[string]*Client
 	Tetra  *Tetra
 }
 
-func (clients *Clients) AddClient(client Client) {
-	clients.ByNick[client.Nick()] = client
-	clients.ByUID[client.Uid()] = client
+func (clients *Clients) AddClient(client *Client) {
+	clients.ByNick[client.Nick] = client
+	clients.ByUID[client.Uid] = client
 }
 
-func (clients *Clients) DelClient(client Client) (err error) {
-	delete(clients.ByNick, client.Nick())
-	delete(clients.ByUID, client.Uid())
+func (clients *Clients) DelClient(client *Client) (err error) {
+	delete(clients.ByNick, client.Nick)
+	delete(clients.ByUID, client.Uid)
 
 	return
 }
@@ -36,7 +36,7 @@ type Tetra struct {
 	Channels map[string]*Channel
 	Bursted  bool
 	Handlers map[string]map[string]*Handler
-	Services map[string]*ServiceClient
+	Services map[string]*Client
 	Servers  map[string]*Server
 	nextuid  int
 	//Config *Config
@@ -53,13 +53,13 @@ func NewTetra() (tetra *Tetra) {
 			Gecos: "Tetra in Go!",
 		},
 		Clients: &Clients{
-			ByNick: make(map[string]Client),
-			ByUID:  make(map[string]Client),
+			ByNick: make(map[string]*Client),
+			ByUID:  make(map[string]*Client),
 			Tetra:  tetra,
 		},
 		Channels: make(map[string]*Channel),
 		Handlers: make(map[string]map[string]*Handler),
-		Services: make(map[string]*ServiceClient),
+		Services: make(map[string]*Client),
 		Servers:  make(map[string]*Server),
 		Bursted:  false,
 		nextuid:  100000,
@@ -73,19 +73,19 @@ func NewTetra() (tetra *Tetra) {
 		ip := line.Args[8]
 		uid := line.Args[7]
 
-		client := &RemoteClient{
-			nick:    nick,
-			user:    user,
+		client := &Client{
+			Nick:    nick,
+			User:    user,
 			VHost:   host,
-			host:    line.Args[6],
-			uid:     uid,
+			Host:    line.Args[6],
+			Uid:     uid,
 			Ip:      ip,
-			account: line.Args[9],
-			gecos:   line.Args[10],
+			Account: line.Args[9],
+			Gecos:   line.Args[10],
 			tetra:   tetra,
 		}
 
-		tetra.Clients.AddClient(*client)
+		tetra.Clients.AddClient(client)
 	})
 
 	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
@@ -114,17 +114,17 @@ func (tetra *Tetra) Connect(host, port string) (err error) {
 	return
 }
 
-func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *ServiceClient) {
-	cli = &ServiceClient{
-		nick:    nick,
-		user:    user,
-		host:    host,
+func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
+	cli = &Client{
+		Nick:    nick,
+		User:    user,
+		Host:    host,
 		VHost:   host,
-		gecos:   gecos,
-		account: "*",
+		Gecos:   gecos,
+		Account: "*",
 		Ip:      "0",
-		ts:      0,
-		uid:     tetra.NextUID(),
+		Ts:      0,
+		Uid:     tetra.NextUID(),
 	}
 
 	tetra.Services[service] = cli

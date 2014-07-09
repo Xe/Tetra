@@ -7,15 +7,15 @@ import (
 )
 
 type Command struct {
-	Impl   func(*RemoteClient, []string)
+	Impl   func(*Client, []string)
 	Uuid   string
 	Script Script
-	Owner  *ServiceClient
+	Owner  *Client
 	Verb   string
 	Perms  int
 }
 
-func (tetra *Tetra) AddCommand(service, verb string, impl func(*RemoteClient, []string)) (command *Command, err error) {
+func (tetra *Tetra) AddCommand(service, verb string, impl func(*Client, []string)) (command *Command, err error) {
 	client := tetra.Services[service]
 
 	command = &Command{

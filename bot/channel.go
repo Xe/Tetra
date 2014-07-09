@@ -11,6 +11,7 @@ type ChanUser struct {
 	Prefix  int
 }
 
+// Implements Targeter
 type Channel struct {
 	Name    string
 	Ts      int64
@@ -38,17 +39,21 @@ func (c *Channel) AddChanUser(client Client) (cu *ChanUser) {
 	cu.Channel = c
 	cu.Prefix = 0
 
-	c.Clients[client.Uid()] = cu
+	c.Clients[client.Uid] = cu
 
 	return
 }
 
 func (c *Channel) DelChanUser(client Client) (err error) {
-	if _, ok := c.Clients[client.Uid()]; !ok {
-		return errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid() + " from " + c.Name)
+	if _, ok := c.Clients[client.Uid]; !ok {
+		return errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid + " from " + c.Name)
 	}
 
-	delete(c.Clients, client.Uid())
+	delete(c.Clients, client.Uid)
 
 	return nil
+}
+
+func (c *Channel) Target() (string) {
+	return c.Name
 }

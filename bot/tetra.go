@@ -40,6 +40,7 @@ type Tetra struct {
 	Handlers map[string]map[string]*Handler
 	Services map[string]*Client
 	Servers  map[string]*Server
+	Scripts  map[string]*Script
 	nextuid  int
 	//Config *Config
 }
@@ -63,6 +64,7 @@ func NewTetra() (tetra *Tetra) {
 		Handlers: make(map[string]map[string]*Handler),
 		Services: make(map[string]*Client),
 		Servers:  make(map[string]*Server),
+		Scripts:  make(map[string]*Script),
 		Bursted:  false,
 		nextuid:  100000,
 	}
@@ -150,8 +152,6 @@ func NewTetra() (tetra *Tetra) {
 		}
 	})
 
-	tetra.AddService("tetra", "Tetra", "user", "yolo-swag.com", "Tetra in Go!")
-
 	return
 }
 
@@ -179,6 +179,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		Host:    host,
 		VHost:   host,
 		Gecos:   gecos,
+		Umodes:  modes.UPROP_IRCOP,
 		Account: "*",
 		Ip:      "0",
 		Ts:      0,
@@ -189,6 +190,10 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 	tetra.Services[service] = cli
 
 	tetra.Clients.AddClient(cli)
+
+	if tetra.Bursted {
+		tetra.Conn.SendLine(cli.Euid())
+	}
 
 	return
 }

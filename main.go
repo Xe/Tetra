@@ -16,6 +16,8 @@ func main() {
 	tetra.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
 	tetra.Conn.SendLine("SERVER tetra.int 1 :Tetra in Go!")
 
+	tetra.LoadScript("modules/tetra/main.lua")
+
 	for _, client := range tetra.Clients.ByUID {
 		tetra.Conn.SendLine(client.Euid())
 	}

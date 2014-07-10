@@ -32,5 +32,9 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 		"bot":    tetra,
 	})
 
+	tetra.Scripts[name] = script
+
+	script.L.DoFile(name)
+
 	return
 }

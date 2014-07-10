@@ -1,0 +1,24 @@
+{
+	"autoload": ["tetra/main"],
+	"services": [
+		{
+			"nick": "Tetra",
+			"user": "tetra",
+			"host": "yolo-swag.com",
+			"gecos": "Tetra administrative client",
+			"name": "tetra"
+		}
+	],
+	"myinfo": {
+		"name": "tetra.int",
+		"gecos": "Tetra in Go!",
+		"sid": "420"
+	},
+	"uplink": {
+		"host": "127.0.0.1",
+		"port": "6667",
+		"password": "shameless",
+		"ssl": false
+	},
+	"rrdpath": "var/rrd/"
+}

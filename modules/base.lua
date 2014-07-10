@@ -139,3 +139,12 @@ elevatedtest =
   end
 
 --]]
+
+function parseLine(line)
+  local source = tetra.bot.Clients.ByUID[line.Source]
+  local destination = line.Args[1]
+  local message = split(line.Args[2], " ")
+
+  return source, destination, message
+end
+

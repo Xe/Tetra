@@ -17,20 +17,28 @@ type Script struct {
 	Log      *log.Logger
 	Handlers map[string]*Handler
 	Service  string
+	Client   *Client
 }
 
 func (tetra *Tetra) LoadScript(name string) (script *Script) {
+	kind := strings.Split(name, "/")[0]
+	client, ok := tetra.Services[kind]
+	if !ok {
+		client = tetra.Services["tetra"]
+	}
+
 	script = &Script{
 		Name:     name,
 		L:        luar.Init(),
 		Tetra:    tetra,
 		Log:      log.New(os.Stdout, name+" ", log.LstdFlags),
 		Handlers: make(map[string]*Handler),
-		Service:  strings.Split(name, "/")[0],
+		Service:  kind,
+		Client:   client,
 	}
 
 	luar.Register(script.L, "", luar.Map{
-		"service": script.Service,
+		"client":  script.Client,
 	})
 
 	luar.Register(script.L, "tetra", luar.Map{

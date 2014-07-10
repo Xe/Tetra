@@ -1,9 +1,7 @@
 function linetest(line)
-  tetra.log.Printf("%#v", line)
-  source = tetra.bot.Clients.ByUID[line.Source]
-  tetra.log.Printf("%#v", source)
-end
+  local source, destination, message = parseLine(line)
 
-tetra.log.Printf("%#v", tetra.script)
+  client.Notice(source, "Test")
+end
 
 tetra.script.AddLuaProtohook("PRIVMSG", "linetest")

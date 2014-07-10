@@ -13,16 +13,16 @@ func main() {
 
 	bot.Auth()
 
-	for _, script := range bot.Config.Autoload {
-		bot.LoadScript(script)
-	}
-
 	for _, sclient := range bot.Config.Services {
 		bot.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
 	}
 
 	for _, client := range bot.Services {
 		bot.Conn.SendLine(client.Euid())
+	}
+
+	for _, script := range bot.Config.Autoload {
+		bot.LoadScript(script)
 	}
 
 	for {

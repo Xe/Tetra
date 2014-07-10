@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Clients struct {
@@ -42,7 +43,7 @@ type Tetra struct {
 	Servers  map[string]*Server
 	Scripts  map[string]*Script
 	nextuid  int
-	//Config *Config
+	Config   *Config
 }
 
 func NewTetra() (tetra *Tetra) {
@@ -179,10 +180,9 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		Host:    host,
 		VHost:   host,
 		Gecos:   gecos,
-		Umodes:  modes.UPROP_IRCOP,
-		Account: "*",
+		Account: nick,
 		Ip:      "0",
-		Ts:      0,
+		Ts:      time.Now().Unix(),
 		Uid:     tetra.NextUID(),
 		tetra:   tetra,
 	}

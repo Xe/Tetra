@@ -34,12 +34,15 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{
-		"new": uuid.New(),
+		"new": uuid.New,
 	})
 
 	tetra.Scripts[name] = script
 
-	script.L.DoFile(name)
+	err := script.L.DoFile("modules/" + name + ".lua")
+	if err != nil {
+		script.Log.Printf("%#v", err)
+	}
 
 	return
 }

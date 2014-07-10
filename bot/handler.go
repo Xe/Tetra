@@ -10,7 +10,7 @@ type Handler struct {
 	Impl   func(*r1459.RawLine)
 	Verb   string
 	Uuid   string
-	Script Script
+	Script *Script
 }
 
 func (tetra *Tetra) AddHandler(verb string, impl func(*r1459.RawLine)) (handler *Handler, err error) {

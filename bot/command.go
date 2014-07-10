@@ -7,7 +7,7 @@ import (
 )
 
 type Command struct {
-	Impl   func(*Client, []string)
+	Impl   func(*Client, []string) string
 	Uuid   string
 	Script Script
 	Owner  *Client
@@ -15,7 +15,7 @@ type Command struct {
 	Perms  int
 }
 
-func (tetra *Tetra) AddCommand(service, verb string, impl func(*Client, []string)) (command *Command, err error) {
+func (tetra *Tetra) AddCommand(service, verb string, impl func(*Client, []string) string)  (command *Command, err error) {
 	client := tetra.Services[service]
 
 	command = &Command{

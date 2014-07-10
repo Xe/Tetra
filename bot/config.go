@@ -8,6 +8,7 @@ import (
 type ServerConfig struct {
 	Name  string `json:"name"`
 	Gecos string `json:"gecos"`
+	Sid   string `json:"sid"`
 }
 
 type ServiceConfig struct {
@@ -29,13 +30,14 @@ type Config struct {
 	Autoload []string         `json:"autoload"`
 	Services []*ServiceConfig `json:"services"`
 	Server   *ServerConfig    `json:"myinfo"`
+	Uplink   *UplinkConfig    `json:"uplink"`
 	RRDPath  string           `json:"rrdpath"`
 }
 
-func NewConfig(fname string) (conf *Config) {
+func NewConfig(fname string) (conf *Config, err error) {
 	contents, err := ioutil.ReadFile(fname)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	json.Unmarshal(contents, conf)

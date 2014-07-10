@@ -10,6 +10,7 @@ import (
 	"net/textproto"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type Clients struct {
@@ -102,6 +103,58 @@ func NewTetra() (tetra *Tetra) {
 
 	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
 		// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
+
+		ts := line.Args[0]
+		name := line.Args[1]
+		cmodes := line.Args[2]
+		users := line.Args[3]
+
+		var channel *Channel
+
+		if mychannel, ok := tetra.Channels[name]; ok {
+			channel = mychannel
+		} else {
+			// The ircd should never give an invalid TS.
+			numberts, _ := strconv.ParseInt(ts, 10, 64)
+
+			// TODO: make this its own function somewhere?
+			modeflags := 0
+
+			for _, char := range cmodes {
+				if _, ok := modes.CHANMODES[1][string(char)]; ok {
+					modeflags = modeflags | modes.CHANMODES[1][string(char)]
+				}
+			}
+
+			channel = &Channel{
+				Name:    name,
+				Modes:   modeflags,
+				Clients: make(map[string]*ChanUser),
+				Lists:   make(map[int][]string),
+				Ts:      numberts,
+			}
+
+			tetra.Channels[name] = channel
+		}
+
+		for _, user := range strings.Split(users, " ") {
+			var uid string
+			length := len(user)
+			pfxcount := length-9
+
+			uid = user[pfxcount:]
+			prefixes := user[:pfxcount]
+
+			client := tetra.Clients.ByUID[uid]
+
+			cu := channel.AddChanUser(client)
+
+			for _, char := range prefixes {
+				if _, ok := modes.PREFIXES[string(char)]; ok {
+					cu.Prefix = modes.PREFIXES[string(char)] | cu.Prefix
+				}
+			}
+		}
 	})
 
 	tetra.AddService("tetra", "Tetra", "user", "yolo-swag.com", "Tetra in Go!")

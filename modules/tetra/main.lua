@@ -1,2 +1,2 @@
-tetra.log.Printf("Test " .. uuid.new())
+tetra.log.Printf("My service name: " .. tetra.script.Service)
 

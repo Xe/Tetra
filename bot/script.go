@@ -7,6 +7,7 @@ import (
 	"github.com/Xe/Tetra/1459"
 	"log"
 	"os"
+	"strings"
 )
 
 type Script struct {
@@ -27,7 +28,12 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 		Log:      log.New(os.Stdout, name+" ", log.LstdFlags),
 		Commands: nil,
 		Handlers: nil,
+		Service:  strings.Split(name, "/")[0],
 	}
+
+	luar.Register(script.L, "", luar.Map{
+		"service": script.Service,
+	})
 
 	luar.Register(script.L, "tetra", luar.Map{
 		"script": script,

@@ -3,9 +3,9 @@ package tetra
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/modes"
-	"fmt"
 	"log"
 	"net"
 	"net/textproto"
@@ -163,6 +163,26 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		}
 	})
 
+	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
+		source := tetra.Clients.ByUID[line.Source]
+		destination := line.Args[0]
+
+		if destination[0] == '#' {
+			return
+		}
+
+		client := tetra.Clients.ByUID[destination]
+		message := strings.Split(line.Args[1], " ")
+		verb := strings.ToUpper(message[0])
+
+		if command, ok := client.Commands[verb]; !ok {
+			return
+		} else {
+			reply := command.Impl(source, message)
+			client.Notice(source, reply)
+		}
+	})
+
 	return
 }
 
@@ -191,16 +211,17 @@ func (tetra *Tetra) Auth() {
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
 	cli = &Client{
-		Nick:    nick,
-		User:    user,
-		Host:    host,
-		VHost:   host,
-		Gecos:   gecos,
-		Account: nick,
-		Ip:      "0",
-		Ts:      time.Now().Unix(),
-		Uid:     tetra.NextUID(),
-		tetra:   tetra,
+		Nick:     nick,
+		User:     user,
+		Host:     host,
+		VHost:    host,
+		Gecos:    gecos,
+		Account:  nick,
+		Ip:       "0",
+		Ts:       time.Now().Unix(),
+		Uid:      tetra.NextUID(),
+		tetra:    tetra,
+		Commands: make(map[string]*Command),
 	}
 
 	tetra.Services[service] = cli

@@ -59,10 +59,10 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 
 // Add a lua command (by name) from a lua script. This is designed to be ran
 // from a lua environment.
-func (script *Script) AddLuaCommand(tetra *Tetra, verb string, help string, funcname string) {
+func (script *Script) AddLuaCommand(verb string, funcname string) {
 	function := luar.NewLuaObjectFromName(script.L, funcname)
 
-	command, _ := tetra.AddCommand(script.Service, verb,
+	command, _ := script.Tetra.AddCommand(script.Service, verb,
 		func(client *Client, message []string) string {
 			reply, err := function.Call(client, message)
 			if err != nil {
@@ -77,13 +77,14 @@ func (script *Script) AddLuaCommand(tetra *Tetra, verb string, help string, func
 }
 
 // Add a lua function as a protocol hook
-func (script *Script) AddLuaProtohook(tetra *Tetra, verb string, name string) {
+func (script *Script) AddLuaProtohook(verb string, name string) {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
-	handler, err := tetra.AddHandler(verb, func(line *r1459.RawLine) {
+	handler, err := script.Tetra.AddHandler(verb, func(line *r1459.RawLine) {
 		_, err := function.Call(line)
 		if err != nil {
 			script.Log.Printf("Lua error %s: %#v", script.Name, err)
+			panic(err)
 		}
 	})
 	if err != nil {

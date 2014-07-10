@@ -1,2 +1,5 @@
-tetra.log.Printf("My service name: " .. tetra.script.Service)
+function test(user, message)
+  return "Test!"
+end
 
+tetra.script.AddLuaCommand("TEST", "test")

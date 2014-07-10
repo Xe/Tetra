@@ -1,55 +1,67 @@
 package main
 
 import (
-	_ "fmt"
+	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot"
+	"runtime"
 )
 
 func main() {
-	tetra := tetra.NewTetra("etc/config.json")
+	bot := tetra.NewTetra("etc/config.json")
 
-	tetra.Connect("127.0.0.1", "6667")
-	defer tetra.Conn.Conn.Close()
+	bot.Connect("127.0.0.1", "6667")
+	defer bot.Conn.Conn.Close()
 
-	tetra.Auth()
+	bot.Auth()
 
-	for _, script := range tetra.Config.Autoload {
-		tetra.LoadScript(script)
+	for _, script := range bot.Config.Autoload {
+		bot.LoadScript(script)
 	}
 
-	for _, sclient := range tetra.Config.Services {
-		tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+	for _, sclient := range bot.Config.Services {
+		bot.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+	}
+
+	bot.AddCommand("tetra", "MEM",
+		func(user *tetra.Client, message []string) string {
+			stats := new(runtime.MemStats)
+			runtime.ReadMemStats(stats)
+
+			return fmt.Sprintf("Allocs: %d, Frees: %d, Bytes in use: %d, Scripts loaded: %d",
+				stats.Mallocs, stats.Frees, stats.Alloc, len(bot.Scripts))
+		})
+
+	for _, client := range bot.Services {
+		bot.Conn.SendLine(client.Euid())
+		bot.Log.Printf("%#v", client)
 	}
 
 	for {
-		line, err := tetra.Conn.GetLine()
+		line, err := bot.Conn.GetLine()
 		if err != nil {
 			panic(err)
 		}
 
 		rawline := r1459.NewRawLine(line)
 
-		tetra.Conn.Log.Printf("<<< %s", line)
+		bot.Conn.Log.Printf("<<< %s", line)
 
 		if rawline.Verb == "PING" {
-			if !tetra.Bursted {
-				tetra.Bursted = true
-				if svc, ok := tetra.Services["tetra"]; !ok {
-					panic("No service tetra!")
+			if !bot.Bursted {
+				bot.Bursted = true
+				if svc, ok := bot.Services["tetra"]; !ok {
+					panic("No service bot!")
 				} else {
-					for _, client := range tetra.Services {
-						tetra.Conn.SendLine(client.Euid())
-					}
 					svc.Join("#services")
 				}
 			}
-			tetra.Conn.SendLine("PONG :" + rawline.Args[0])
+			bot.Conn.SendLine("PONG :" + rawline.Args[0])
 		}
 
-		if _, present := tetra.Handlers[rawline.Verb]; present {
-			for _, handler := range tetra.Handlers[rawline.Verb] {
-				if tetra.Bursted {
+		if _, present := bot.Handlers[rawline.Verb]; present {
+			for _, handler := range bot.Handlers[rawline.Verb] {
+				if bot.Bursted {
 					go handler.Impl(rawline)
 				} else {
 					handler.Impl(rawline)

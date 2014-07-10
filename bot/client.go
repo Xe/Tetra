@@ -35,7 +35,8 @@ func (r *Client) Euid() string {
 
 func (r *Client) message(source *Client, kind string,
 	destination Targeter, message string) {
-	r.tetra.Conn.SendLine(":%s %s %s :%s", source.Uid, kind, destination, message)
+	str := fmt.Sprintf(":%s %s %s :%s", source.Uid, kind, destination.Target(), message)
+	r.tetra.Conn.SendLine(str)
 }
 
 func (r *Client) Privmsg(destination Targeter, message string) {

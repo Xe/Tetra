@@ -36,11 +36,7 @@ func main() {
 				if svc, ok := tetra.Services["tetra"]; !ok {
 					panic(ok)
 				} else {
-					if channel, ok := tetra.Channels["#services"] ; !ok {
-						panic(ok)
-					} else {
-						svc.Join(channel)
-					}
+					svc.Join("#services")
 				}
 
 			}

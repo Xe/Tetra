@@ -126,15 +126,8 @@ func NewTetra() (tetra *Tetra) {
 				}
 			}
 
-			channel = &Channel{
-				Name:    name,
-				Modes:   modeflags,
-				Clients: make(map[string]*ChanUser),
-				Lists:   make(map[int][]string),
-				Ts:      numberts,
-			}
-
-			tetra.Channels[name] = channel
+			channel = tetra.NewChannel(name, numberts)
+			channel.Modes = modeflags
 		}
 
 		for _, user := range strings.Split(users, " ") {
@@ -190,6 +183,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		Ip:      "0",
 		Ts:      0,
 		Uid:     tetra.NextUID(),
+		tetra:   tetra,
 	}
 
 	tetra.Services[service] = cli

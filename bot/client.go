@@ -1,9 +1,9 @@
 package tetra
 
 import (
-	"errors"
 	"fmt"
-	"strconv"
+	"strings"
+	"time"
 )
 
 type Client struct {
@@ -32,7 +32,8 @@ func (r *Client) Euid() string {
 		r.VHost, r.Host, r.Uid, r.Ip, r.Account, r.Gecos)
 }
 
-func (r *Client) message(source *Client, kind string,  destination Targeter, message string) {
+func (r *Client) message(source *Client, kind string,
+	destination Targeter, message string) {
 	r.tetra.Conn.SendLine(":%s %s %s :%s", source.Uid, kind, destination, message)
 }
 
@@ -48,14 +49,20 @@ func (r *Client) Target() (string) {
 	return r.Uid
 }
 
-func (r *Client) Join(channel *Channel) (err error) {
-	if r == nil {
-		panic(errors.New("What the fuck"))
+func (r *Client) Join(channame string) {
+	var channel *Channel
+
+	upperchan := strings.ToUpper(channame)
+
+	if _, ok := r.tetra.Channels[upperchan]; ok {
+		channel = r.tetra.NewChannel(channame, time.Now().Unix())
+	} else {
+		channel = r.tetra.Channels[upperchan]
 	}
 
-	r.tetra.Conn.SendLine(":420 SJOIN " + strconv.FormatInt(channel.Ts, 10) + " " +
-		channel.Name + " + :@" + r.Uid)
+	str := fmt.Sprintf(":%s SJOIN %d %s + :%s", r.tetra.Info.Sid, channel.Ts,
+		channel.Name, r.Uid)
 
-	return
+	r.tetra.Conn.SendLine(str)
 }
 

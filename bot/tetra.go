@@ -45,6 +45,7 @@ type Tetra struct {
 	Scripts  map[string]*Script
 	nextuid  int
 	Config   *Config
+	Log      *log.Logger
 }
 
 func NewTetra(cpath string) (tetra *Tetra) {
@@ -56,7 +57,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	tetra = &Tetra{
 		Conn: &Connection{
-			Log: log.New(os.Stdout, "", log.LstdFlags),
+			Log: log.New(os.Stdout, "CONN ", log.LstdFlags),
 		},
 		Info: &Server{
 			Name:  "tetra.int",
@@ -76,6 +77,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Bursted:  false,
 		nextuid:  100000,
 		Config:   config,
+		Log:      log.New(os.Stdout, "BOT ", log.LstdFlags),
 	}
 
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {

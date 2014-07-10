@@ -1,6 +1,7 @@
 package tetra
 
 import (
+	"code.google.com/p/go-uuid/uuid"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
 	"log"
@@ -30,6 +31,10 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 		"script": script,
 		"log":    script.Log,
 		"bot":    tetra,
+	})
+
+	luar.Register(script.L, "uuid", luar.Map{
+		"new":    uuid.New(),
 	})
 
 	tetra.Scripts[name] = script

@@ -54,13 +54,15 @@ func (r *Client) Join(channame string) {
 
 	upperchan := strings.ToUpper(channame)
 
-	if _, ok := r.tetra.Channels[upperchan]; ok {
+	if _, ok := r.tetra.Channels[upperchan]; !ok {
 		channel = r.tetra.NewChannel(channame, time.Now().Unix())
 	} else {
 		channel = r.tetra.Channels[upperchan]
 	}
 
-	str := fmt.Sprintf(":%s SJOIN %d %s + :%s", r.tetra.Info.Sid, channel.Ts,
+	channel.AddChanUser(r)
+
+	str := fmt.Sprintf(":%s SJOIN %d %s + :@%s", r.tetra.Info.Sid, channel.Ts,
 		channel.Name, r.Uid)
 
 	r.tetra.Conn.SendLine(str)

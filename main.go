@@ -40,7 +40,6 @@ func main() {
 				} else {
 					svc.Join("#services")
 				}
-
 			}
 			tetra.Conn.SendLine("PONG :" + rawline.Args[0])
 		}

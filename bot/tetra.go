@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/modes"
+	"fmt"
 	"log"
 	"net"
 	"net/textproto"
@@ -46,7 +47,13 @@ type Tetra struct {
 	Config   *Config
 }
 
-func NewTetra() (tetra *Tetra) {
+func NewTetra(cpath string) (tetra *Tetra) {
+	config, err := NewConfig(cpath)
+	if err != nil {
+		fmt.Printf("No config file %s\n", cpath)
+		panic(err)
+	}
+
 	tetra = &Tetra{
 		Conn: &Connection{
 			Log: log.New(os.Stdout, "", log.LstdFlags),
@@ -68,6 +75,7 @@ func NewTetra() (tetra *Tetra) {
 		Scripts:  make(map[string]*Script),
 		Bursted:  false,
 		nextuid:  100000,
+		Config:   config,
 	}
 
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
@@ -171,6 +179,12 @@ func (tetra *Tetra) Connect(host, port string) (err error) {
 	tetra.Conn.Tp = textproto.NewReader(tetra.Conn.Reader)
 
 	return
+}
+
+func (tetra *Tetra) Auth() {
+	tetra.Conn.SendLine("PASS " + tetra.Config.Uplink.Password + " TS 6 :" + tetra.Config.Server.Sid)
+	tetra.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
+	tetra.Conn.SendLine("SERVER " + tetra.Config.Server.Name + " 1 :" + tetra.Config.Server.Gecos)
 }
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {

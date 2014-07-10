@@ -7,16 +7,20 @@ import (
 )
 
 func main() {
-	tetra := tetra.NewTetra()
+	tetra := tetra.NewTetra("etc/config.json")
 
 	tetra.Connect("127.0.0.1", "6667")
 	defer tetra.Conn.Conn.Close()
 
-	tetra.Conn.SendLine("PASS shameless TS 6 :420")
-	tetra.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
-	tetra.Conn.SendLine("SERVER tetra.int 1 :Tetra in Go!")
+	tetra.Auth()
 
-	tetra.LoadScript("tetra/main")
+	for _, script := range tetra.Config.Autoload {
+		tetra.LoadScript(script)
+	}
+
+	for _, sclient := range tetra.Config.Services {
+		tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+	}
 
 	for {
 		line, err := tetra.Conn.GetLine()
@@ -32,7 +36,7 @@ func main() {
 			if !tetra.Bursted {
 				tetra.Bursted = true
 				if svc, ok := tetra.Services["tetra"]; !ok {
-					panic(ok)
+					panic("No service tetra!")
 				} else {
 					for _, client := range tetra.Services {
 						tetra.Conn.SendLine(client.Euid())

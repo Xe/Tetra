@@ -40,7 +40,7 @@ func NewConfig(fname string) (conf *Config, err error) {
 		return nil, err
 	}
 
-	json.Unmarshal(contents, conf)
+	json.Unmarshal(contents, &conf)
 
 	return
 }

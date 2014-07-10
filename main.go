@@ -33,8 +33,18 @@ func main() {
 		if rawline.Verb == "PING" {
 			if !tetra.Bursted {
 				tetra.Bursted = true
+				if svc, ok := tetra.Services["tetra"]; !ok {
+					panic(ok)
+				} else {
+					if channel, ok := tetra.Channels["#services"] ; !ok {
+						panic(ok)
+					} else {
+						svc.Join(channel)
+					}
+				}
+
 			}
-			tetra.Conn.SendLine("PONG :%s", rawline.Args[0])
+			tetra.Conn.SendLine("PONG :" + rawline.Args[0])
 		}
 
 		if _, present := tetra.Handlers[rawline.Verb]; present {

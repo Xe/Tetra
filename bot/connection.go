@@ -16,8 +16,9 @@ type Connection struct {
 }
 
 func (c *Connection) SendLine(line string, stuff ...interface{}) {
-	log.Printf(">>> "+line, stuff...)
-	fmt.Fprintf(c.Conn, line+"\r\n", stuff...)
+	str := fmt.Sprintf(line, stuff...)
+	c.Log.Printf(">>> " + str)
+	fmt.Fprintf(c.Conn, "%s\r\n", line)
 }
 
 func (c *Connection) GetLine() (line string, err error) {

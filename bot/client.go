@@ -1,7 +1,9 @@
 package tetra
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 )
 
 type Client struct {
@@ -46,18 +48,13 @@ func (r *Client) Target() (string) {
 	return r.Uid
 }
 
-func (r *Client) Join(name interface{}) (err error) {
-	switch name.(type) {
-	case string:
-		if channel, ok := r.tetra.Channels[name.(string)]; ok {
-			r.tetra.Conn.SendLine(":%s SJOIN %d %s + @%s", r.tetra.Info.Sid,
-				channel.Ts, channel.Name, r.Uid)
-		}
-	case *Channel:
-		channel := name.(*Channel)
-		r.tetra.Conn.SendLine(":%s SJOIN %d %s + @%s", r.tetra.Info.Sid,
-			channel.Ts, channel.Name, r.Uid)
+func (r *Client) Join(channel *Channel) (err error) {
+	if r == nil {
+		panic(errors.New("What the fuck"))
 	}
+
+	r.tetra.Conn.SendLine(":420 SJOIN " + strconv.FormatInt(channel.Ts, 10) + " " +
+		channel.Name + " + :@" + r.Uid)
 
 	return
 }

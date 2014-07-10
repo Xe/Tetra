@@ -1,5 +1,9 @@
-function test(user, message)
-  return "Test!"
+function linetest(line)
+  tetra.log.Printf("%#v", line)
+  source = tetra.bot.Clients.ByUID[line.Source]
+  tetra.log.Printf("%#v", source)
 end
 
-tetra.script.AddLuaCommand("TEST", "test")
+tetra.log.Printf("%#v", tetra.script)
+
+tetra.script.AddLuaProtohook("PRIVMSG", "linetest")

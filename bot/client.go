@@ -18,7 +18,6 @@ type Client struct {
 	Gecos       string
 	Permissions int
 	Umodes      int
-	Commands    map[string]*Command
 	Kind        string
 	tetra       *Tetra
 	Ts          int64

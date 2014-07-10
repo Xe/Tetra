@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot"
-	"runtime"
 )
 
 func main() {
@@ -23,18 +21,8 @@ func main() {
 		bot.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
 	}
 
-	bot.AddCommand("tetra", "MEM",
-		func(user *tetra.Client, message []string) string {
-			stats := new(runtime.MemStats)
-			runtime.ReadMemStats(stats)
-
-			return fmt.Sprintf("Allocs: %d, Frees: %d, Bytes in use: %d, Scripts loaded: %d",
-				stats.Mallocs, stats.Frees, stats.Alloc, len(bot.Scripts))
-		})
-
 	for _, client := range bot.Services {
 		bot.Conn.SendLine(client.Euid())
-		bot.Log.Printf("%#v", client)
 	}
 
 	for {

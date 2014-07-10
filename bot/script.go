@@ -15,8 +15,7 @@ type Script struct {
 	L        *lua.State
 	Tetra    *Tetra
 	Log      *log.Logger
-	Commands []*Command
-	Handlers []*Handler
+	Handlers map[string]*Handler
 	Service  string
 }
 
@@ -26,8 +25,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 		L:        luar.Init(),
 		Tetra:    tetra,
 		Log:      log.New(os.Stdout, name+" ", log.LstdFlags),
-		Commands: nil,
-		Handlers: nil,
+		Handlers: make(map[string]*Handler),
 		Service:  strings.Split(name, "/")[0],
 	}
 
@@ -51,29 +49,10 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 
 	err := script.L.DoFile("modules/" + name + ".lua")
 	if err != nil {
-		script.Log.Printf("%#v", err)
+		panic(err)
 	}
 
 	return
-}
-
-// Add a lua command (by name) from a lua script. This is designed to be ran
-// from a lua environment.
-func (script *Script) AddLuaCommand(verb string, funcname string) {
-	function := luar.NewLuaObjectFromName(script.L, funcname)
-
-	command, _ := script.Tetra.AddCommand(script.Service, verb,
-		func(client *Client, message []string) string {
-			reply, err := function.Call(client, message)
-			if err != nil {
-				script.Log.Printf("Lua error %s: %#v", script.Name, err)
-				return "Lua error"
-			}
-
-			return reply.(string)
-		})
-
-	script.Commands = append(script.Commands, command)
 }
 
 // Add a lua function as a protocol hook
@@ -92,7 +71,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 	}
 
 	handler.Script = script
-	script.Handlers = append(script.Handlers, handler)
+	script.Handlers[handler.Uuid] = handler
 }
 
 // Unload a script and delete its commands and handlers
@@ -103,14 +82,9 @@ func (tetra *Tetra) UnloadScript(name string) error {
 
 	script := tetra.Scripts[name]
 
-	for i, command := range script.Commands {
-		tetra.DelCommand(command.Verb, command.Uuid)
-		script.Commands = script.Commands[i:]
-	}
-
-	for j, handler := range script.Handlers {
+	for _, handler := range script.Handlers {
 		tetra.DelHandler(handler.Verb, handler.Uuid)
-		script.Handlers = script.Handlers[j:]
+		delete(script.Handlers, handler.Uuid)
 	}
 
 	script.L.Close()

@@ -39,6 +39,8 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 		"new": uuid.New,
 	})
 
+	script.L.DoFile("modules/base.lua")
+
 	tetra.Scripts[name] = script
 
 	err := script.L.DoFile("modules/" + name + ".lua")

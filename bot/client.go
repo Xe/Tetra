@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"fmt"
+	"github.com/Xe/Tetra/modes"
 	"strings"
 	"time"
 )
@@ -66,4 +67,8 @@ func (r *Client) Join(channame string) {
 		channel.Name, r.Uid)
 
 	r.tetra.Conn.SendLine(str)
+}
+
+func (r *Client) IsOper() bool {
+	return r.Umodes & modes.UPROP_IRCOP == modes.UPROP_IRCOP
 }

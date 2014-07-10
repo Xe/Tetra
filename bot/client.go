@@ -45,7 +45,7 @@ func (r *Client) Notice(destination Targeter, message string) {
 	r.message(r, "NOTICE", destination, message)
 }
 
-func (r *Client) Target() (string) {
+func (r *Client) Target() string {
 	return r.Uid
 }
 
@@ -67,4 +67,3 @@ func (r *Client) Join(channame string) {
 
 	r.tetra.Conn.SendLine(str)
 }
-

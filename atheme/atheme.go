@@ -17,7 +17,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 	var serverproxy *xmlrpc.Client
 	serverproxy, err = xmlrpc.NewClient(url, nil)
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 

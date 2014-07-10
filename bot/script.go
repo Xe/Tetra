@@ -34,7 +34,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{
-		"new":    uuid.New(),
+		"new": uuid.New(),
 	})
 
 	tetra.Scripts[name] = script

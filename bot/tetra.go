@@ -135,7 +135,7 @@ func NewTetra() (tetra *Tetra) {
 		for _, user := range strings.Split(users, " ") {
 			var uid string
 			length := len(user)
-			pfxcount := length-9
+			pfxcount := length - 9
 
 			uid = user[pfxcount:]
 			prefixes := user[:pfxcount]

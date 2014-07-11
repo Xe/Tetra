@@ -4,7 +4,9 @@ function linetest(line)
   if destination.Target():sub(1,1) == "#" then
     client.Privmsg(destination, message)
   else
-    client.Notice(source, message)
+    if destination.Kind == client.Kind then
+      client.Notice(source, message)
+    end
   end
 end
 

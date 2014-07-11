@@ -46,6 +46,7 @@ type Tetra struct {
 	nextuid  int
 	Config   *Config
 	Log      *log.Logger
+	Uplink   *Server
 }
 
 func NewTetra(cpath string) (tetra *Tetra) {
@@ -78,6 +79,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		nextuid:  100000,
 		Config:   config,
 		Log:      log.New(os.Stdout, "BOT ", log.LstdFlags),
+		Uplink:   &Server{},
 	}
 
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
@@ -195,6 +197,16 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		channel.AddChanUser(client)
 	})
 
+	tetra.AddHandler("PART", func(line *r1459.RawLine) {
+		// <<< :42FAAAAAB PART #help
+		// TODO: Implement
+	})
+
+	tetra.AddHandler("KICK", func(line *r1459.RawLine) {
+		// <<< :42FAAAAAB KICK #help 42FAAAAAB :foo
+		// TODO: Implement
+	})
+
 	tetra.AddHandler("CHGHOST", func(line *r1459.RawLine) {
 		client := tetra.Clients.ByUID[line.Args[0]]
 		client.VHost = line.Args[1]
@@ -203,6 +215,34 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	tetra.AddHandler("QUIT", func(line *r1459.RawLine) {
 		client := tetra.Clients.ByUID[line.Source]
 		tetra.Clients.DelClient(client)
+	})
+
+	tetra.AddHandler("SID", func(line *r1459.RawLine) {
+		// <<< :42F SID cod.int 2 752 :Cod fishy
+		parent := tetra.Servers[line.Source]
+
+		server := &Server {
+			Name: line.Args[0],
+			Gecos: line.Args[3],
+			Sid: line.Args[2],
+			Links: []*Server{parent},
+		}
+
+		parent.Links = append(parent.Links, server)
+
+		tetra.Servers[server.Sid] = server
+	})
+
+	tetra.AddHandler("PASS", func(line *r1459.RawLine) {
+		// <<< PASS shameless TS 6 :42F
+		tetra.Uplink.Sid = line.Args[3]
+		tetra.Servers[line.Args[3]] = tetra.Uplink
+	})
+
+	tetra.AddHandler("SERVER", func(line *r1459.RawLine) {
+		// <<< SERVER fluttershy.yolo-swag.com 1 :shadowircd test server
+		tetra.Uplink.Name = line.Args[0]
+		tetra.Uplink.Gecos = line.Args[2]
 	})
 
 	return

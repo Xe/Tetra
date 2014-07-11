@@ -39,7 +39,27 @@ commands = {
   VERSION = function(source, message)
     local commit = os.capture("git rev-parse --short HEAD")
     return "Tetra 0.1-" .. commit
-  end
+  end,
+  NETDUMP = elevated() .. function(source, message)
+    tetra.log.Printf("%#v", tetra.bot)
+    tetra.log.Printf("%#v", tetra.bot.Clients.ByUID)
+
+    for uid, client in pairs(tetra.bot.Clients.ByUID) do
+      tetra.log.Printf("%#v", client)
+    end
+
+    tetra.log.Printf("%#v", tetra.bot.Channels)
+
+    for name, channel in pairs(tetra.bot.Channels) do
+      tetra.log.Printf("%#v", channel)
+
+      for uid, cuser in pairs(channel.Clients) do
+        tetra.log.Printf("%#v %#v", cuser, cuser.Client)
+      end
+    end
+
+    return "Logged"
+  end,
 }
 
 function parsecommands(source, message)

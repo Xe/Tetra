@@ -233,16 +233,16 @@ func (tetra *Tetra) Auth() {
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
 	cli = &Client{
-		Nick:     nick,
-		User:     user,
-		Host:     host,
-		VHost:    host,
-		Gecos:    gecos,
-		Account:  nick,
-		Ip:       "0",
-		Ts:       time.Now().Unix(),
-		Uid:      tetra.NextUID(),
-		tetra:    tetra,
+		Nick:    nick,
+		User:    user,
+		Host:    host,
+		VHost:   host,
+		Gecos:   gecos,
+		Account: nick,
+		Ip:      "0",
+		Ts:      time.Now().Unix(),
+		Uid:     tetra.NextUID(),
+		tetra:   tetra,
 	}
 
 	tetra.Services[service] = cli

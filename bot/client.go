@@ -70,5 +70,5 @@ func (r *Client) Join(channame string) {
 }
 
 func (r *Client) IsOper() bool {
-	return r.Umodes & modes.UPROP_IRCOP == modes.UPROP_IRCOP
+	return r.Umodes&modes.UPROP_IRCOP == modes.UPROP_IRCOP
 }

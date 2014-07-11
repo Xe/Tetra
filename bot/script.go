@@ -2,9 +2,9 @@ package tetra
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/Xe/Tetra/1459"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
-	"github.com/Xe/Tetra/1459"
 	"log"
 	"os"
 	"strings"
@@ -38,7 +38,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 	}
 
 	luar.Register(script.L, "", luar.Map{
-		"client":  script.Client,
+		"client": script.Client,
 	})
 
 	luar.Register(script.L, "tetra", luar.Map{

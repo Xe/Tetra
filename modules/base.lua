@@ -1,3 +1,5 @@
+local json = require "json"
+
 -- http://lua-users.org/wiki/SplitJoin
 -- Compatibility: Lua-5.1
 function split(str, pat)
@@ -139,6 +141,30 @@ elevatedtest =
   end
 
 --]]
+
+function geturl(url)
+  local c, err = web.get(url)
+  if err ~= nil then
+    tetra.log.Printf("URL error: %#v", err)
+    return nil, err
+  end
+
+  local str, err = ioutil.readall(c.Body)
+  if err ~= nil then
+    tetra.log.Printf("Read error: %#v", err)
+    return nil, err
+  end
+
+  str = ioutil.byte2string(str)
+
+  return str, nil
+end
+
+function getjson(url)
+  obj = json.decode(geturl(url))
+
+  return obj, nil
+end
 
 function parseLine(line)
   local source = tetra.bot.Clients.ByUID[line.Source]

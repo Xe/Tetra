@@ -3,20 +3,12 @@ local json = require "json"
 function dblookup(id)
   local url = "http://derpiboo.ru/"..id..".json?nocomments"
 
-  local c, err = web.get(url)
+  local obj, err = getjson(url)
+
   if err ~= nil then
-    tetra.log.Printf("URL error: %#v", err)
     return nil, err
   end
 
-  local str, err = ioutil.readall(c.Body)
-  if err ~= nil then
-    tetra.log.Printf("Read error: %#v", err)
-    return nil, err
-  end
-
-  str = ioutil.byte2string(str)
-  local obj = json.decode(str)
   return obj, nil
 end
 
@@ -30,7 +22,7 @@ end
 function db_scrape(line)
   local source, destination, message = parseLine(line)
 
-  if message:find("derpiboo.ru") then
+  if message:find("derpiboo.ru/(%d+)") then
     local id = message:match("/(%d+)")
 
     if id == nil then

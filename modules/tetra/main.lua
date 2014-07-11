@@ -25,9 +25,6 @@ commands = {
       return "Script " .. name .. " is not loaded."
     end
 
-    tetra.log.Printf("%#v", tetra.script)
-    tetra.log.Printf("%#v", client)
-
     local err = tetra.bot.UnloadScript(name)
 
     return "Script " .. name .. " unloaded"
@@ -39,6 +36,10 @@ commands = {
 
     return "End of scripts list"
   end,
+  VERSION = function(source, message)
+    local commit = os.capture("git rev-parse --short HEAD")
+    return "Tetra 0.1-" .. commit
+  end
 }
 
 function parsecommands(source, message)

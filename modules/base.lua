@@ -155,16 +155,8 @@ function parseLine(line)
   return source, destination, message
 end
 
-function reply_channel(source, destination, message)
-  if destination.IsChannel() then
-    client.Privmsg(destination, message)
-  end
-end
-
-function reply_notice(source, destination, message)
-  if destination.Nick == client.Nick then
-    client.Notice(source, message)
-  end
+function is_orthogonal_channel(destination)
+  -- TODO: implement
 end
 
 function is_targeted_pm(destination)

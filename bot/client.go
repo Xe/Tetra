@@ -68,10 +68,12 @@ func (r *Client) Join(channame string) {
 
 	channel.AddChanUser(r)
 
-	str := fmt.Sprintf(":%s SJOIN %d %s + :%s", r.tetra.Info.Sid, channel.Ts,
-		channel.Name, r.Uid)
+	if r.tetra.Bursted {
+		str := fmt.Sprintf(":%s SJOIN %d %s + :%s", r.tetra.Info.Sid, channel.Ts,
+			channel.Name, r.Uid)
 
-	r.tetra.Conn.SendLine(str)
+		r.tetra.Conn.SendLine(str)
+	}
 }
 
 func (r *Client) IsOper() bool {

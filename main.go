@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot"
+	"strings"
 )
 
 func main() {
@@ -33,11 +35,22 @@ func main() {
 
 		if rawline.Verb == "PING" {
 			if !bot.Bursted {
-				bot.Bursted = true
 				for _, client := range bot.Services {
 					bot.Conn.SendLine(client.Euid())
 					client.Join(bot.Config.Server.SnoopChan)
 				}
+
+				for _, channel := range bot.Channels {
+					for uid, _ := range channel.Clients {
+						if !strings.HasPrefix(uid, bot.Info.Sid) {
+							continue
+						}
+						str := fmt.Sprintf(":%s SJOIN %d %s + :%s", bot.Info.Sid, channel.Ts, channel.Name, uid)
+						bot.Conn.SendLine(str)
+					}
+				}
+
+				bot.Bursted = true
 			}
 			bot.Conn.SendLine("PONG :" + rawline.Args[0])
 		}

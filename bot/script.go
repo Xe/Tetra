@@ -5,6 +5,7 @@ import (
 	"github.com/Xe/Tetra/1459"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
+	"errors"
 	"net/http"
 	"io/ioutil"
 	"log"
@@ -28,6 +29,10 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	client, ok := tetra.Services[kind]
 	if !ok {
 		client = tetra.Services["tetra"]
+	}
+
+	if _, present := tetra.Scripts[name]; present {
+		return nil, errors.New("Double script load!")
 	}
 
 	script = &Script{

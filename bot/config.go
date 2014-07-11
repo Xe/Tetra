@@ -6,9 +6,11 @@ import (
 )
 
 type ServerConfig struct {
-	Name  string `json:"name"`
-	Gecos string `json:"gecos"`
-	Sid   string `json:"sid"`
+	Name      string `json:"name"`
+	Gecos     string `json:"gecos"`
+	Sid       string `json:"sid"`
+	StaffChan string `json:"staffchan"`
+	SnoopChan string `json:"snoopchan"`
 }
 
 type ServiceConfig struct {

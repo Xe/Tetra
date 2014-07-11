@@ -12,7 +12,9 @@
 	"myinfo": {
 		"name": "tetra.int",
 		"gecos": "Tetra in Go!",
-		"sid": "420"
+		"sid": "420",
+		"staffchan": "#opers",
+		"snoopchan": "#services"
 	},
 	"uplink": {
 		"host": "127.0.0.1",

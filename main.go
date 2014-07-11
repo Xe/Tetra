@@ -17,10 +17,6 @@ func main() {
 		bot.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
 	}
 
-	for _, client := range bot.Services {
-		bot.Conn.SendLine(client.Euid())
-	}
-
 	for _, script := range bot.Config.Autoload {
 		bot.LoadScript(script)
 	}
@@ -38,10 +34,9 @@ func main() {
 		if rawline.Verb == "PING" {
 			if !bot.Bursted {
 				bot.Bursted = true
-				if svc, ok := bot.Services["tetra"]; !ok {
-					panic("No service bot!")
-				} else {
-					svc.Join("#services")
+				for _, client := range bot.Services {
+					bot.Conn.SendLine(client.Euid())
+					client.Join(bot.Config.Server.SnoopChan)
 				}
 			}
 			bot.Conn.SendLine("PONG :" + rawline.Args[0])

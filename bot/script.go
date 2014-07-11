@@ -18,9 +18,10 @@ type Script struct {
 	Handlers map[string]*Handler
 	Service  string
 	Client   *Client
+	Uuid     string
 }
 
-func (tetra *Tetra) LoadScript(name string) (script *Script) {
+func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	kind := strings.Split(name, "/")[0]
 	client, ok := tetra.Services[kind]
 	if !ok {
@@ -35,6 +36,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 		Handlers: make(map[string]*Handler),
 		Service:  kind,
 		Client:   client,
+		Uuid:     uuid.New(),
 	}
 
 	luar.Register(script.L, "", luar.Map{
@@ -55,9 +57,9 @@ func (tetra *Tetra) LoadScript(name string) (script *Script) {
 
 	tetra.Scripts[name] = script
 
-	err := script.L.DoFile("modules/" + name + ".lua")
+	err = script.L.DoFile("modules/" + name + ".lua")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return
@@ -71,7 +73,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 		_, err := function.Call(line)
 		if err != nil {
 			script.Log.Printf("Lua error %s: %#v", script.Name, err)
-			panic(err)
+			//panic(err)
 		}
 	})
 	if err != nil {

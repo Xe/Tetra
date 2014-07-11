@@ -85,7 +85,6 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 		_, err := function.Call(line)
 		if err != nil {
 			script.Log.Printf("Lua error %s: %#v", script.Name, err)
-			//panic(err)
 		}
 	})
 	if err != nil {

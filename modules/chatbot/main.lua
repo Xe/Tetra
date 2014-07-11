@@ -1,0 +1,1 @@
+client.Join("#cinemaquestria")

@@ -101,16 +101,17 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		}
 
 		client := &Client{
-			Nick:    nick,
-			User:    user,
-			VHost:   host,
-			Host:    line.Args[6],
-			Uid:     uid,
-			Ip:      ip,
-			Account: line.Args[9],
-			Gecos:   line.Args[10],
-			tetra:   tetra,
-			Umodes:  modeflags,
+			Nick:     nick,
+			User:     user,
+			VHost:    host,
+			Host:     line.Args[6],
+			Uid:      uid,
+			Ip:       ip,
+			Account:  line.Args[9],
+			Gecos:    line.Args[10],
+			tetra:    tetra,
+			Umodes:   modeflags,
+			Channels: make(map[string]*Channel),
 		}
 
 		tetra.Clients.AddClient(client)
@@ -221,10 +222,10 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		// <<< :42F SID cod.int 2 752 :Cod fishy
 		parent := tetra.Servers[line.Source]
 
-		server := &Server {
-			Name: line.Args[0],
+		server := &Server{
+			Name:  line.Args[0],
 			Gecos: line.Args[3],
-			Sid: line.Args[2],
+			Sid:   line.Args[2],
 			Links: []*Server{parent},
 		}
 
@@ -292,16 +293,17 @@ func (tetra *Tetra) Burst() {
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
 	cli = &Client{
-		Nick:    nick,
-		User:    user,
-		Host:    host,
-		VHost:   host,
-		Gecos:   gecos,
-		Account: nick,
-		Ip:      "0",
-		Ts:      time.Now().Unix(),
-		Uid:     tetra.NextUID(),
-		tetra:   tetra,
+		Nick:     nick,
+		User:     user,
+		Host:     host,
+		VHost:    host,
+		Gecos:    gecos,
+		Account:  nick,
+		Ip:       "0",
+		Ts:       time.Now().Unix(),
+		Uid:      tetra.NextUID(),
+		tetra:    tetra,
+		Channels: make(map[string]*Channel),
 	}
 
 	tetra.Services[service] = cli

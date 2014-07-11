@@ -11,6 +11,7 @@ type Handler struct {
 	Verb   string
 	Uuid   string
 	Script *Script
+	Go     bool
 }
 
 func (tetra *Tetra) AddHandler(verb string, impl func(*r1459.RawLine)) (handler *Handler, err error) {
@@ -18,6 +19,7 @@ func (tetra *Tetra) AddHandler(verb string, impl func(*r1459.RawLine)) (handler 
 		Verb: verb,
 		Impl: impl,
 		Uuid: uuid.New(),
+		Go:   true,
 	}
 
 	if _, ok := tetra.Handlers[verb]; !ok {
@@ -33,6 +35,8 @@ func (tetra *Tetra) DelHandler(verb string, uuid string) (err error) {
 	if _, present := tetra.Handlers[verb]; !present {
 		return errors.New("No such verb to delete handler for " + verb)
 	}
+
+	tetra.Handlers[verb][uuid].Go = false
 
 	delete(tetra.Handlers[verb], uuid)
 

@@ -44,6 +44,8 @@ func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 
 	c.Clients[client.Uid] = cu
 
+	client.Channels[c.Name] = c
+
 	return
 }
 
@@ -53,6 +55,7 @@ func (c *Channel) DelChanUser(client *Client) (err error) {
 	}
 
 	delete(c.Clients, client.Uid)
+	delete(client.Channels, c.Name)
 
 	return nil
 }

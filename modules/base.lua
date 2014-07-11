@@ -181,8 +181,14 @@ function parseLine(line)
   return source, destination, message
 end
 
-function is_orthogonal_channel(destination)
-  -- TODO: implement
+function is_common_channel(destination)
+  if not destination.IsChannel() then return false end
+
+  if client.Channels[destination.Target()] ~= nil then
+    return true
+  else
+    return false
+  end
 end
 
 function is_targeted_pm(destination)

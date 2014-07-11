@@ -31,21 +31,20 @@ func main() {
 
 		bot.Conn.Log.Printf("<<< %s", line)
 
-		if rawline.Verb == "PING" {
-			if !bot.Bursted {
-				bot.Burst()
-			}
-			bot.Conn.SendLine("PONG :" + rawline.Args[0])
-		}
+		go func() {
 
-		if _, present := bot.Handlers[rawline.Verb]; present {
-			for _, handler := range bot.Handlers[rawline.Verb] {
-				if bot.Bursted {
-					go handler.Impl(rawline)
-				} else {
+			if rawline.Verb == "PING" {
+				if !bot.Bursted {
+					bot.Burst()
+				}
+				bot.Conn.SendLine("PONG :" + rawline.Args[0])
+			}
+
+			if _, present := bot.Handlers[rawline.Verb]; present {
+				for _, handler := range bot.Handlers[rawline.Verb] {
 					handler.Impl(rawline)
 				}
 			}
-		}
+		}()
 	}
 }

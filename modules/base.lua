@@ -143,7 +143,14 @@ elevatedtest =
 function parseLine(line)
   local source = tetra.bot.Clients.ByUID[line.Source]
   local destination = line.Args[1]
-  local message = split(line.Args[2], " ")
+  local message = line.Args[2]
+
+  if destination:sub(1,1) == "#" then
+    destination = destination:upper()
+    destination = tetra.bot.Channels[destination]
+  else
+    destination = tetra.bot.Clients.ByUID[destination]
+  end
 
   return source, destination, message
 end

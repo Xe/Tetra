@@ -2,7 +2,7 @@ package tetra
 
 import (
 	"fmt"
-	"github.com/Xe/Tetra/modes"
+	"github.com/Xe/Tetra/bot/modes"
 	"strings"
 	"time"
 )

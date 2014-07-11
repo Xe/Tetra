@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Xe/Tetra/1459"
-	"github.com/Xe/Tetra/modes"
+	"github.com/Xe/Tetra/bot/modes"
 	"log"
 	"net"
 	"net/textproto"

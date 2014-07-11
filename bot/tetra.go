@@ -231,6 +231,25 @@ func (tetra *Tetra) Auth() {
 	tetra.Conn.SendLine("SERVER " + tetra.Config.Server.Name + " 1 :" + tetra.Config.Server.Gecos)
 }
 
+func (tetra *Tetra) Burst() {
+	for _, client := range tetra.Services {
+		tetra.Conn.SendLine(client.Euid())
+		client.Join(tetra.Config.Server.SnoopChan)
+	}
+
+	for _, channel := range tetra.Channels {
+		for uid, _ := range channel.Clients {
+			if !strings.HasPrefix(uid, tetra.Info.Sid) {
+				continue
+			}
+			str := fmt.Sprintf(":%s SJOIN %d %s + :%s", tetra.Info.Sid, channel.Ts, channel.Name, uid)
+			tetra.Conn.SendLine(str)
+		}
+	}
+
+	tetra.Bursted = true
+}
+
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
 	cli = &Client{
 		Nick:    nick,

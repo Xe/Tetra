@@ -25,6 +25,7 @@ type Client struct {
 
 type Targeter interface {
 	Target() string
+	IsChannel() bool
 }
 
 func (r *Client) Euid() string {
@@ -48,6 +49,10 @@ func (r *Client) Notice(destination Targeter, message string) {
 
 func (r *Client) Target() string {
 	return r.Uid
+}
+
+func (r *Client) IsChannel() bool {
+	return false
 }
 
 func (r *Client) Join(channame string) {

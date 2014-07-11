@@ -15,7 +15,7 @@ end
 function youtube_scrape(line)
   local source, destination, message = parseLine(line)
 
-  if destination.Target():sub(1,1) == "#" then
+  if destination.IsChannel() then
     if message:find("youtube%.com/watch") then
       client.Privmsg(destination, ytlookup(message:match("v=(...........)")))
     elseif message:find("youtu%.be/") then

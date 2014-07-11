@@ -60,3 +60,7 @@ func (c *Channel) DelChanUser(client *Client) (err error) {
 func (c *Channel) Target() string {
 	return c.Name
 }
+
+func (c *Channel) IsChannel() bool {
+	return true
+}

@@ -163,6 +163,48 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		}
 	})
 
+	tetra.AddHandler("MODE", func(line *r1459.RawLine) {
+		var give bool = true
+		client := tetra.Clients.ByUID[line.Args[0]]
+		modeflags := client.Umodes
+
+		umodes := line.Args[1]
+
+		for _, char := range umodes {
+			if char == '+' {
+				give = true
+			} else if char == '-' {
+				give = false
+			}
+			if _, ok := modes.UMODES[string(char)]; ok {
+				if give {
+					modeflags = modeflags | modes.UMODES[string(char)]
+				} else {
+					modeflags = modeflags & ^(modes.UMODES[string(char)])
+				}
+			}
+		}
+
+		client.Umodes = modeflags
+	})
+
+	tetra.AddHandler("JOIN", func(line *r1459.RawLine) {
+		client := tetra.Clients.ByUID[line.Source]
+		channel := tetra.Channels[strings.ToUpper(line.Args[1])]
+
+		channel.AddChanUser(client)
+	})
+
+	tetra.AddHandler("CHGHOST", func(line *r1459.RawLine) {
+		client := tetra.Clients.ByUID[line.Args[0]]
+		client.VHost = line.Args[1]
+	})
+
+	tetra.AddHandler("QUIT", func(line *r1459.RawLine) {
+		client := tetra.Clients.ByUID[line.Source]
+		tetra.Clients.DelClient(client)
+	})
+
 	return
 }
 

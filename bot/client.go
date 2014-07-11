@@ -44,6 +44,10 @@ func (r *Client) Privmsg(destination Targeter, message string) {
 	r.message(r, "PRIVMSG", destination, message)
 }
 
+func (r *Client) ServicesLog(message string) {
+	r.Privmsg(r.tetra.Channels["#SERVICES"], message)
+}
+
 func (r *Client) Notice(destination Targeter, message string) {
 	r.message(r, "NOTICE", destination, message)
 }

@@ -123,7 +123,10 @@ function elevated(...)
         return "No permissions"
       end
 
-      return f(user, ...)
+      local res = f(user, ...)
+
+      client.ServicesLog(user.Nick .. ": " .. res)
+      return res
     end
   end
   }

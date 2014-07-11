@@ -200,12 +200,20 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	tetra.AddHandler("PART", func(line *r1459.RawLine) {
 		// <<< :42FAAAAAB PART #help
-		// TODO: Implement
+		channelname := strings.ToUpper(line.Args[0])
+		channel := tetra.Channels[channelname]
+		client := tetra.Clients.ByUID[line.Source]
+
+		channel.DelChanUser(client)
 	})
 
 	tetra.AddHandler("KICK", func(line *r1459.RawLine) {
 		// <<< :42FAAAAAB KICK #help 42FAAAAAB :foo
-		// TODO: Implement
+		channelname := strings.ToUpper(line.Args[0])
+		channel := tetra.Channels[channelname]
+		client := tetra.Clients.ByUID[line.Source]
+
+		channel.DelChanUser(client)
 	})
 
 	tetra.AddHandler("CHGHOST", func(line *r1459.RawLine) {
@@ -216,6 +224,10 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	tetra.AddHandler("QUIT", func(line *r1459.RawLine) {
 		client := tetra.Clients.ByUID[line.Source]
 		tetra.Clients.DelClient(client)
+
+		for _, channel := range client.Channels {
+			channel.DelChanUser(client)
+		}
 	})
 
 	tetra.AddHandler("SID", func(line *r1459.RawLine) {

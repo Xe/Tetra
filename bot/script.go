@@ -5,6 +5,8 @@ import (
 	"github.com/Xe/Tetra/1459"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
+	"net/http"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -51,6 +53,16 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 
 	luar.Register(script.L, "uuid", luar.Map{
 		"new": uuid.New,
+	})
+
+	luar.Register(script.L, "web", luar.Map{
+		"get":  http.Get,
+		"post": http.Post,
+	})
+
+	luar.Register(script.L, "ioutil", luar.Map{
+		"readall":     ioutil.ReadAll,
+		"byte2string": byteSliceToString,
 	})
 
 	script.L.DoFile("modules/base.lua")
@@ -102,4 +114,8 @@ func (tetra *Tetra) UnloadScript(name string) error {
 	delete(tetra.Scripts, name)
 
 	return nil
+}
+
+func byteSliceToString(slice []byte) string {
+	return string(slice)
 }

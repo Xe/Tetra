@@ -45,11 +45,19 @@ func main() {
 
 		if _, present := bot.Handlers[rawline.Verb]; present {
 			for _, handler := range bot.Handlers[rawline.Verb] {
-				if bot.Bursted {
-					go handler.Impl(rawline)
-				} else {
-					handler.Impl(rawline)
-				}
+				func() {
+					defer func() {
+						if r := recover(); r != nil {
+							bot.Log.Printf("Recovered in handler %s (%s): %#v",
+								handler.Verb, handler.Uuid, r)
+						}
+					}()
+					if bot.Bursted {
+						go handler.Impl(rawline)
+					} else {
+						handler.Impl(rawline)
+					}
+				}()
 			}
 		}
 	}

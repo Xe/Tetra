@@ -4,9 +4,10 @@ import "strings"
 
 // IRC line
 type RawLine struct {
-	Source string
-	Verb   string
-	Args   []string
+	Source    string
+	Verb      string
+	Args      []string
+	Processed bool
 }
 
 // Create a new line and split out an RFC 1459 frame to a Line

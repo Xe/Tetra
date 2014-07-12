@@ -126,13 +126,6 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
 		// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
-
-		defer func() {
-			if r := recover(); r != nil {
-				tetra.Log.Printf("I didn't like %#v", line)
-			}
-		}()
-
 		ts := line.Args[0]
 		name := line.Args[1]
 		cmodes := line.Args[2]

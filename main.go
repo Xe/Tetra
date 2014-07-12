@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot"
 )
@@ -48,8 +49,10 @@ func main() {
 				func() {
 					defer func() {
 						if r := recover(); r != nil {
-							bot.Log.Printf("Recovered in handler %s (%s): %#v",
+							str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
 								handler.Verb, handler.Uuid, r)
+							bot.Log.Printf(str)
+							bot.Services["tetra"].ServicesLog(str)
 						}
 					}()
 					if bot.Bursted {

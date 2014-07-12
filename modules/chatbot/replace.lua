@@ -51,7 +51,7 @@ function replay(line)
   if channel_data[channel] ~= nil then
     client.Notice(source, "Replaying last 30 lines of chat in " .. line.Args[2] .. " for you")
     for i, line in pairs(channel_data[channel].table) do
-      client.Notice(source, "<" .. line.Nick .. "> ".. line.Line)
+      client.Notice(source, i .. ": <" .. line.Nick .. "> ".. line.Line)
     end
   end
 end

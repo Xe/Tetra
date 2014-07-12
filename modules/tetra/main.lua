@@ -60,6 +60,48 @@ commands = {
 
     return "Logged"
   end,
+  JOIN = elevated() .. function(source, message)
+    local parc = #message
+
+    if parc == 0 then
+      return "Need channel name or service and channel name"
+    end
+
+    local service = client
+    local chan = ""
+
+    if parc == 2 then
+      local tmp = message[1]
+      if tetra.bot.Services[tmp] ~= nil then
+        service = tetra.bot.Services[tmp]
+        chan = message[2]
+      else
+        return "Cannot join " .. message[2] .. ": No such service \"" .. tmp .. "\""
+      end
+    end
+
+    if parc == 1 then
+      chan = message[1]
+    end
+
+    if parc > 2 then
+      return "Cannot join, Too many arguments"
+    end
+
+    chan = string.upper(chan)
+
+    if tetra.bot.Channels[chan] == nil then
+      return "Cannot join " .. chan .. ", it does not exist"
+    end
+
+    service.Join(chan)
+
+    return "Joined " .. service.Nick .. " to " .. chan
+  end,
+  PART = elevated() .. function(source, message)
+    -- TODO: implement
+    return "Not implemented"
+  end,
 }
 
 function parsecommands(source, message)

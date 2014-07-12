@@ -98,6 +98,30 @@ a = A("5")
 a:test() --> 5
 --]]
 
+-- Class for a limited length table
+LimitQueue = class(function(self, max)
+  self.max = max
+  self.table = {}
+end)
+
+function LimitQueue:Add(data)
+  local ret = false
+
+  if #self.table == self.max then
+    table.remove(self.table, 1)
+
+    ret = true
+  end
+
+  table.insert(self.table, data)
+
+  return ret
+end
+
+function LimitQueue:Pop()
+  return table.remove(self.table, 1)
+end
+
 -- http://stackoverflow.com/a/326715
 function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, 'r'))

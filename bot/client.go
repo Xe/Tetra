@@ -81,6 +81,25 @@ func (r *Client) Join(channame string) {
 	}
 }
 
+func (r *Client) Part(channame string) bool {
+	upperchan := strings.ToUpper(channame)
+
+	channel, err := r.tetra.Channels[upperchan]
+	if !err {
+		return err
+	}
+
+	channel.DelChanUser(r)
+
+	if r.tetra.Bursted {
+		str := fmt.Sprintf(":%s PART %s", r.Uid, channame)
+
+		r.tetra.Conn.SendLine(str)
+	}
+
+	return true
+}
+
 func (r *Client) IsOper() bool {
 	return r.Umodes&modes.UPROP_IRCOP == modes.UPROP_IRCOP
 }

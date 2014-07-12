@@ -29,7 +29,7 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 		Modes:   0,
 	}
 
-	tetra.Channels[strings.ToUpper(name)] = c
+	tetra.Channels[c.Target()] = c
 
 	return
 }
@@ -44,7 +44,7 @@ func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 
 	c.Clients[client.Uid] = cu
 
-	client.Channels[c.Name] = c
+	client.Channels[c.Target()] = c
 
 	return
 }
@@ -61,7 +61,7 @@ func (c *Channel) DelChanUser(client *Client) (err error) {
 }
 
 func (c *Channel) Target() string {
-	return c.Name
+	return strings.ToUpper(c.Name)
 }
 
 func (c *Channel) IsChannel() bool {

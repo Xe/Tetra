@@ -64,7 +64,7 @@ commands = {
     local parc = #message
 
     if parc == 0 then
-      return "Need channel name or service and channel name"
+      return "Cannot join, need channel name or service and channel name"
     end
 
     local service = client
@@ -100,7 +100,47 @@ commands = {
   end,
   PART = elevated() .. function(source, message)
     -- TODO: implement
-    return "Not implemented"
+    
+    local parc = #message
+
+    if part == 0 then
+      return "Cannot part, need channel or service and channel name"
+    end
+
+    local service = client
+    local chan = ""
+
+    if parc == 2 then
+      local tmp = message[1]
+      if tetra.bot.Services[tmp] ~= nil then
+        service = tetra.bot.Services[tmp]
+        chan = message[2]
+      else
+        return "Cannot part " .. message[2] .. ": No such service \"" .. tmp .. "\""
+      end
+    end
+
+    if parc == 1 then
+      chan = message[1]
+    end
+
+    if parc > 2 then
+      return "Cannot part, Too many arguments"
+    end
+
+    chan = string.upper(chan)
+
+    if tetra.bot.Channels[chan] == nil then
+      return "Cannot part " .. chan .. ", it does not exist"
+    end
+
+    if not table.contains(keys(service.Channels), chan) then
+      return service.Nick .. " is not in " .. chan .. ", cannot part"
+    end
+
+    service.Part(chan)
+
+    return "Parted " .. service.Nick .. " from " .. chan
   end,
 }
 

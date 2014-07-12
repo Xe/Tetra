@@ -314,6 +314,17 @@ func (tetra *Tetra) Burst() {
 	tetra.Bursted = true
 }
 
+func (tetra *Tetra) StickConfig() {
+	for _, sclient := range tetra.Config.Services {
+		tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+	}
+
+	for _, script := range tetra.Config.Autoload {
+		tetra.LoadScript(script)
+	}
+
+}
+
 func (tetra *Tetra) Quit() {
 	for _, service := range tetra.Services {
 		tetra.DelService(service.Kind)
@@ -366,4 +377,51 @@ func (tetra *Tetra) DelService(service string) (err error) {
 
 func (tetra *Tetra) GetConn() *net.Conn {
 	return &tetra.Conn.Conn
+}
+
+func (tetra *Tetra) ProcessLine(line string) {
+	rawline := r1459.NewRawLine(line)
+
+	tetra.Conn.Log.Printf("<<< %s", line)
+
+	defer func() {
+		if r := recover(); r != nil {
+			tetra.Conn.Log.Printf("<<< %s", line)
+			str := fmt.Sprintf("Recovered from verb %s", rawline.Verb)
+			tetra.Log.Printf(str)
+			tetra.Services["tetra"].ServicesLog(str)
+		}
+	}()
+
+	if rawline.Verb == "PING" {
+		if rawline.Source == "" {
+			if !tetra.Bursted {
+				tetra.Burst()
+				tetra.Log.Printf("Bursted!")
+			}
+			tetra.Conn.SendLine("PONG :" + rawline.Args[0])
+		} else {
+			tetra.Conn.SendLine(":%s PONG %s :%s", tetra.Info.Sid, tetra.Info.Name, rawline.Source)
+		}
+	}
+
+	if _, present := tetra.Handlers[rawline.Verb]; present {
+		for _, handler := range tetra.Handlers[rawline.Verb] {
+			func() {
+				defer func() {
+					if r := recover(); r != nil {
+						str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
+							handler.Verb, handler.Uuid, r)
+						tetra.Log.Printf(str)
+						tetra.Services["tetra"].ServicesLog(str)
+					}
+				}()
+				if tetra.Bursted {
+					go handler.Impl(rawline)
+				} else {
+					handler.Impl(rawline)
+				}
+			}()
+		}
+	}
 }

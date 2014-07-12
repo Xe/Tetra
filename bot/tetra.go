@@ -112,6 +112,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			tetra:    tetra,
 			Umodes:   modeflags,
 			Channels: make(map[string]*Channel),
+			Server:   tetra.Servers[line.Source],
 		}
 
 		tetra.Clients.AddClient(client)
@@ -316,6 +317,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		Uid:      tetra.NextUID(),
 		tetra:    tetra,
 		Channels: make(map[string]*Channel),
+		Server:   tetra.Info,
 	}
 
 	tetra.Services[service] = cli

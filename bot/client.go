@@ -22,6 +22,7 @@ type Client struct {
 	tetra       *Tetra
 	Ts          int64
 	Channels    map[string]*Channel
+	Server      *Server
 }
 
 type Targeter interface {

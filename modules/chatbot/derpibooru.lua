@@ -14,6 +14,13 @@ end
 
 function summarize(info)
   local ret = "^ Derpibooru: "
+
+  if table.contains(info.tag_ids, "explicit") then
+    ret = ret .. "[NSFW] "
+  else
+    ret = ret .. "[SAFE] "
+  end
+
   ret = ret .. "Tags: " .. info.tags
 
   return ret
@@ -21,6 +28,10 @@ end
 
 function db_scrape(line)
   local source, destination, message = parseLine(line)
+
+  if not is_common_channel(destination) then
+    return
+  end
 
   if message:find("derpiboo.ru/(%d+)") then
     local id = message:match("/(%d+)")

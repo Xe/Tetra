@@ -137,11 +137,9 @@ end
 --[[
 Usage:
 
-elevatedtest =
-  elevated() ..
-  function(user, message)
-    return "Hi master"
-  end
+elevatedtest = elevated() .. function(user, message)
+  return "Hi master"
+end
 
 --]]
 
@@ -196,5 +194,15 @@ end
 
 function is_targeted_pm(destination)
   return not destination.IsChannel() and destination.Nick == client.Nick
+end
+
+-- https://stackoverflow.com/questions/2282444/
+function table.contains(table, element)
+  for _, value in pairs(table) do
+    if value == element then
+      return true
+    end
+  end
+  return false
 end
 

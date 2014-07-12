@@ -40,7 +40,7 @@ func main() {
 				}
 				bot.Conn.SendLine("PONG :" + rawline.Args[0])
 			} else {
-				bot.Conn.SendLine(":%s PONG %s", bot.Info.Sid, rawline.Source)
+				bot.Conn.SendLine(":%s PONG %s :%s", bot.Info.Sid, bot.Info.Name, rawline.Source)
 			}
 		}
 

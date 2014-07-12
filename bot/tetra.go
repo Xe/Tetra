@@ -58,7 +58,8 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	tetra = &Tetra{
 		Conn: &Connection{
-			Log: log.New(os.Stdout, "CONN ", log.LstdFlags),
+			Log:    log.New(os.Stdout, "CONN ", log.LstdFlags),
+			Buffer: make(chan string, 100),
 		},
 		Info: &Server{
 			Name:  "tetra.int",
@@ -81,6 +82,8 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Log:      log.New(os.Stdout, "BOT ", log.LstdFlags),
 		Uplink:   &Server{},
 	}
+
+	go tetra.Conn.sendLinesWait()
 
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
 		// :47G EUID xena 1 1404369238 +ailoswxz xena staff.yolo-swag.com 0::1 47GAAAABK 0::1 * :Xena

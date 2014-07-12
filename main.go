@@ -35,6 +35,7 @@ func main() {
 			if rawline.Source == "" {
 				if !bot.Bursted {
 					bot.Burst()
+					bot.Log.Printf("Bursted!")
 				}
 				bot.Conn.SendLine("PONG :" + rawline.Args[0])
 			} else {

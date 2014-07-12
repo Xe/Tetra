@@ -61,11 +61,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			Log:    log.New(os.Stdout, "CONN ", log.LstdFlags),
 			Buffer: make(chan string, 100),
 		},
-		Info: &Server{
-			Name:  "tetra.int",
-			Sid:   "420",
-			Gecos: "Tetra in Go!",
-		},
+		Info: &Server{},
 		Clients: &Clients{
 			ByNick: make(map[string]*Client),
 			ByUID:  make(map[string]*Client),
@@ -81,6 +77,13 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Config:   config,
 		Log:      log.New(os.Stdout, "BOT ", log.LstdFlags),
 		Uplink:   &Server{},
+	}
+
+	tetra.Info = &Server{
+		Sid:   tetra.Config.Server.Sid,
+		Name:  tetra.Config.Server.Name,
+		Gecos: tetra.Config.Server.Gecos,
+		Links: []*Server{tetra.Uplink},
 	}
 
 	go tetra.Conn.sendLinesWait()
@@ -123,6 +126,12 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
 		// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
+
+		defer func() {
+			if r := recover(); r != nil {
+				tetra.Log.Printf("I didn't like %#v", line)
+			}
+		}()
 
 		ts := line.Args[0]
 		name := line.Args[1]

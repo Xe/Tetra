@@ -90,6 +90,10 @@ commands = {
 
     chan = string.upper(chan)
 
+    if table.contains(keys(service.Channels), chan) then
+      return service.Nick .. " is already in " .. chan .. ", cannot join again!"
+    end
+
     if tetra.bot.Channels[chan] == nil then
       return "Cannot join " .. chan .. ", it does not exist"
     end

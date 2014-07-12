@@ -8,11 +8,14 @@ type RawLine struct {
 	Verb      string
 	Args      []string
 	Processed bool
+	Raw       string
 }
 
 // Create a new line and split out an RFC 1459 frame to a Line
 func NewRawLine(input string) (line *RawLine) {
-	line = &RawLine{}
+	line = &RawLine{
+		Raw: input,
+	}
 
 	split := strings.Split(input, " ")
 

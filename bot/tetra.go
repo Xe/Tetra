@@ -129,6 +129,11 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		ts := line.Args[0]
 		name := line.Args[1]
 		cmodes := line.Args[2]
+
+		if line.Raw[len(line.Raw)-1] == ':' {
+			return
+		}
+
 		users := line.Args[len(line.Args)-1]
 
 		var channel *Channel

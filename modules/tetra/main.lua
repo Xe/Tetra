@@ -99,8 +99,6 @@ commands = {
     return "Joined " .. service.Nick .. " to " .. chan
   end,
   PART = elevated() .. function(source, message)
-    -- TODO: implement
-    
     local parc = #message
 
     if part == 0 then
@@ -141,6 +139,10 @@ commands = {
     service.Part(chan)
 
     return "Parted " .. service.Nick .. " from " .. chan
+  end,
+  DIE = elevated() .. function(source, message)
+    tetra.bot.Quit()
+    return "Okay"
   end,
 }
 

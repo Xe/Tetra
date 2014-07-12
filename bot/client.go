@@ -35,6 +35,11 @@ func (r *Client) Euid() string {
 		r.VHost, r.Host, r.Uid, r.Ip, r.Account, r.Gecos)
 }
 
+func (r *Client) Quit() {
+	str := fmt.Sprintf(":%s QUIT :Service unloaded")
+	r.tetra.Conn.SendLine(str)
+}
+
 func (r *Client) message(source *Client, kind string,
 	destination Targeter, message string) {
 	str := fmt.Sprintf(":%s %s %s :%s", source.Uid, kind, destination.Target(), message)

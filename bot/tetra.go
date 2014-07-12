@@ -316,6 +316,16 @@ func (tetra *Tetra) Burst() {
 	tetra.Bursted = true
 }
 
+func (tetra *Tetra) Quit() {
+	for _, service := range tetra.Services {
+		tetra.DelService(service.Kind)
+		service.Quit()
+	}
+
+	tetra.Conn.SendLine("SQUIT :Goodbye!")
+	tetra.Conn.Conn.Close()
+}
+
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
 	cli = &Client{
 		Nick:     nick,
@@ -345,12 +355,13 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 
 func (tetra *Tetra) DelService(service string) (err error) {
 	if _, ok := tetra.Services[service]; !ok {
-		panic(errors.New("No such service " + service))
+		return errors.New("No such service " + service)
 	}
 
 	client := tetra.Services[service]
 
 	tetra.Clients.DelClient(client)
+	client.Quit()
 
 	return
 }

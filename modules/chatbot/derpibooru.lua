@@ -15,7 +15,7 @@ end
 function summarize(info)
   local ret = "^ Derpibooru: "
 
-  if table.contains(info.tag_ids, "explicit") then
+  if contains(info.tag_ids, "explicit") then
     ret = ret .. "[NSFW] "
   else
     ret = ret .. "[SAFE] "

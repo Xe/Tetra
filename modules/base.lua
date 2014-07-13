@@ -221,7 +221,7 @@ function is_targeted_pm(destination)
 end
 
 -- https://stackoverflow.com/questions/2282444/
-function table.contains(table, element)
+function contains(table, element)
   for _, value in pairs(table) do
     if value == element then
       return true

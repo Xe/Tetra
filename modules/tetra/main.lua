@@ -90,7 +90,7 @@ commands = {
 
     chan = string.upper(chan)
 
-    if table.contains(keys(service.Channels), chan) then
+    if contains(keys(service.Channels), chan) then
       return service.Nick .. " is already in " .. chan .. ", cannot join again!"
     end
 
@@ -136,7 +136,7 @@ commands = {
       return "Cannot part " .. chan .. ", it does not exist"
     end
 
-    if not table.contains(keys(service.Channels), chan) then
+    if not contains(keys(service.Channels), chan) then
       return service.Nick .. " is not in " .. chan .. ", cannot part"
     end
 
@@ -147,6 +147,9 @@ commands = {
   DIE = elevated() .. function(source, message)
     tetra.bot.Quit()
     return "Okay"
+  end,
+  LIST = function(source, message)
+    return "Commands: " .. table.concat(keys(commands), " ")
   end,
 }
 

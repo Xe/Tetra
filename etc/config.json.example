@@ -1,5 +1,5 @@
 {
-	"autoload": ["tetra/main"],
+	"autoload": ["tetra/main", "chatbot/youtube", "chatbot/derpibooru", "chatbot/replace"],
 	"services": [
 		{
 			"nick": "Tetra",
@@ -7,14 +7,21 @@
 			"host": "yolo-swag.com",
 			"gecos": "Tetra administrative client",
 			"name": "tetra"
+		},
+		{
+			"nick": "Chatbot",
+			"user": "bot",
+			"host": "yolo-swag.com",
+			"gecos": "Chitty chatter bot!",
+			"name": "chatbot"
 		}
 	],
 	"myinfo": {
 		"name": "tetra.int",
 		"gecos": "Tetra in Go!",
 		"sid": "420",
-		"staffchan": "#opers",
-		"snoopchan": "#services"
+		"snoopchan": "#services",
+		"staffchan": "#opers"
 	},
 	"uplink": {
 		"host": "127.0.0.1",
@@ -22,5 +29,10 @@
 		"password": "shameless",
 		"ssl": false
 	},
-	"rrdpath": "var/rrd/"
+	"stats": {
+		"host": "127.0.0.1:8086",
+		"db": "Localnet_devel",
+		"user": "tetra",
+		"pass": "foobar"
+	}
 }

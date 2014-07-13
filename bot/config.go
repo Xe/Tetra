@@ -28,12 +28,19 @@ type UplinkConfig struct {
 	Ssl      bool   `json:"ssl"`
 }
 
+type StatsConfig struct {
+	Host     string `json:"host"`
+	Database string `json:"db"`
+	Username string `json:"user"`
+	Password string `json:"pass"`
+}
+
 type Config struct {
 	Autoload []string         `json:"autoload"`
 	Services []*ServiceConfig `json:"services"`
 	Server   *ServerConfig    `json:"myinfo"`
 	Uplink   *UplinkConfig    `json:"uplink"`
-	RRDPath  string           `json:"rrdpath"`
+	Stats    *StatsConfig     `json:"stats"`
 }
 
 func NewConfig(fname string) (conf *Config, err error) {
@@ -42,7 +49,7 @@ func NewConfig(fname string) (conf *Config, err error) {
 		return nil, err
 	}
 
-	json.Unmarshal(contents, &conf)
+	err = json.Unmarshal(contents, &conf)
 
 	return
 }

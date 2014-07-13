@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/modes"
+	"github.com/rcrowley/go-metrics"
+	"github.com/rcrowley/go-metrics/influxdb"
 	"log"
+	"log/syslog"
 	"net"
 	"net/textproto"
 	"os"
@@ -18,6 +21,7 @@ import (
 type Clients struct {
 	ByNick map[string]*Client
 	ByUID  map[string]*Client
+	Gauge  metrics.Gauge
 	Tetra  *Tetra
 }
 
@@ -66,6 +70,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			ByNick: make(map[string]*Client),
 			ByUID:  make(map[string]*Client),
 			Tetra:  tetra,
+			Gauge:  metrics.NewGauge(),
 		},
 		Channels: make(map[string]*Channel),
 		Handlers: make(map[string]map[string]*Handler),
@@ -346,6 +351,20 @@ func (tetra *Tetra) Burst() {
 			tetra.Conn.SendLine(str)
 		}
 	}
+
+	w, _ := syslog.Dial("unixgram", "/dev/log", syslog.LOG_INFO, "metrics")
+	go metrics.Syslog(metrics.DefaultRegistry, 60e9, w)
+
+	metrics.Register("clientcount", tetra.Clients.Gauge)
+
+	go tetra.GetNetworkStats()
+
+	go influxdb.Influxdb(metrics.DefaultRegistry, 10e9, &influxdb.Config{
+		Host:     tetra.Config.Stats.Host,
+		Database: tetra.Config.Stats.Database,
+		Username: tetra.Config.Stats.Username,
+		Password: tetra.Config.Stats.Password,
+	})
 
 	tetra.Bursted = true
 }

@@ -358,6 +358,7 @@ func (tetra *Tetra) Burst() {
 	metrics.Register("clientcount", tetra.Clients.Gauge)
 
 	go tetra.GetNetworkStats()
+	go tetra.GetChannelStats()
 
 	go influxdb.Influxdb(metrics.DefaultRegistry, 10e9, &influxdb.Config{
 		Host:     tetra.Config.Stats.Host,

@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"errors"
+	"github.com/rcrowley/go-metrics"
 	"strings"
 )
 
@@ -18,6 +19,7 @@ type Channel struct {
 	Modes   int
 	Clients map[string]*ChanUser
 	Lists   map[int][]string
+	Gauge   metrics.Gauge
 }
 
 func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
@@ -27,9 +29,12 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 		Lists:   make(map[int][]string),
 		Clients: make(map[string]*ChanUser),
 		Modes:   0,
+		Gauge:   metrics.NewGauge(),
 	}
 
 	tetra.Channels[c.Target()] = c
+
+	metrics.Register(strings.ToUpper(name) + "_stats", c.Gauge)
 
 	return
 }

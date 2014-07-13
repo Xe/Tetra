@@ -22,6 +22,16 @@ func (t *Tetra) GetNetworkStats() {
 	}
 }
 
+func (t *Tetra) GetChannelStats() {
+	for {
+		for _, channel := range t.Channels {
+			channel.Gauge.Update(int64(len(channel.Clients)))
+		}
+
+		wait()
+	}
+}
+
 func wait() {
 	time.Sleep(time.Minute * 1)
 }

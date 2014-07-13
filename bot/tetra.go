@@ -88,6 +88,42 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	go tetra.Conn.sendLinesWait()
 
+	tetra.AddHandler("UID", func(line *r1459.RawLine) {
+		// <<< :0RS UID RServ 2 0 +Z rserv rserv.yolo-swag.com 0 0RSSR0001 :Ruby Services
+		nick := line.Args[0]
+		umodes := line.Args[3]
+		user := line.Args[4]
+		host := line.Args[5]
+		ip := line.Args[6]
+		uid := line.Args[7]
+
+		// TODO: make this its own function somewhere?
+		modeflags := 0
+
+		for _, char := range umodes {
+			if _, ok := modes.UMODES[string(char)]; ok {
+				modeflags = modeflags | modes.UMODES[string(char)]
+			}
+		}
+
+		client := &Client{
+			Nick:     nick,
+			User:     user,
+			VHost:    host,
+			Host:     line.Args[6],
+			Uid:      uid,
+			Ip:       ip,
+			Account:  "*",
+			Gecos:    line.Args[8],
+			tetra:    tetra,
+			Umodes:   modeflags,
+			Channels: make(map[string]*Channel),
+			Server:   tetra.Servers[line.Source],
+		}
+
+		tetra.Clients.AddClient(client)
+	})
+
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
 		// :47G EUID xena 1 1404369238 +ailoswxz xena staff.yolo-swag.com 0::1 47GAAAABK 0::1 * :Xena
 		nick := line.Args[0]

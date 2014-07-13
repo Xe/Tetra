@@ -31,6 +31,8 @@ function eval_channel(line)
     local res, err = func()
 
     tetra.log.Printf("%#v: %#v", res, err)
+
+    client.Privmsg(ld, "> " .. res)
   end
 end
 

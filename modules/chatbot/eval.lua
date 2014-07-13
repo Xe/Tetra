@@ -1,5 +1,9 @@
 ld = nil
 
+-- Sandbox
+os = {}
+io = {}
+
 function eval_channel(line)
   local source, destination, message = parseLine(line)
 

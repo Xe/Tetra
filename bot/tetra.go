@@ -339,7 +339,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 	cli = &Client{
 		Nick:     nick,
 		User:     user,
-		Host:     host,
+		Host:     "0",
 		VHost:    host,
 		Gecos:    gecos,
 		Account:  nick,

@@ -16,8 +16,6 @@ func (t *Tetra) GetNetworkStats() {
 
 		t.Clients.Gauge.Update(num)
 
-		t.Log.Printf("%d clients connected", num)
-
 		wait()
 	}
 }

@@ -1,4 +1,5 @@
 db = FooDB("var/autojoin.json")
+done = false
 
 commands = {
   LOAD = elevated() .. function(source, message)
@@ -193,6 +194,7 @@ function admincommands(line)
 end
 
 function onBurst(line)
+  if done then return end
   for name, channels in pairs(db.data) do
     if tetra.bot.Services[name] ~= nil then
       local service = tetra.bot.Services[name]
@@ -203,6 +205,8 @@ function onBurst(line)
       end
     end
   end
+
+  done = true
 end
 
 tetra.script.AddLuaProtohook("PRIVMSG", "admincommands")

@@ -16,6 +16,16 @@ func (t *Tetra) GetNetworkStats() {
 
 		t.Clients.Gauge.Update(num)
 
+		for _, server := range t.Servers {
+			if server.Counter == nil {
+				continue
+			}
+
+			server.Counter.Update(int64(server.count))
+		}
+
+		t.Log.Printf("Logged stats for network and server populations")
+
 		wait()
 	}
 }
@@ -25,6 +35,8 @@ func (t *Tetra) GetChannelStats() {
 		for _, channel := range t.Channels {
 			channel.Gauge.Update(int64(len(channel.Clients)))
 		}
+
+		t.Log.Printf("Logged stats for channel populations")
 
 		wait()
 	}

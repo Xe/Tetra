@@ -81,15 +81,20 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		nextuid:  100000,
 		Config:   config,
 		Log:      log.New(os.Stdout, "BOT ", log.LstdFlags),
-		Uplink:   &Server{},
+		Uplink: &Server{
+			Counter: metrics.NewGauge(),
+		},
 	}
 
 	tetra.Info = &Server{
-		Sid:   tetra.Config.Server.Sid,
-		Name:  tetra.Config.Server.Name,
-		Gecos: tetra.Config.Server.Gecos,
-		Links: []*Server{tetra.Uplink},
+		Sid:     tetra.Config.Server.Sid,
+		Name:    tetra.Config.Server.Name,
+		Gecos:   tetra.Config.Server.Gecos,
+		Links:   []*Server{tetra.Uplink},
+		Counter: nil,
 	}
+
+	metrics.Register(tetra.Config.Server.Name+"_clients", tetra.Info.Counter)
 
 	go tetra.Conn.sendLinesWait()
 
@@ -161,6 +166,8 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			Channels: make(map[string]*Channel),
 			Server:   tetra.Servers[line.Source],
 		}
+
+		client.Server.AddClient()
 
 		tetra.Clients.AddClient(client)
 	})
@@ -280,6 +287,8 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		for _, channel := range client.Channels {
 			channel.DelChanUser(client)
 		}
+
+		client.Server.DelClient()
 	})
 
 	tetra.AddHandler("SID", func(line *r1459.RawLine) {
@@ -287,15 +296,18 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		parent := tetra.Servers[line.Source]
 
 		server := &Server{
-			Name:  line.Args[0],
-			Gecos: line.Args[3],
-			Sid:   line.Args[2],
-			Links: []*Server{parent},
+			Name:    line.Args[0],
+			Gecos:   line.Args[3],
+			Sid:     line.Args[2],
+			Links:   []*Server{parent},
+			Counter: metrics.NewGauge(),
 		}
 
 		parent.Links = append(parent.Links, server)
 
 		tetra.Servers[server.Sid] = server
+
+		metrics.Register(server.Name+"_clients", server.Counter)
 	})
 
 	tetra.AddHandler("PASS", func(line *r1459.RawLine) {
@@ -308,15 +320,17 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		// <<< SERVER fluttershy.yolo-swag.com 1 :shadowircd test server
 		tetra.Uplink.Name = line.Args[0]
 		tetra.Uplink.Gecos = line.Args[2]
+
+		metrics.Register(tetra.Uplink.Name+"_clients", tetra.Uplink.Counter)
 	})
 
 	tetra.AddHandler("WHOIS", func(line *r1459.RawLine) {
 		/*
-		<<< :649AAAABQ WHOIS 376100000 :ShadowNET
-		>>> :376 311 649AAAABQ ShadowNET fishie cod.services * :Cod IRC services
-		>>> :376 312 649AAAABQ ShadowNET ardreth.shadownet.int :Cod IRC services
-		>>> :376 313 649AAAABQ ShadowNET :is a Network Service
-		>>> :376 318 649AAAABQ ShadowNET :End of /WHOIS list.
+			<<< :649AAAABQ WHOIS 376100000 :ShadowNET
+			>>> :376 311 649AAAABQ ShadowNET fishie cod.services * :Cod IRC services
+			>>> :376 312 649AAAABQ ShadowNET ardreth.shadownet.int :Cod IRC services
+			>>> :376 313 649AAAABQ ShadowNET :is a Network Service
+			>>> :376 318 649AAAABQ ShadowNET :End of /WHOIS list.
 		*/
 
 		target := line.Args[0]

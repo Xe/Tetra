@@ -1,3 +1,5 @@
+db = FooDB("var/autojoin.json")
+
 commands = {
   LOAD = elevated() .. function(source, message)
     if #message == 0 then
@@ -100,6 +102,14 @@ commands = {
 
     service.Join(chan)
 
+    if db.data[service.Kind] == nil then
+      db.data[service.Kind] = {chan}
+    else
+      table.insert(db.data[service.Kind], chan)
+    end
+
+    db:Commit()
+
     return "Joined " .. service.Nick .. " to " .. chan
   end,
   PART = elevated() .. function(source, message)
@@ -142,6 +152,13 @@ commands = {
 
     service.Part(chan)
 
+    do
+      local idx = find(db.data[service.Kind], chan)
+      table.remove(db.data[service.Kind], idx)
+    end
+
+    db:Commit()
+
     return "Parted " .. service.Nick .. " from " .. chan
   end,
   DIE = elevated() .. function(source, message)
@@ -175,4 +192,18 @@ function admincommands(line)
   end
 end
 
+function onBurst(line)
+  for name, channels in pairs(db.data) do
+    if tetra.bot.Services[name] ~= nil then
+      local service = tetra.bot.Services[name]
+
+      for i, chan in pairs(channels) do
+        tetra.log.Printf("%s joining %s", service.Kind, chan)
+        service.Join(chan)
+      end
+    end
+  end
+end
+
 tetra.script.AddLuaProtohook("PRIVMSG", "admincommands")
+tetra.script.AddLuaProtohook("PING", "onBurst")

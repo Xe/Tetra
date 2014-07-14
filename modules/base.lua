@@ -122,6 +122,36 @@ function LimitQueue:Pop()
   return table.remove(self.table, 1)
 end
 
+-- Simple disk-backed table
+FooDB = class(function(self, fname)
+  self.fname = fname
+
+  local fhandle = io.open(fname, "r")
+
+  if fhandle == nil then
+    self.data = {}
+    return
+  end
+
+  local data = fhandle:read("*a")
+  fhandle:close()
+
+  self.data = json.decode(data)
+
+  if self.data == nil then self.data = {} end
+end)
+
+function FooDB:Commit()
+  local fhandle = io.open(self.fname, "w")
+  if fhandle == nil then
+    error("Cannot open "..self.fname)
+  end
+  local string = json.encode(self.data)
+
+  fhandle:write(string)
+  fhandle:close()
+end
+
 -- http://stackoverflow.com/a/326715
 function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, 'r'))
@@ -228,5 +258,13 @@ function contains(table, element)
     end
   end
   return false
+end
+
+function find(tab, val)
+  for i=1, #tab do
+    if tab[i] == val then return i end
+  end
+
+  return 0
 end
 

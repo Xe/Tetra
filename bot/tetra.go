@@ -310,6 +310,35 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		tetra.Uplink.Gecos = line.Args[2]
 	})
 
+	tetra.AddHandler("WHOIS", func(line *r1459.RawLine) {
+		/*
+		<<< :649AAAABQ WHOIS 376100000 :ShadowNET
+		>>> :376 311 649AAAABQ ShadowNET fishie cod.services * :Cod IRC services
+		>>> :376 312 649AAAABQ ShadowNET ardreth.shadownet.int :Cod IRC services
+		>>> :376 313 649AAAABQ ShadowNET :is a Network Service
+		>>> :376 318 649AAAABQ ShadowNET :End of /WHOIS list.
+		*/
+
+		target := line.Args[0]
+		client := tetra.Clients.ByUID[target]
+		source := tetra.Clients.ByUID[line.Source]
+
+		temp := []string{
+			fmt.Sprintf(":%s 311 %s %s %s %s * :%s", tetra.Info.Sid, source.Uid,
+				client.Nick, client.User, client.VHost, client.Gecos),
+			fmt.Sprintf(":%s 312 %s %s %s :%s", tetra.Info.Sid, source.Uid,
+				client.Nick, tetra.Info.Name, tetra.Info.Gecos),
+			fmt.Sprintf(":%s 313 %s %s :is a Network Service (%s)",
+				tetra.Info.Sid, source.Uid, client.Nick, client.Kind),
+			fmt.Sprintf(":%s 318 %s %s :End of /WHOIS list.", tetra.Info.Sid,
+				source.Uid, client.Nick),
+		}
+
+		for _, line := range temp {
+			tetra.Conn.SendLine(line)
+		}
+	})
+
 	return
 }
 

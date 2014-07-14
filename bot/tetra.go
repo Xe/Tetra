@@ -405,6 +405,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		tetra:    tetra,
 		Channels: make(map[string]*Channel),
 		Server:   tetra.Info,
+		Kind:     service,
 	}
 
 	tetra.Services[service] = cli
@@ -449,6 +450,7 @@ func (tetra *Tetra) ProcessLine(line string) {
 		}
 	}()
 
+	// This should just be hard-coded here.
 	if rawline.Verb == "PING" {
 		if rawline.Source == "" {
 			if !tetra.Bursted {

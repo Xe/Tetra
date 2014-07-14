@@ -45,4 +45,3 @@ func (t *Tetra) GetChannelStats() {
 func wait() {
 	time.Sleep(time.Minute * 1)
 }
-

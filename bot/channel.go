@@ -7,17 +7,17 @@ import (
 )
 
 type ChanUser struct {
-	Client  *Client
-	Channel *Channel
+	Client  *Client  `json:"client"`
+	Channel *Channel `json:"channel"`
 	Prefix  int
 }
 
 // Implements Targeter
 type Channel struct {
-	Name    string
-	Ts      int64
-	Modes   int
-	Clients map[string]*ChanUser
+	Name    string               `json:"name"`
+	Ts      int64                `json:"ts"`
+	Modes   int                  `json:"modes"`
+	Clients map[string]*ChanUser `json:"clients"`
 	Lists   map[int][]string
 	Gauge   metrics.Gauge
 }
@@ -34,7 +34,7 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 
 	tetra.Channels[c.Target()] = c
 
-	metrics.Register(strings.ToUpper(name) + "_stats", c.Gauge)
+	metrics.Register(strings.ToUpper(name)+"_stats", c.Gauge)
 
 	return
 }

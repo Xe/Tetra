@@ -2,13 +2,13 @@ package tetra
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"errors"
 	"github.com/Xe/Tetra/1459"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
-	"errors"
-	"net/http"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 )

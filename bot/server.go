@@ -5,11 +5,11 @@ import (
 )
 
 type Server struct {
-	Sid     string
-	Name    string
-	Gecos   string
-	Links   []*Server
-	count   int
+	Sid     string    `json:"sid"`
+	Name    string    `json:"name"`
+	Gecos   string    `json:"gecos"`
+	Links   []*Server `json:"links"`
+	count   int       `json:"usercount"`
 	Counter metrics.Gauge
 }
 

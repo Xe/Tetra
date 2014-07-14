@@ -42,7 +42,7 @@ func NewRawLine(input string) (line *RawLine) {
 	}
 
 	if len(line.Args) == 0 {
-		line.Args = []string {""}
+		line.Args = []string{""}
 	} else if line.Args[0][0] == ':' {
 		line.Args[0] = strings.TrimPrefix(line.Args[0], ":")
 	}

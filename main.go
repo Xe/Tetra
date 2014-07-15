@@ -7,7 +7,7 @@ import (
 func main() {
 	bot := tetra.NewTetra("etc/config.json")
 
-	bot.Connect("127.0.0.1", "6667")
+	bot.Connect(bot.Config.Uplink.Host, bot.Config.Uplink.Port)
 	defer bot.Conn.Conn.Close()
 
 	bot.Auth()

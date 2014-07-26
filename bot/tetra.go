@@ -403,7 +403,7 @@ func (tetra *Tetra) Burst() {
 	go tetra.GetNetworkStats()
 	go tetra.GetChannelStats()
 
-	go influxdb.Influxdb(metrics.DefaultRegistry, 10e9, &influxdb.Config{
+	go influxdb.Influxdb(metrics.DefaultRegistry, 5 * time.Minute, &influxdb.Config{
 		Host:     tetra.Config.Stats.Host,
 		Database: tetra.Config.Stats.Database,
 		Username: tetra.Config.Stats.Username,

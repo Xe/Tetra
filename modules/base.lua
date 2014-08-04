@@ -1,4 +1,5 @@
 local json = require "json"
+require "socket"
 
 -- http://lua-users.org/wiki/SplitJoin
 -- Compatibility: Lua-5.1
@@ -87,11 +88,11 @@ end
 
 --[[
 A = class(function (self, x)
-  self.x = x
+self.x = x
 end)
 
 function A:test()
-  print(self.x)
+print(self.x)
 end
 
 a = A("5")
@@ -183,16 +184,16 @@ function elevated(...)
       return res
     end
   end
-  }
+}
 
-  return setmetatable({...}, mt)
+return setmetatable({...}, mt)
 end
 
 --[[
 Usage:
 
 elevatedtest = elevated() .. function(user, message)
-  return "Hi master"
+return "Hi master"
 end
 
 --]]
@@ -266,5 +267,9 @@ function find(tab, val)
   end
 
   return 0
+end
+
+function sleep(sec)
+  socket.select(nil, nil, sec)
 end
 

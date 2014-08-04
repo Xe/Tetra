@@ -28,6 +28,8 @@ commands = {
       return "Script " .. name .. " is not loaded."
     end
 
+    sleep(0.5)
+
     local err = tetra.bot.UnloadScript(name)
 
     return "Script " .. name .. " unloaded"

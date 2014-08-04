@@ -38,7 +38,7 @@ function shorten_if_long(line)
   local url = scrapeurl(message)
 
   if url ~= nil then
-    if #url > 50 then
+    if #url > 100 then
       client.Privmsg(destination, "^ " .. shorten(url))
     end
   end

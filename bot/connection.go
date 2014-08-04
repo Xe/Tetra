@@ -14,6 +14,7 @@ type Connection struct {
 	Reader *bufio.Reader
 	Tp     *textproto.Reader
 	Buffer chan string
+	open   bool
 }
 
 func (c *Connection) SendLine(line string, stuff ...interface{}) {
@@ -29,8 +30,16 @@ func (c *Connection) sendLinesWait() {
 	}
 }
 
+func (c *Connection) Close() {
+	c.open = false
+}
+
 func (c *Connection) GetLine() (line string, err error) {
-	line, err = c.Tp.ReadLine()
+	if c.open {
+		line, err = c.Tp.ReadLine()
+	} else {
+		return "", nil
+	}
 
 	return
 }

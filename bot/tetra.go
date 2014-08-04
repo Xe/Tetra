@@ -13,6 +13,7 @@ import (
 	"net"
 	"net/textproto"
 	"os"
+	"os/signal"
 	"strconv"
 	"strings"
 	"time"
@@ -64,6 +65,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Conn: &Connection{
 			Log:    log.New(os.Stdout, "CONN ", log.LstdFlags),
 			Buffer: make(chan string, 100),
+			open:   true,
 		},
 		Info: &Server{},
 		Clients: &Clients{
@@ -93,6 +95,23 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Links:   []*Server{tetra.Uplink},
 		Counter: nil,
 	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			// sig is a ^C, handle it
+			_ = sig
+			for _, client := range tetra.Services {
+				tetra.Conn.SendLine(":%s QUIT :Shutting down.", client.Uid)
+			}
+			tetra.Conn.SendLine("SQUIT :Bye")
+			tetra.Conn.Close()
+
+			time.Sleep(1 * time.Second)
+			os.Exit(0)
+		}
+	}()
 
 	metrics.Register(tetra.Config.Server.Name+"_clients", tetra.Info.Counter)
 
@@ -403,7 +422,7 @@ func (tetra *Tetra) Burst() {
 	go tetra.GetNetworkStats()
 	go tetra.GetChannelStats()
 
-	go influxdb.Influxdb(metrics.DefaultRegistry, 5 * time.Minute, &influxdb.Config{
+	go influxdb.Influxdb(metrics.DefaultRegistry, 5*time.Minute, &influxdb.Config{
 		Host:     tetra.Config.Stats.Host,
 		Database: tetra.Config.Stats.Database,
 		Username: tetra.Config.Stats.Username,

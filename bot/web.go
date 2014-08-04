@@ -11,7 +11,7 @@ func (t *Tetra) WebApp() {
 	m.Use(render.Renderer())
 
 	m.Get("/", func(r render.Render) {
-		r.JSON(501, map[string]interface{} {"error": "No method selected"})
+		r.JSON(501, map[string]interface{}{"error": "No method selected"})
 	})
 
 	m.Get("/clients", func(r render.Render) {

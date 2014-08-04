@@ -36,11 +36,12 @@ type StatsConfig struct {
 }
 
 type Config struct {
-	Autoload []string         `json:"autoload"`
-	Services []*ServiceConfig `json:"services"`
-	Server   *ServerConfig    `json:"myinfo"`
-	Uplink   *UplinkConfig    `json:"uplink"`
-	Stats    *StatsConfig     `json:"stats"`
+	Autoload []string          `json:"autoload"`
+	Services []*ServiceConfig  `json:"services"`
+	Server   *ServerConfig     `json:"myinfo"`
+	Uplink   *UplinkConfig     `json:"uplink"`
+	Stats    *StatsConfig      `json:"stats"`
+	ApiKeys  map[string]string `json:"apikeys"`
 }
 
 func NewConfig(fname string) (conf *Config, err error) {

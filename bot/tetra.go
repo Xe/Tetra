@@ -105,11 +105,12 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			for _, client := range tetra.Services {
 				tetra.Conn.SendLine(":%s QUIT :Shutting down.", client.Uid)
 			}
-			tetra.Conn.SendLine("SQUIT :Bye")
+			tetra.Conn.SendLine("SQUIT %s :Bye", tetra.Info.Sid)
 			tetra.Conn.Close()
 
-			time.Sleep(1 * time.Second)
-			os.Exit(0)
+			tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
+				os.Exit(0)
+			})
 		}
 	}()
 

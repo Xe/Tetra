@@ -1,14 +1,16 @@
+// Package modes contains a bunch of constants and lookup tables that are
+// a pain to use without this file.
 package modes
 
 // Converted from a python file
 
 const (
-	CHFL_PEON   = 0x0000
-	CHFL_VOICE  = 0x0001
-	CHFL_HALFOP = 0x0002
-	CHFL_CHANOP = 0x0004
-	CHFL_ADMIN  = 0x0008
-	CHFL_OWNER  = 0x0010
+	CHFL_PEON   = 0x0000 // No channel status
+	CHFL_VOICE  = 0x0001 // Voiced
+	CHFL_HALFOP = 0x0002 // Channel halfop
+	CHFL_CHANOP = 0x0004 // Channel operator
+	CHFL_ADMIN  = 0x0008 // Channel admin
+	CHFL_OWNER  = 0x0010 // Channel owner
 
 	//Channel properties
 	PROP_NONE       = 0x00000000 // No properties
@@ -61,6 +63,7 @@ const (
 	LIST_INVEX  = 0x0008
 )
 
+// This is a handy lookup table from channel mode letters to bitmasks.
 var CHANMODES = []map[string]int{
 	map[string]int{
 		"q": LIST_QUIET,
@@ -103,6 +106,7 @@ var CHANMODES = []map[string]int{
 	},
 }
 
+// This is a handy lookup table from user mode flags to bitmasks.
 var UMODES = map[string]int{
 	"i": UPROP_INVISIBLE,
 	"g": UPROP_CALLERID,
@@ -119,6 +123,7 @@ var UMODES = map[string]int{
 	"Z": UPROP_SSLCLIENT,
 }
 
+// This is a lookup table for channel prefixes to bitmask flags.
 var PREFIXES = map[string]int{
 	"+": CHFL_VOICE,
 	"%": CHFL_HALFOP,

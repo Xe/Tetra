@@ -1,3 +1,5 @@
+// Package r1459 implements a base structure to scrape out and utilize an RFC 1459
+// frame in high level Go code.
 package r1459
 
 import "strings"
@@ -11,7 +13,8 @@ type RawLine struct {
 	Raw       string
 }
 
-// Create a new line and split out an RFC 1459 frame to a Line
+// Create a new line and split out an RFC 1459 frame to a RawLine. This will
+// not return an error if it fails. TODO: fix this.
 func NewRawLine(input string) (line *RawLine) {
 	line = &RawLine{
 		Raw: input,

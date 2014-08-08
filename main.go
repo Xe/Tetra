@@ -1,3 +1,4 @@
+// Command main starts the program.
 package main
 
 import (

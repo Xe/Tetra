@@ -12,6 +12,7 @@ func main() {
 
 	bot.Auth()
 	bot.StickConfig()
+	bot.WebApp()
 
 	for {
 		line, err := bot.Conn.GetLine()

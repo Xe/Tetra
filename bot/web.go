@@ -1,22 +1,29 @@
 package tetra
 
 import (
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/render"
+	"fmt"
+	"net/http"
+	"os"
 )
 
 func (t *Tetra) WebApp() {
-	m := martini.Classic()
+	http.HandleFunc("/", index)
 
-	m.Use(render.Renderer())
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
 
-	m.Get("/", func(r render.Render) {
-		r.JSON(501, map[string]interface{}{"error": "No method selected"})
-	})
+	fmt.Printf("listening on %v...\n", port)
 
-	m.Get("/clients", func(r render.Render) {
+	go func() {
+		err := http.ListenAndServe(":"+port, nil)
+		if err != nil {
+			panic(err)
+		}
+	} ()
+}
 
-	})
-
-	go m.Run()
+func index(res http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(res, "{\"error\": \"No method chosen.\"}\n")
 }

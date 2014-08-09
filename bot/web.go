@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/codegangsta/negroni"
 )
 
 func (t *Tetra) WebApp() {
-	http.HandleFunc("/", index)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", index)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -17,9 +20,15 @@ func (t *Tetra) WebApp() {
 	fmt.Printf("listening on %v...\n", port)
 
 	go func() {
-		err := http.ListenAndServe(":"+port, nil)
+		n := negroni.Classic()
+		n.UseHandler(mux)
+
+		err := http.ListenAndServe(":"+port, n)
+
 		if err != nil {
-			panic(err)
+			t.Services["tetra"].ServicesLog("Web app died")
+			t.Services["tetra"].ServicesLog(err.Error())
+			t.Log.Fatal(err)
 		}
 	}()
 }

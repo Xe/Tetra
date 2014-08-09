@@ -16,6 +16,7 @@ func main() {
 		var err error
 		if file, err = os.Open("etc/config.json") ; err != nil {
 			fmt.Fprintln(os.Stderr, "Please either set TETRA_CONFIG_PATH to the location of the configuration file or add your config at etc/config.json")
+			os.Exit(1)
 		} else {
 			confloc = "etc/config.json"
 			file.Close()

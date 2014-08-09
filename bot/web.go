@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/codegangsta/negroni"
 	"github.com/Xe/Tetra/bot/modes"
+	"github.com/codegangsta/negroni"
 	"gopkg.in/yaml.v1"
 )
 
@@ -60,7 +60,7 @@ func convertClient(in *Client) (out client) {
 	}
 
 	for _, mychan := range in.Channels {
-		if mychan.Modes & modes.PROP_SECRET != modes.PROP_SECRET {
+		if mychan.Modes&modes.PROP_SECRET != modes.PROP_SECRET {
 			chanclient := mychan.Clients[in.Uid]
 			out.Joins = append(out.Joins, chanuser{
 				Channel: mychan.Name,
@@ -92,7 +92,7 @@ func (t *Tetra) WebApp() {
 		var channels []channel
 
 		for _, in := range t.Channels {
-			if in.Modes & modes.PROP_SECRET != modes.PROP_SECRET {
+			if in.Modes&modes.PROP_SECRET != modes.PROP_SECRET {
 				channels = append(channels, convertChannel(in))
 			}
 		}

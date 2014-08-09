@@ -559,7 +559,7 @@ func (tetra *Tetra) ProcessLine(line string) {
 						tetra.Services["tetra"].ServicesLog(str)
 					}
 				}()
-					handler.Impl(rawline)
+				handler.Impl(rawline)
 			}()
 		}
 	}

@@ -32,6 +32,8 @@ package:
 	@godocdown ./bot > build/doc/bot.md
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc
+	@cp README.md build
+	@cp LICENSE build
 	@mv build ${VERSION}
 	@tar czf ${VERSION}.tgz ${VERSION}
 	@rm -rf ${VERSION}

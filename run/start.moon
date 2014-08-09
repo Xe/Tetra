@@ -33,8 +33,10 @@ with host = get_or_fail "IRCD_PORT_6667_TCP_ADDR", "ircd address"
   config.uplink.host = host
   config.uplink.port = port
 
-with influxhost = get_or_fail "TETRA_INFLUX_HOST", "influxdb host"
-  config.stats.host = influxhost
+--with influxhost = get_or_fail "TETRA_INFLUX_HOST", "influxdb host"
+--  config.stats.host = influxhost
+
+config.stats.host = "NOCOLLECTION"
 
 print "Using ircd at " .. host .. " port " .. port
 

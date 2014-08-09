@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ -z "$TETRA_INFLUX_HOST" ]; then
-	export TETRA_INFLUX_HOST="172.16.42.1:8086"
-fi
-
 cp /app/etc/config.yaml /app/run/config.yaml
 export TETRA_CONFIG_PATH=/app/run/config.yaml
 

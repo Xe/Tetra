@@ -437,20 +437,22 @@ func (tetra *Tetra) Burst() {
 		}
 	}
 
-	w, _ := syslog.Dial("unixgram", "/dev/log", syslog.LOG_INFO, "metrics")
-	go metrics.Syslog(metrics.DefaultRegistry, 60e9, w)
-
 	metrics.Register("clientcount", tetra.Clients.Gauge)
 
-	go tetra.GetNetworkStats()
-	go tetra.GetChannelStats()
+	if tetra.Config.Stats.Host != "NOCOLLECTION" {
+		w, _ := syslog.Dial("unixgram", "/dev/log", syslog.LOG_INFO, "metrics")
+		go metrics.Syslog(metrics.DefaultRegistry, 60e9, w)
 
-	go influxdb.Influxdb(metrics.DefaultRegistry, 5*time.Minute, &influxdb.Config{
-		Host:     tetra.Config.Stats.Host,
-		Database: tetra.Config.Stats.Database,
-		Username: tetra.Config.Stats.Username,
-		Password: tetra.Config.Stats.Password,
-	})
+		go tetra.GetNetworkStats()
+		go tetra.GetChannelStats()
+
+		go influxdb.Influxdb(metrics.DefaultRegistry, 5*time.Minute, &influxdb.Config{
+			Host:     tetra.Config.Stats.Host,
+			Database: tetra.Config.Stats.Database,
+			Username: tetra.Config.Stats.Username,
+			Password: tetra.Config.Stats.Password,
+		})
+	}
 
 	tetra.Bursted = true
 }

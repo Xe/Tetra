@@ -3,6 +3,9 @@ VERSION="Tetra-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 build:
 	go build
 
+clean:
+	rm Tetra
+
 run:
 	@make build
 	./Tetra

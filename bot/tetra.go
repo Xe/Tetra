@@ -380,7 +380,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		}
 	})
 
-	for i := 0; i < 16; i++ {
+	for i := 0; i < 4; i++ {
 		tetra.wg.Add(1)
 		go func() {
 			uid := uuid.New()

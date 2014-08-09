@@ -23,6 +23,8 @@ func main() {
 		}
 	}
 
+	fmt.Printf("Config file %s\n", confloc)
+
 	bot := tetra.NewTetra(confloc)
 
 	bot.Connect(bot.Config.Uplink.Host, bot.Config.Uplink.Port)

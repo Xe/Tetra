@@ -37,3 +37,10 @@ package:
 	@rm -rf ${VERSION}
 	@echo "Package at ${VERSION}.tgz"
 
+docker-build:
+	docker build -t xena/tetra .
+
+docker-run:
+	@make build
+	docker run --rm --link tetra-ircd:ircd -it --name tetra xena/tetra .
+

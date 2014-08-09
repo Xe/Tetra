@@ -21,7 +21,7 @@ func (t *Tetra) WebApp() {
 		if err != nil {
 			panic(err)
 		}
-	} ()
+	}()
 }
 
 func index(res http.ResponseWriter, req *http.Request) {

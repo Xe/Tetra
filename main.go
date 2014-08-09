@@ -15,12 +15,5 @@ func main() {
 	bot.StickConfig()
 	bot.WebApp()
 
-	for {
-		line, err := bot.Conn.GetLine()
-		if err != nil {
-			panic(err)
-		}
-
-		bot.ProcessLine(line)
-	}
+	bot.Main()
 }

@@ -16,6 +16,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -52,6 +53,8 @@ type Tetra struct {
 	Config   *Config
 	Log      *log.Logger
 	Uplink   *Server
+	tasks    chan string
+	wg       *sync.WaitGroup
 }
 
 func NewTetra(cpath string) (tetra *Tetra) {
@@ -86,6 +89,8 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Uplink: &Server{
 			Counter: metrics.NewGauge(),
 		},
+		tasks: make(chan string, 100),
+		wg:    &sync.WaitGroup{},
 	}
 
 	tetra.Info = &Server{
@@ -373,6 +378,16 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		}
 	})
 
+	for i := 0; i < 16; i++ {
+		tetra.wg.Add(1)
+		go func() {
+			for line := range tetra.tasks {
+				tetra.ProcessLine(line)
+			}
+			tetra.wg.Done()
+		}()
+	}
+
 	return
 }
 
@@ -545,4 +560,17 @@ func (tetra *Tetra) ProcessLine(line string) {
 			}()
 		}
 	}
+}
+
+func (t *Tetra) Main() {
+	for {
+		line, err := t.Conn.GetLine()
+		if err != nil {
+			break
+		}
+
+		t.tasks <- line
+	}
+
+	t.wg.Wait()
 }

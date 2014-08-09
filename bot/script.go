@@ -91,7 +91,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 	handler, err := script.Tetra.AddHandler(verb, func(line *r1459.RawLine) {
 		_, err := function.Call(line)
 		if err != nil {
-			script.Log.Printf("Lua error %s: %#v", script.Name, err)
+			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
 			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
 		}
 	})

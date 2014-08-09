@@ -37,7 +37,8 @@ Continue with configuration.
 
 ### From a tarball
 
-Extract the tarball and continue with configuration.
+Install `liblua5.1-dev` then extract the tarball and continue with 
+configuration.
 
 ## Configuration
 

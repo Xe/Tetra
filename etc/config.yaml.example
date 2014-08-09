@@ -1,0 +1,30 @@
+autoload:
+- tetra/main
+- chatbot/eval
+services:
+- nick: Tetra
+  user: tetra
+  host: yolo-swag.com
+  gecos: Tetra administrative client
+  name: tetra
+- nick: Chatbot
+  user: bot
+  host: yolo-swag.com
+  gecos: Chitty chatter bot!
+  name: chatbot
+server:
+  name: tetra.int
+  gecos: Tetra in Go!
+  sid: "420"
+  staffchan: '#opers'
+  snoopchan: '#services'
+uplink:
+  host: 127.0.0.1
+  port: "6667"
+  password: shameless
+  ssl: false
+stats:
+  host: 127.0.0.1:8086
+  database: Localnet_devel
+  username: tetra
+  password: foobar

@@ -23,6 +23,6 @@ _testmain.go
 *.test
 
 Tetra
-etc/config.json
+etc/config.yaml
 var/
 *.tgz

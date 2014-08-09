@@ -1,47 +1,48 @@
 package tetra
 
 import (
-	"encoding/json"
 	"io/ioutil"
+
+	"gopkg.in/yaml.v1"
 )
 
 type ServerConfig struct {
-	Name      string `json:"name"`
-	Gecos     string `json:"gecos"`
-	Sid       string `json:"sid"`
-	StaffChan string `json:"staffchan"`
-	SnoopChan string `json:"snoopchan"`
+	Name      string
+	Gecos     string
+	Sid       string
+	StaffChan string
+	SnoopChan string
 }
 
 type ServiceConfig struct {
-	Nick  string `json:"nick"`
-	User  string `json:"user"`
-	Host  string `json:"host"`
-	Gecos string `json:"gecos"`
-	Name  string `json:"name"`
+	Nick  string
+	User  string
+	Host  string
+	Gecos string
+	Name  string
 }
 
 type UplinkConfig struct {
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Password string `json:"password"`
-	Ssl      bool   `json:"ssl"`
+	Host     string
+	Port     string
+	Password string
+	Ssl      bool
 }
 
 type StatsConfig struct {
-	Host     string `json:"host"`
-	Database string `json:"db"`
-	Username string `json:"user"`
-	Password string `json:"pass"`
+	Host     string
+	Database string
+	Username string
+	Password string
 }
 
 type Config struct {
-	Autoload []string          `json:"autoload"`
-	Services []*ServiceConfig  `json:"services"`
-	Server   *ServerConfig     `json:"myinfo"`
-	Uplink   *UplinkConfig     `json:"uplink"`
-	Stats    *StatsConfig      `json:"stats"`
-	ApiKeys  map[string]string `json:"apikeys"`
+	Autoload []string
+	Services []*ServiceConfig
+	Server   *ServerConfig
+	Uplink   *UplinkConfig
+	Stats    *StatsConfig
+	ApiKeys  map[string]string
 }
 
 func NewConfig(fname string) (conf *Config, err error) {
@@ -50,7 +51,7 @@ func NewConfig(fname string) (conf *Config, err error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(contents, &conf)
+	err = yaml.Unmarshal(contents, &conf)
 
 	return
 }

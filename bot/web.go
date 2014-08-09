@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/drone/routes"
 	"github.com/Xe/Tetra/bot/modes"
 	"github.com/codegangsta/negroni"
 	"gopkg.in/yaml.v1"
@@ -74,11 +75,13 @@ func convertClient(in *Client) (out client) {
 }
 
 func (t *Tetra) WebApp() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
+	mux := routes.New()
+
+	mux.Get("/", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(res, "error: No method chosen.")
 	})
-	mux.HandleFunc("/config.yaml", func(res http.ResponseWriter, req *http.Request) {
+
+	mux.Get("/config.yaml", func(res http.ResponseWriter, req *http.Request) {
 		out, err := yaml.Marshal(t.Config)
 		if err != nil {
 			res.WriteHeader(500)
@@ -88,7 +91,8 @@ func (t *Tetra) WebApp() {
 
 		fmt.Fprintf(res, "%s", out)
 	})
-	mux.HandleFunc("/channels.yaml", func(res http.ResponseWriter, req *http.Request) {
+
+	mux.Get("/channels.yaml", func(res http.ResponseWriter, req *http.Request) {
 		var channels []channel
 
 		for _, in := range t.Channels {
@@ -106,7 +110,8 @@ func (t *Tetra) WebApp() {
 
 		fmt.Fprintf(res, "%s", out)
 	})
-	mux.HandleFunc("/clients.yaml", func(res http.ResponseWriter, req *http.Request) {
+
+	mux.Get("/clients.yaml", func(res http.ResponseWriter, req *http.Request) {
 		var clients []client
 
 		for _, in := range t.Clients.ByUID {

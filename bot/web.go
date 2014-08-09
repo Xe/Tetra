@@ -15,6 +15,7 @@ type client struct {
 	User    string
 	Host    string
 	Account string
+	Server  string
 	Joins   []chanuser
 }
 
@@ -55,6 +56,7 @@ func convertClient(in *Client) (out client) {
 		User:    in.User,
 		Host:    in.VHost,
 		Account: in.Account,
+		Server:  in.Server.Name,
 	}
 
 	for _, mychan := range in.Channels {

@@ -4,10 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/Xe/Tetra/1459"
-	"github.com/Xe/Tetra/bot/modes"
-	"github.com/rcrowley/go-metrics"
-	"github.com/rcrowley/go-metrics/influxdb"
 	"log"
 	"log/syslog"
 	"net"
@@ -18,6 +14,12 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"code.google.com/p/go-uuid/uuid"
+	"github.com/Xe/Tetra/1459"
+	"github.com/Xe/Tetra/bot/modes"
+	"github.com/rcrowley/go-metrics"
+	"github.com/rcrowley/go-metrics/influxdb"
 )
 
 type Clients struct {
@@ -381,8 +383,13 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	for i := 0; i < 16; i++ {
 		tetra.wg.Add(1)
 		go func() {
+			uid := uuid.New()
+			tetra.Log.Printf("Worker %s started", uid)
+			logger := log.New(os.Stdout, fmt.Sprintf("worker %s ", uid), log.LstdFlags)
 			for line := range tetra.tasks {
+				logger.Printf("Processing \"%s\"", line)
 				tetra.ProcessLine(line)
+				time.Sleep(5 * time.Millisecond)
 			}
 			tetra.wg.Done()
 		}()
@@ -552,11 +559,7 @@ func (tetra *Tetra) ProcessLine(line string) {
 						tetra.Services["tetra"].ServicesLog(str)
 					}
 				}()
-				if tetra.Bursted {
-					go handler.Impl(rawline)
-				} else {
 					handler.Impl(rawline)
-				}
 			}()
 		}
 	}
@@ -569,7 +572,11 @@ func (t *Tetra) Main() {
 			break
 		}
 
-		t.tasks <- line
+		if t.Bursted {
+			t.tasks <- line
+		} else {
+			t.ProcessLine(line)
+		}
 	}
 
 	t.wg.Wait()

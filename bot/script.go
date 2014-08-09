@@ -1,16 +1,18 @@
 package tetra
 
 import (
-	"code.google.com/p/go-uuid/uuid"
 	"errors"
-	"github.com/Xe/Tetra/1459"
-	lua "github.com/aarzilli/golua/lua"
-	"github.com/stevedonovan/luar"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+
+	"code.google.com/p/go-uuid/uuid"
+	"github.com/Xe/Tetra/1459"
+	lua "github.com/aarzilli/golua/lua"
+	"github.com/stevedonovan/luar"
 )
 
 type Script struct {
@@ -90,6 +92,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 		_, err := function.Call(line)
 		if err != nil {
 			script.Log.Printf("Lua error %s: %#v", script.Name, err)
+			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
 		}
 	})
 	if err != nil {

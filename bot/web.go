@@ -110,7 +110,13 @@ func (t *Tetra) WebApp() {
 		var clients []client
 
 		for _, in := range t.Clients.ByUID {
-			clients = append(clients, convertClient(in))
+			myclient := convertClient(in)
+
+			if len(myclient.Joins) == 0 {
+				continue
+			}
+
+			clients = append(clients, myclient)
 		}
 
 		out, err := yaml.Marshal(clients)

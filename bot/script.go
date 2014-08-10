@@ -48,14 +48,81 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 		Uuid:     uuid.New(),
 	}
 
+	script.seed()
+
+	script, err = tetra.loadLuaScript(script)
+	if err != nil {
+		script.Log.Printf("Trying to load %s as moonscript", script.Name)
+
+		script, err = tetra.loadMoonScript(script)
+
+		if err != nil {
+			return nil, errors.New("No such script " + name)
+		}
+	}
+
+	tetra.Scripts[name] = script
+
+	return
+}
+
+func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
+	err := script.L.DoFile("modules/" + script.Name + ".lua")
+
+	if err != nil {
+		return script, err
+	}
+
+	script.Log.Printf("lua script %s loaded at %s", script.Name, script.Uuid)
+
+	return script, nil
+}
+
+func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
+	contents, failed := ioutil.ReadFile("modules/" + script.Name + ".moon")
+
+	if failed != nil {
+		return script, errors.New("Could not read " + script.Name + ".moon")
+	}
+
+	luar.Register(script.L, "", luar.Map{
+		"moonscript_code_from_file": string(contents),
+	})
+
+	err := script.L.DoString(`
+		moonscript = require "moonscript"
+
+		local func, err = moonscript.loadstring(moonscript_code_from_file)
+
+		if err ~= nil then
+			tetra.log.Printf("Moonscript error, %#v", err)
+			return
+		end
+
+		func()`)
+	if err != nil {
+		script.Log.Print(err)
+		return nil, err
+	}
+
+	script.Log.Printf("moonscript script %s loaded at %s", script.Name, script.Uuid)
+
+	return script, nil
+}
+
+func (script *Script) seed() {
 	luar.Register(script.L, "", luar.Map{
 		"client": script.Client,
+		"print":  script.Log.Print,
+		"script": script,
+		"log":    script.Log,
 	})
 
 	luar.Register(script.L, "tetra", luar.Map{
-		"script": script,
-		"log":    script.Log,
-		"bot":    tetra,
+		"script":    script,
+		"log":       script.Log,
+		"bot":       script.Tetra,
+		"protohook": script.AddLuaProtohook,
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{
@@ -74,14 +141,6 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 
 	script.L.DoFile("modules/base.lua")
 
-	tetra.Scripts[name] = script
-
-	err = script.L.DoFile("modules/" + name + ".lua")
-	if err != nil {
-		return nil, err
-	}
-
-	return
 }
 
 // Add a lua function as a protocol hook
@@ -92,6 +151,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 		_, err := function.Call(line)
 		if err != nil {
 			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+			script.Log.Printf("%#v", err)
 			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
 		}
 	})

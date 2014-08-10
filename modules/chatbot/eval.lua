@@ -1,9 +1,5 @@
 ld = nil
 
--- Sandbox
-os = {}
-io = {}
-
 function eval_channel(line)
   local source, destination, message = parseLine(line)
 
@@ -32,7 +28,11 @@ function eval_channel(line)
 
     tetra.log.Printf("%#v: %#v", res, err)
 
-    client.Privmsg(ld, "> " .. res)
+    if res ~= nil then
+      client.Privmsg(ld, "> " .. res)
+    else
+      client.Privmsg(ld, "> nil")
+    end
   end
 end
 

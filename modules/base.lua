@@ -295,3 +295,7 @@ end
 --  end,
 -- }
 --]]
+
+-- Golua sucks
+pcall = unsafe_pcall
+xpcall = unsafe_xpcall

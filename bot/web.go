@@ -134,6 +134,17 @@ func (t *Tetra) WebApp() {
 		fmt.Fprintf(res, "%s", out)
 	})
 
+	mux.Get("/yo/:id", func(res http.ResponseWriter, req *http.Request) {
+		params := req.URL.Query()
+		id := params.Get(":id")
+		client := t.Services["tetra"]
+		username := req.URL.Query()["username"][0]
+
+		client.ServicesLog(fmt.Sprintf("%s sent %s a yo!", username, id))
+
+		fmt.Fprintf(res, "OK")
+	})
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"

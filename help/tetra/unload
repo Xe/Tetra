@@ -1,0 +1,7 @@
+Usage: UNLOAD <type/script>
+
+UNLOAD removes a script from memory and clears the protocol hooks, hooks and
+commands from use.
+
+Example:
+    UNLOAD tetra/scripts

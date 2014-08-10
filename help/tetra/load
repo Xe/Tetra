@@ -1,0 +1,7 @@
+Usage: LOAD <type/script>
+
+LOAD loads a script into memory and prepares the protocol hooks, hooks and
+commands for use.
+
+Example:
+    LOAD tetra/scripts

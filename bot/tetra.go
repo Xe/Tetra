@@ -531,12 +531,18 @@ func (tetra *Tetra) StickConfig() {
 			command := strings.ToLower(strings.Join(message, " "))
 
 			if helpHas(client.Kind, command) {
-				// Show help to user
+				if client.Commands[basecommand].NeedsOper && !source.IsOper() {
+					return "Permission denied."
+				} else {
+					client.showHelp(source, client.Kind, command)
+
+					return "End of help file"
+				}
 			} else {
 				ret = "Help for " + strings.ToUpper(command) + " not found."
 			}
 
-			return
+			return "This should never happen"
 		})
 	}
 

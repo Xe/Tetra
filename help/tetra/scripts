@@ -1,0 +1,4 @@
+SCRIPTS allows an oper to see the list of scripts Tetra has loaded.
+
+Example:
+    SCRIPTS

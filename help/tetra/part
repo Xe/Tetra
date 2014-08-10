@@ -1,0 +1,13 @@
+Usage: PART <[service]|channel> [channel]
+
+Parts a service from a channel (by default the main service). This can be
+invoked in one of two ways. The first allows you to join the core service to a
+channel and the second allows you to join any arbitrary service to a channel.
+The service name is the short name ("tetra" instead of "{{$client := index .Tetra.Services "tetra"}}{{$client.Nick}}".)
+
+This command will fail if the channel does not exist on the network or the
+service is not present in the target channel.
+
+Examples:
+    PART #opers
+    PART chatbot #opers

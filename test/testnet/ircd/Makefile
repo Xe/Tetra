@@ -5,4 +5,4 @@ kill:
 	docker rm -f tetra-ircd
 
 run:
-	docker run -d --name tetra-ircd -P xena/tetra-ircd
+	@docker run -d --name tetra-ircd -P xena/tetra-ircd

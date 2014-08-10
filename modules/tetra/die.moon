@@ -1,4 +1,4 @@
-export die = elevated() .. ->
+export die = elevated! .. ->
   tetra.bot.Quit!
   return "Okay"
 

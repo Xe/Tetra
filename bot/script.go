@@ -177,7 +177,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) error {
 func (script *Script) AddLuaCommand(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
-	command, err := NewCommand(script.Client, verb, func(client *Client, target Targeter, args []string) string {
+	command, err := script.Client.NewCommand(verb, func(client *Client, target Targeter, args []string) string {
 		reply, err := function.Call(client, target, args)
 
 		if err != nil {

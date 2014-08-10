@@ -17,7 +17,7 @@ type Command struct {
 }
 
 // NewCommand returns a new command instance.
-func NewCommand(c *Client, verb string, handler func(*Client, Targeter, []string) string) (cmd *Command, err error) {
+func (c *Client) NewCommand(verb string, handler func(*Client, Targeter, []string) string) (cmd *Command, err error) {
 	verb = strings.ToUpper(verb)
 
 	if _, present := c.Commands[verb]; present {

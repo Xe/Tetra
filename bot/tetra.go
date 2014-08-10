@@ -109,15 +109,10 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		for sig := range c {
 			// sig is a ^C, handle it
 			_ = sig
-			for _, client := range tetra.Services {
-				tetra.Conn.SendLine(":%s QUIT :Shutting down.", client.Uid)
-			}
-			tetra.Conn.SendLine("SQUIT %s :Bye", tetra.Info.Sid)
-			tetra.Conn.Close()
 
-			tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
-				os.Exit(0)
-			})
+			fmt.Println( " <-- Control-C pressed!")
+
+			tetra.Quit()
 		}
 	}()
 
@@ -516,11 +511,14 @@ func (tetra *Tetra) StickConfig() {
 func (tetra *Tetra) Quit() {
 	for _, service := range tetra.Services {
 		tetra.DelService(service.Kind)
-		service.Quit()
 	}
 
-	tetra.Conn.SendLine("SQUIT :Goodbye!")
-	tetra.Conn.Conn.Close()
+	tetra.Conn.SendLine("SQUIT %s :Goodbye!", tetra.Info.Sid)
+
+	tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
+		os.Exit(0)
+	})
+
 }
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {

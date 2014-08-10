@@ -3,3 +3,5 @@ export die = elevated! .. ->
   return "Okay"
 
 tetra.script.AddLuaCommand "DIE", "die"
+
+client.Commands.DIE.NeedsOper = true

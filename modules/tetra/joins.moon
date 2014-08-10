@@ -106,3 +106,6 @@ export onBurst = (line) ->
 tetra.script.AddLuaCommand "JOIN", "joincmd"
 tetra.script.AddLuaCommand "PART", "partcmd"
 tetra.protohook "PING", "onBurst"
+
+client.Commands["JOIN"].NeedsOper = true
+client.Commands["PART"].NeedsOper = true

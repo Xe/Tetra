@@ -26,3 +26,4 @@ UNLOAD = elevated() .. function(source, destination, message)
 end
 
 tetra.script.AddLuaCommand("UNLOAD", "UNLOAD")
+client.Commands.UNLOAD.NeedOper = true

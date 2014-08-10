@@ -7,3 +7,4 @@ SCRIPTS = elevated() .. function(source, message)
 end
 
 tetra.script.AddLuaCommand("SCRIPTS", "SCRIPTS")
+client.Commands.SCRIPTS.NeedOper = true

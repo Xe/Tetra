@@ -9,11 +9,12 @@ import (
 
 // Struct command holds everything needed for a bot command.
 type Command struct {
-	Impl   func(*Client, Targeter, []string) string
-	Uuid   string
-	Script *Script
-	Verb   string
-	Owner  *Client
+	Impl      func(*Client, Targeter, []string) string
+	Uuid      string
+	Script    *Script
+	Verb      string
+	Owner     *Client
+	NeedsOper bool
 }
 
 // NewCommand returns a new command instance.

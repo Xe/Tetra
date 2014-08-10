@@ -22,3 +22,4 @@ LOAD = elevated() .. function(source, destination, msg)
 end
 
 tetra.script.AddLuaCommand("LOAD", "LOAD")
+client.Commands.LOAD.NeedsOper = true

@@ -1,4 +1,4 @@
-Tetra Help:
+Tetra Help Index: {{$client := .Target}}
 
-Commands loaded:{{range .Me.Commands}}
+Commands loaded:{{range .Me.Commands}} {{$seen := false}}
     {{.Verb}}{{end}}

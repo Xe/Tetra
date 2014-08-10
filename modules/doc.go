@@ -14,5 +14,27 @@ the following globals available:
     ".byte2sting:   converts C strings to Go strings
 
 All modules will also have base.lua loaded.
+
+Modules may be written in either lua or moonscript. If there is a name conflict
+the lua file will be preferred over the moonscript one.
+
+An example moonscript module is as follows:
+
+    export handler = (line) ->
+      source, destination, message = parseLine line
+      print "#{destination.Target!} <#{source.Nick}> #{table.concat message, " "}"
+
+    tetra.protohook "PRIVMSG", "handler"
+
+Please note that handler/command functions myst be exported for Tetra to be able
+to use them. This is a moonscript-specific problem.
+
+An example lua module is as follows:
+
+    function ping(client, target, message)
+      return "PONG"
+    end
+
+    tetra.script.AddLuaCommand("PING", "ping")
 */
 package modules

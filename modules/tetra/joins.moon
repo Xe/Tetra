@@ -81,12 +81,26 @@ export partcmd = elevated! .. (source, destination, message) ->
   service.Part(chan)
 
   do
-    idx = find(db.data[service.Kind], chan)
-    table.remove(db.data[service.Kind], idx
+    idx = find db.data[service.Kind], chan
+    table.remove db.data[service.Kind], idx
 
   db\Commit!
 
   return "Joined #{service.Nick} to #{chan}"
 
+export onBurst = (line) ->
+  if done
+    return
+
+  for name, channels in pairs db.data
+    service = tetra.bot.Services[name]
+
+    for i, chan in pairs channels
+      print "#{service.Kind} joining #{chan}"
+      service.Join(chan)
+
+  done = true
+
 tetra.script.AddLuaCommand "JOIN", "joincmd"
 tetra.script.AddLuaCommand "PART", "partcmd"
+tetra.protohook "PING", "onBurst"

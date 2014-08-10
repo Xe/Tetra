@@ -96,21 +96,4 @@ function admincommands(line)
   end
 end
 
-function onBurst(line)
-  if done then return end
-  for name, channels in pairs(db.data) do
-    if tetra.bot.Services[name] ~= nil then
-      local service = tetra.bot.Services[name]
-
-      for i, chan in pairs(channels) do
-        tetra.log.Printf("%s joining %s", service.Kind, chan)
-        service.Join(chan)
-      end
-    end
-  end
-
-  done = true
-end
-
 tetra.script.AddLuaProtohook("PRIVMSG", "admincommands")
-tetra.script.AddLuaProtohook("PING", "onBurst")

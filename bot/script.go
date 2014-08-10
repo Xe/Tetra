@@ -69,6 +69,8 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 }
 
 func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
+	script.L.DoFile("modules/base.lua")
+
 	err := script.L.DoFile("modules/" + script.Name + ".lua")
 
 	if err != nil {
@@ -93,6 +95,9 @@ func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
 
 	err := script.L.DoString(`
 		moonscript = require "moonscript"
+
+		xpcall = unsafe_xpcall
+		pcall = unsafe_pcall
 
 		local func, err = moonscript.loadstring(moonscript_code_from_file)
 
@@ -140,8 +145,6 @@ func (script *Script) seed() {
 		"readall":     ioutil.ReadAll,
 		"byte2string": byteSliceToString,
 	})
-
-	script.L.DoFile("modules/base.lua")
 }
 
 // AddLuaProtohook adds a lua function as a protocol hook

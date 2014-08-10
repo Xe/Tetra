@@ -1,3 +1,5 @@
+require "modules/base"
+
 export db = FooDB "var/autojoin.json"
 export done = false
 

@@ -13,12 +13,14 @@ the following globals available:
     ioutil.readall: convenience wrapper
     ".byte2sting:   converts C strings to Go strings
 
-All modules will also have base.lua loaded.
+All modules will also have base.lua loaded. Moonscript modules need to load this
+manually for now.
 
 Modules may be written in either lua or moonscript. If there is a name conflict
 the lua file will be preferred over the moonscript one.
 
 An example moonscript module is as follows:
+    require "modules/base" -- Needed for now
 
     export handler = (line) ->
       source, destination, message = parseLine line

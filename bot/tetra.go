@@ -132,12 +132,13 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 		var target Targeter
 		client := tetra.Clients.ByUID[destination]
-		verb := strings.Split(line.Args[1], " ")[0]
+		verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
 		message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
-		tetra.Log.Printf("%v, %v, %v, %v", source.Nick, destination, verb, message)
-
 		if destination[0] == '#' {
+			// We don't support fantasy yet
+			return
+
 			if !strings.HasPrefix(strings.Split(strings.ToUpper(text), " ")[0], strings.ToUpper(client.Nick)) {
 				return
 			}
@@ -157,16 +158,15 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			}
 		}
 
-		if command, ok := client.Commands[verb]; !ok {
-			tetra.Log.Printf("Unknown command %s used by %s", verb, source.Nick)
-			tetra.Log.Printf("%#v", client.Commands)
-		} else {
+		if command, ok := client.Commands[verb]; ok {
 			reply := command.Impl(source, target, message)
 			if target.IsChannel() {
 				client.Privmsg(target, reply)
 			} else {
 				client.Notice(source, reply)
 			}
+		} else {
+			client.Notice(source, "No such command " + verb)
 		}
 	})
 

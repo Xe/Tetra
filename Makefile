@@ -28,16 +28,18 @@ package:
 	@rm build/modules/doc.go
 	@mkdir build/doc
 	@echo "Bundling documentation..."
+	@godocdown . > build/doc/main.md
 	@godocdown ./modules > build/doc/modules.md
 	@godocdown ./atheme > build/doc/atheme.md
 	@godocdown ./1459 > build/doc/1459.md
 	@godocdown ./bot > build/doc/bot.md
+	@cp -vrf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc
 	@cp README.md build
 	@cp LICENSE build
 	@mv build ${VERSION}
-	@tar czf ${VERSION}.tgz ${VERSION}
+	@tar cvzf ${VERSION}.tgz ${VERSION}
 	@rm -rf ${VERSION}
 	@echo "Package at ${VERSION}.tgz"
 

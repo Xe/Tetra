@@ -1,4 +1,8 @@
-// Command main starts the program.
+/*
+Command Tetra is an extended services package for TS6 IRC daemons.
+
+See README.md for installation and use directions.
+*/
 package main
 
 import (

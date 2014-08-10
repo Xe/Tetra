@@ -6,4 +6,6 @@ export TETRA_CONFIG_PATH=/app/run/config.yaml
 env
 whoami
 
+cd /app
+
 moon /app/run/start.moon

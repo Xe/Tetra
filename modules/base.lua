@@ -1,4 +1,4 @@
-local json = require "json"
+require "json"
 require "socket"
 
 -- http://lua-users.org/wiki/SplitJoin

@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"bufio"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -448,9 +449,14 @@ func (tetra *Tetra) NextUID() string {
 }
 
 func (tetra *Tetra) Connect(host, port string) (err error) {
-	tetra.Conn.Conn, err = net.Dial("tcp", host+":"+port)
-	if err != nil {
-		panic(err)
+	if tetra.Config.Uplink.Ssl {
+		config := &tls.Config{InsecureSkipVerify: true}
+		tetra.Conn.Conn, err = tls.Dial("tcp", host+":"+port, config)
+	} else {
+		tetra.Conn.Conn, err = net.Dial("tcp", host+":"+port)
+		if err != nil {
+			tetra.Log.Fatal(err)
+		}
 	}
 
 	tetra.Conn.Reader = bufio.NewReader(tetra.Conn.Conn)
@@ -592,7 +598,7 @@ func (tetra *Tetra) ProcessLine(line string) {
 	if _, present := tetra.Handlers[rawline.Verb]; present {
 		for _, handler := range tetra.Handlers[rawline.Verb] {
 			func() {
-				/*defer func() {
+				defer func() {
 					if r := recover(); r != nil {
 						str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
 							handler.Verb, handler.Uuid, r)
@@ -600,7 +606,7 @@ func (tetra *Tetra) ProcessLine(line string) {
 						tetra.Log.Printf("%#v", r)
 						tetra.Services["tetra"].ServicesLog(str)
 					}
-				}()*/
+				}()
 				handler.Impl(rawline)
 			}()
 		}

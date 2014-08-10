@@ -22,6 +22,7 @@ type Script struct {
 	Log      *log.Logger
 	Handlers map[string]*Handler
 	Commands map[string]*Command
+	Hooks    []*Hook
 	Service  string
 	Client   *Client
 	Uuid     string
@@ -197,6 +198,24 @@ func (script *Script) AddLuaCommand(verb string, name string) error {
 	return nil
 }
 
+// Adds a hook from lua
+func (script *Script) AddLuaHook(verb string, name string) error {
+	function := luar.NewLuaObjectFromName(script.L, name)
+
+	hook := script.Tetra.NewHook(verb, func(args ...interface{}) {
+		_, err := function.Call(args...)
+		if err != nil {
+			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+			script.Log.Printf("%#v", err)
+			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+		}
+	})
+
+	script.Hooks = append(script.Hooks, hook)
+
+	return nil
+}
+
 // Unload a script and delete its commands and handlers
 func (tetra *Tetra) UnloadScript(name string) error {
 	if _, ok := tetra.Scripts[name]; !ok {
@@ -212,6 +231,10 @@ func (tetra *Tetra) UnloadScript(name string) error {
 
 	for _, command := range script.Commands {
 		delete(script.Commands, command.Uuid)
+	}
+
+	for _, hook := range script.Hooks {
+		tetra.DelHook(hook)
 	}
 
 	script.L.Close()

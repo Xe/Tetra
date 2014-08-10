@@ -51,6 +51,7 @@ type Tetra struct {
 	Services map[string]*Client
 	Servers  map[string]*Server
 	Scripts  map[string]*Script
+	Hooks    map[string][]*Hook
 	nextuid  int
 	Config   *Config
 	Log      *log.Logger
@@ -84,6 +85,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Services: make(map[string]*Client),
 		Servers:  make(map[string]*Server),
 		Scripts:  make(map[string]*Script),
+		Hooks:    make(map[string][]*Hook),
 		Bursted:  false,
 		nextuid:  100000,
 		Config:   config,

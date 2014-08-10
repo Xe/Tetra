@@ -137,10 +137,10 @@ func (t *Tetra) WebApp() {
 	mux.Get("/yo/:id", func(res http.ResponseWriter, req *http.Request) {
 		params := req.URL.Query()
 		id := params.Get(":id")
-		client := t.Services["tetra"]
 		username := req.URL.Query()["username"][0]
 
-		client.ServicesLog(fmt.Sprintf("%s sent %s a yo!", username, id))
+		t.RunHook("YO", username, id)
+		t.RunHook("YO_"+id, username)
 
 		fmt.Fprintf(res, "OK")
 	})

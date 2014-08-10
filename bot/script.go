@@ -26,6 +26,7 @@ type Script struct {
 	Service  string
 	Client   *Client
 	Uuid     string
+	Kind     string
 }
 
 func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
@@ -55,8 +56,6 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 
 	script, err = tetra.loadLuaScript(script)
 	if err != nil {
-		script.Log.Printf("Trying to load %s as moonscript", script.Name)
-
 		script, err = tetra.loadMoonScript(script)
 
 		if err != nil {
@@ -79,6 +78,8 @@ func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
 	}
 
 	script.Log.Printf("lua script %s loaded at %s", script.Name, script.Uuid)
+
+	script.Kind = "lua"
 
 	return script, nil
 }
@@ -114,6 +115,8 @@ func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
 	}
 
 	script.Log.Printf("moonscript script %s loaded at %s", script.Name, script.Uuid)
+
+	script.Kind = "moonscript"
 
 	return script, nil
 }

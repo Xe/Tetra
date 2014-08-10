@@ -36,7 +36,7 @@ func (r *Client) Euid() string {
 }
 
 func (r *Client) Quit() {
-	str := fmt.Sprintf(":%s QUIT :Service unloaded")
+	str := fmt.Sprintf(":%s QUIT :Service unloaded", r.Uid)
 	r.tetra.Conn.SendLine(str)
 }
 

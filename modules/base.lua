@@ -273,3 +273,25 @@ function sleep(sec)
   socket.select(nil, nil, sec)
 end
 
+function try(t)
+  local ok, err = pcall(t.main)
+  if not ok then
+    t.catch(err)
+  end
+  if t.finally then
+    return t.finally()
+  end
+end
+
+--[[
+-- Usage:
+--
+-- try {
+--  main: function()
+--    io.open("filethatDoesnOtexist", "r")
+--  end,
+--  catch: function(e)
+--    print("Caught error!", e)
+--  end,
+-- }
+--]]

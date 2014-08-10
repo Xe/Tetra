@@ -45,7 +45,8 @@ docker-build:
 	docker build -t xena/tetra .
 
 docker-run:
-	@make build
+	make -C ./test/testnet/ircd kill || true
+	make -C ./test/testnet/ircd run
 	docker run --rm --link tetra-ircd:ircd -it --name tetra xena/tetra .
 
 test:

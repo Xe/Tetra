@@ -38,6 +38,10 @@ package:
 	@cp etc/config.yaml.example build/etc
 	@cp README.md build
 	@cp LICENSE build
+	@echo "including source code"
+	@mkdir build/src
+	@cp -vrf ./1459 build/src
+	@cp -vrf ./bot build/src
 	@mv build ${VERSION}
 	@tar cvzf ${VERSION}.tgz ${VERSION}
 	@rm -rf ${VERSION}

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Write config
+echo "Writing server config"
+moon /home/ircd/template/config.moon > /home/ircd/run/etc/ircd.conf
+
+chmod 777 /home/ircd/run/etc/ircd.conf
+setuser ircd /home/ircd/run/bin/ircd -foreground

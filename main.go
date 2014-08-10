@@ -18,7 +18,7 @@ func main() {
 	if confloc == "" { // No user set config location
 		var file *os.File
 		var err error
-		if file, err = os.Open("etc/config.yaml") ; err != nil {
+		if file, err = os.Open("etc/config.yaml"); err != nil {
 			fmt.Fprintln(os.Stderr, "Please either set TETRA_CONFIG_PATH to the location of the configuration file or add your config at etc/config.yaml")
 			os.Exit(1)
 		} else {

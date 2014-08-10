@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/drone/routes"
 	"github.com/Xe/Tetra/bot/modes"
 	"github.com/codegangsta/negroni"
+	"github.com/drone/routes"
 	"gopkg.in/yaml.v1"
 )
 

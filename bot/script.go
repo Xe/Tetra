@@ -142,11 +142,10 @@ func (script *Script) seed() {
 	})
 
 	script.L.DoFile("modules/base.lua")
-
 }
 
 // AddLuaProtohook adds a lua function as a protocol hook
-func (script *Script) AddLuaProtohook(verb string, name string) (error) {
+func (script *Script) AddLuaProtohook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
 	handler, err := script.Tetra.AddHandler(verb, func(line *r1459.RawLine) {
@@ -168,10 +167,10 @@ func (script *Script) AddLuaProtohook(verb string, name string) (error) {
 }
 
 // AddLuaCommand adds a new command to a script from a lua context
-func (script *Script) AddLuaCommand(verb string, name string) (error) {
+func (script *Script) AddLuaCommand(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
-	command, err := NewCommand(script.Client, verb, func(client *Client, target Targeter, args []string) (string) {
+	command, err := NewCommand(script.Client, verb, func(client *Client, target Targeter, args []string) string {
 		reply, err := function.Call(client, target, args)
 
 		if err != nil {

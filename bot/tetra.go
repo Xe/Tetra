@@ -166,7 +166,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 				client.Notice(source, reply)
 			}
 		} else {
-			client.Notice(source, "No such command " + verb)
+			client.Notice(source, "No such command "+verb)
 		}
 	})
 

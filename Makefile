@@ -1,5 +1,7 @@
 VERSION="Tetra-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
+.PHONY: build clean run package docker-build docker-run
+
 build:
 	go build
 

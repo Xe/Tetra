@@ -1,4 +1,4 @@
-require "json"
+-- Test docker building and running
 
 make = (directory, rule) ->
   with retcode = os.execute "make -C #{directory} #{rule}"
@@ -27,6 +27,23 @@ print "ircd id:  #{ircd_id\sub 1,10}"
 print "tetra id: #{tetra_id\sub 1,10}"
 
 with proc = io.popen "docker logs -f #{tetra_id\sub 1,10}"
+  pingcount = 0
+
   for line in \lines!
     print line
+
+    if line\match "ERROR"
+      print "There was an error :("
+      capture "docker rm -f tetra tetra-ircd"
+
+      os.exit(2)
+
+    if line\match "PING"
+      pingcount += 1
+      print "Ping count: #{pingcount}"
+
+      if pingcount > 1
+        print "Tests passed"
+        capture "docker rm -f tetra tetra-ircd"
+        os.exit(0)
 

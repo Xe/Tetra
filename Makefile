@@ -1,6 +1,6 @@
 VERSION="Tetra-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
-.PHONY: build clean run package docker-build docker-run
+.PHONY: build clean run package docker-build docker-run test
 
 build:
 	go build
@@ -47,4 +47,7 @@ docker-build:
 docker-run:
 	@make build
 	docker run --rm --link tetra-ircd:ircd -it --name tetra xena/tetra .
+
+test:
+	make -C test test-build test-docker
 

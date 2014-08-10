@@ -110,7 +110,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			// sig is a ^C, handle it
 			_ = sig
 
-			fmt.Println( " <-- Control-C pressed!")
+			fmt.Println(" <-- Control-C pressed!")
 
 			tetra.Quit()
 		}
@@ -153,16 +153,18 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			}
 		}
 
-		if command, ok := client.Commands[verb]; ok {
-			reply := command.Impl(source, target, message)
-			if target.IsChannel() {
-				client.Privmsg(target, reply)
+		go func() {
+			if command, ok := client.Commands[verb]; ok {
+				reply := command.Impl(source, target, message)
+				if target.IsChannel() {
+					client.Privmsg(target, reply)
+				} else {
+					client.Notice(source, reply)
+				}
 			} else {
-				client.Notice(source, reply)
+				client.Notice(source, "No such command "+verb)
 			}
-		} else {
-			client.Notice(source, "No such command "+verb)
-		}
+		}()
 	})
 
 	tetra.AddHandler("UID", func(line *r1459.RawLine) {

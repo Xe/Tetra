@@ -49,7 +49,14 @@ Look at the example config, copy it to `etc/config.json` or set
 
 You need the following lua rocks:
 
- - `luajson`
  - `luasocket`
 
-Run `./Tetra` in a tmux/dtach session.
+You also need the following from moonrocks:
+
+ - `lua_json`
+ - `moonscript`
+ - `yaml` (for runit-based autoconfiguration)
+
+Run `./Tetra` in a tmux/dtach session. You can also run Tetra in Docker as long 
+as you set `IRCD_PORT_6667_TCP_ADDR` to the address of your ircd. The Makefile 
+in the project root automates this.

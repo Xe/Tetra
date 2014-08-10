@@ -8,21 +8,22 @@ import (
 )
 
 type Client struct {
-	Nick        string `json:"nick"`
-	User        string `json:"user"`
-	Host        string `json:"realhost"`
-	VHost       string `json:"host"`
-	Ip          string `json:"ip"`
-	Account     string `json:"account"`
-	Uid         string `json:"uid"`
-	Gecos       string `json:"gecos"`
+	Nick        string
+	User        string
+	Host        string
+	VHost       string
+	Ip          string
+	Account     string
+	Uid         string
+	Gecos       string
 	Permissions int
 	Umodes      int
 	Kind        string
 	tetra       *Tetra
-	Ts          int64               `json:"ts"`
-	Channels    map[string]*Channel `json:"channels"`
-	Server      *Server             `json:"server"`
+	Ts          int64
+	Channels    map[string]*Channel
+	Server      *Server
+	Commands    map[string]*Command
 }
 
 type Targeter interface {

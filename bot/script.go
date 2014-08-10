@@ -21,6 +21,7 @@ type Script struct {
 	Tetra    *Tetra
 	Log      *log.Logger
 	Handlers map[string]*Handler
+	Commands map[string]*Command
 	Service  string
 	Client   *Client
 	Uuid     string
@@ -43,6 +44,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 		Tetra:    tetra,
 		Log:      log.New(os.Stdout, name+" ", log.LstdFlags),
 		Handlers: make(map[string]*Handler),
+		Commands: make(map[string]*Command),
 		Service:  kind,
 		Client:   client,
 		Uuid:     uuid.New(),
@@ -143,8 +145,8 @@ func (script *Script) seed() {
 
 }
 
-// Add a lua function as a protocol hook
-func (script *Script) AddLuaProtohook(verb string, name string) {
+// AddLuaProtohook adds a lua function as a protocol hook
+func (script *Script) AddLuaProtohook(verb string, name string) (error) {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
 	handler, err := script.Tetra.AddHandler(verb, func(line *r1459.RawLine) {
@@ -156,11 +158,41 @@ func (script *Script) AddLuaProtohook(verb string, name string) {
 		}
 	})
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	handler.Script = script
 	script.Handlers[handler.Uuid] = handler
+
+	return nil
+}
+
+// AddLuaCommand adds a new command to a script from a lua context
+func (script *Script) AddLuaCommand(verb string, name string) (error) {
+	function := luar.NewLuaObjectFromName(script.L, name)
+
+	command, err := NewCommand(script.Client, verb, func(client *Client, target Targeter, args []string) (string) {
+		reply, err := function.Call(client, target, args)
+
+		if err != nil {
+			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+			script.Log.Printf("%#v", err)
+			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+			return ""
+		}
+
+		return reply.(string)
+	})
+
+	if err != nil {
+		return err
+	}
+
+	command.Script = script
+
+	script.Commands[command.Uuid] = command
+
+	return nil
 }
 
 // Unload a script and delete its commands and handlers
@@ -174,6 +206,10 @@ func (tetra *Tetra) UnloadScript(name string) error {
 	for _, handler := range script.Handlers {
 		tetra.DelHandler(handler.Verb, handler.Uuid)
 		delete(script.Handlers, handler.Uuid)
+	}
+
+	for _, command := range script.Commands {
+		delete(script.Commands, command.Uuid)
 	}
 
 	script.L.Close()

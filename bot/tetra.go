@@ -125,6 +125,51 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	go tetra.Conn.sendLinesWait()
 
+	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
+		source := tetra.Clients.ByUID[line.Source]
+		destination := line.Args[0]
+		text := line.Args[1]
+
+		var target Targeter
+		client := tetra.Clients.ByUID[destination]
+		verb := strings.Split(line.Args[1], " ")[0]
+		message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
+
+		tetra.Log.Printf("%v, %v, %v, %v", source.Nick, destination, verb, message)
+
+		if destination[0] == '#' {
+			if !strings.HasPrefix(strings.Split(strings.ToUpper(text), " ")[0], strings.ToUpper(client.Nick)) {
+				return
+			}
+
+			var ok bool
+			target, ok = tetra.Channels[strings.ToUpper(destination)]
+
+			if !ok {
+				tetra.Log.Fatal("asked to process a PRIVMSG for a channel that does not exist")
+			}
+		} else {
+			var ok bool
+			target, ok = tetra.Clients.ByUID[destination]
+
+			if !ok {
+				tetra.Log.Fatal("got a message from a ghost client. We are out of sync.")
+			}
+		}
+
+		if command, ok := client.Commands[verb]; !ok {
+			tetra.Log.Printf("Unknown command %s used by %s", verb, source.Nick)
+			tetra.Log.Printf("%#v", client.Commands)
+		} else {
+			reply := command.Impl(source, target, message)
+			if target.IsChannel() {
+				client.Privmsg(target, reply)
+			} else {
+				client.Notice(source, reply)
+			}
+		}
+	})
+
 	tetra.AddHandler("UID", func(line *r1459.RawLine) {
 		// <<< :0RS UID RServ 2 0 +Z rserv rserv.yolo-swag.com 0 0RSSR0001 :Ruby Services
 		nick := line.Args[0]
@@ -493,6 +538,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		Channels: make(map[string]*Channel),
 		Server:   tetra.Info,
 		Kind:     service,
+		Commands: make(map[string]*Command),
 	}
 
 	tetra.Services[service] = cli
@@ -528,15 +574,6 @@ func (tetra *Tetra) ProcessLine(line string) {
 
 	tetra.Conn.Log.Printf("<<< %s", line)
 
-	defer func() {
-		if r := recover(); r != nil {
-			tetra.Conn.Log.Printf("<<< %s", line)
-			str := fmt.Sprintf("Recovered from verb %s", rawline.Verb)
-			tetra.Log.Printf(str)
-			tetra.Services["tetra"].ServicesLog(str)
-		}
-	}()
-
 	// This should just be hard-coded here.
 	if rawline.Verb == "PING" {
 		if rawline.Source == "" {
@@ -553,14 +590,15 @@ func (tetra *Tetra) ProcessLine(line string) {
 	if _, present := tetra.Handlers[rawline.Verb]; present {
 		for _, handler := range tetra.Handlers[rawline.Verb] {
 			func() {
-				defer func() {
+				/*defer func() {
 					if r := recover(); r != nil {
 						str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
 							handler.Verb, handler.Uuid, r)
-						tetra.Log.Printf(str)
+						tetra.Log.Print(str)
+						tetra.Log.Printf("%#v", r)
 						tetra.Services["tetra"].ServicesLog(str)
 					}
-				}()
+				}()*/
 				handler.Impl(rawline)
 			}()
 		}

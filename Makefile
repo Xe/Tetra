@@ -1,4 +1,4 @@
-VERSION="Tetra-`git rev-parse --short HEAD`-`uname`-`uname -m`"
+VERSION="Tetra-0.1-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
 .PHONY: build clean run package docker-build docker-run test
 

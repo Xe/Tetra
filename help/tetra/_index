@@ -1,0 +1,4 @@
+Tetra Help:
+
+Commands loaded:{{range .Me.Commands}}
+    {{.Verb}}{{end}}

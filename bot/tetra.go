@@ -509,7 +509,35 @@ func (tetra *Tetra) Burst() {
 
 func (tetra *Tetra) StickConfig() {
 	for _, sclient := range tetra.Config.Services {
-		tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+
+		client.NewCommand("HELP", func(source *Client, target Targeter, message []string) (ret string) {
+			if len(message) == 0 {
+				if helpHas(client.Kind, "_index") {
+					client.showHelp(source, client.Kind, "_index")
+
+					return "End of help file"
+				} else {
+					return "No help available."
+				}
+			}
+
+			basecommand := strings.ToUpper(message[0])
+
+			if _, present := client.Commands[basecommand]; !present {
+				return "No such command " + basecommand
+			}
+
+			command := strings.ToLower(strings.Join(message, " "))
+
+			if helpHas(client.Kind, command) {
+				// Show help to user
+			} else {
+				ret = "Help for " + strings.ToUpper(command) + " not found."
+			}
+
+			return
+		})
 	}
 
 	for _, script := range tetra.Config.Autoload {

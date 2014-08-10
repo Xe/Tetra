@@ -41,8 +41,11 @@ func (r *Client) Quit() {
 	r.tetra.Conn.SendLine(str)
 }
 
-func (r *Client) message(source *Client, kind string,
-	destination Targeter, message string) {
+func (r *Client) message(source *Client, kind string, destination Targeter, message string) {
+	if message == "" {
+		message = " "
+	}
+
 	str := fmt.Sprintf(":%s %s %s :%s", source.Uid, kind, destination.Target(), message)
 	r.tetra.Conn.SendLine(str)
 }

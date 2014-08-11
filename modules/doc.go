@@ -22,7 +22,7 @@ the lua file will be preferred over the moonscript one.
 An example moonscript module is as follows:
     require "modules/base" -- Needed for now
 
-    handler = protohook("PRIVMSG) .. (line) ->
+    handler = protohook("PRIVMSG") .. (line) ->
       source, destination, message = parseLine line
       print "#{destination.Target!} <#{source.Nick}> #{table.concat message, " "}"
 

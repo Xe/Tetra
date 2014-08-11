@@ -430,9 +430,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		go func() {
 			uid := uuid.New()
 			tetra.Log.Printf("Worker %s started", uid)
-			logger := log.New(os.Stdout, fmt.Sprintf("worker %s ", uid), log.LstdFlags)
 			for line := range tetra.tasks {
-				logger.Printf("Processing \"%s\"", line)
 				tetra.ProcessLine(line)
 				time.Sleep(5 * time.Millisecond)
 			}

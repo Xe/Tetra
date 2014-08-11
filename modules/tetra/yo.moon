@@ -1,6 +1,6 @@
 -- Example hook via YO
 
-export yo_callback = hook("YO") .. (source, dest) ->
+hook("YO") .. (source, dest) ->
   yo, err = tetra.bot.GetYo dest
 
   client.ServicesLog "#{dest} got a yo from #{source}!"

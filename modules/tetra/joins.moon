@@ -3,7 +3,7 @@ require "modules/base"
 export db = FooDB "var/autojoin.json"
 export done = false
 
-joincmd = command("JOIN") .. elevated! .. (source, destination, message) ->
+command("JOIN") .. elevated! .. (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -47,7 +47,7 @@ joincmd = command("JOIN") .. elevated! .. (source, destination, message) ->
 
   return "Joined #{service.Nick} to #{chan}"
 
-partcmd = command("PART") .. elevated! .. (source, destination, message) ->
+command("PART") .. elevated! .. (source, destination, message) ->
   parc = #message
 
   if parc == 0

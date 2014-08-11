@@ -81,17 +81,6 @@ func (t *Tetra) WebApp() {
 		fmt.Fprintf(res, "error: No method chosen.")
 	})
 
-	mux.Get("/config.yaml", func(res http.ResponseWriter, req *http.Request) {
-		out, err := yaml.Marshal(t.Config)
-		if err != nil {
-			res.WriteHeader(500)
-			fmt.Fprintf(res, `error: Bad yaml`)
-			return
-		}
-
-		fmt.Fprintf(res, "%s", out)
-	})
-
 	mux.Get("/channels.yaml", func(res http.ResponseWriter, req *http.Request) {
 		var channels []channel
 

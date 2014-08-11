@@ -33,17 +33,19 @@ package:
 	@godocdown ./atheme > build/doc/atheme.md
 	@godocdown ./1459 > build/doc/1459.md
 	@godocdown ./bot > build/doc/bot.md
-	@cp -vrf doc/* build/doc/
+	@cp -rf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc
 	@cp README.md build
 	@cp LICENSE build
 	@echo "including source code"
 	@mkdir build/src
-	@cp -vrf ./1459 build/src
-	@cp -vrf ./bot build/src
+	@cp -rf ./1459 build/src
+	@cp -rf ./bot build/src
+	@echo "including help files"
+	@cp -rf ./help build/
 	@mv build ${VERSION}
-	@tar cvzf ${VERSION}.tgz ${VERSION}
+	@tar czf ${VERSION}.tgz ${VERSION}
 	@rm -rf ${VERSION}
 	@echo "Package at ${VERSION}.tgz"
 

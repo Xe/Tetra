@@ -26,7 +26,7 @@ function summarize(info)
   return ret
 end
 
-function db_scrape(line)
+db_scrape = protohook("PRIVMSG") .. function(line)
   local source, destination, message = parseLine(line)
 
   if not is_common_channel(destination) then
@@ -50,5 +50,3 @@ function db_scrape(line)
     client.Privmsg(destination, summarize(info))
   end
 end
-
-tetra.script.AddLuaProtohook("PRIVMSG", "db_scrape")

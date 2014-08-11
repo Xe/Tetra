@@ -1,6 +1,6 @@
 -- Example hook via YO
 
-export yo_callback = (source, dest) ->
+export yo_callback = hook("YO") .. (source, dest) ->
   yo, err = tetra.bot.GetYo dest
 
   client.ServicesLog "#{dest} got a yo from #{source}!"
@@ -11,5 +11,3 @@ export yo_callback = (source, dest) ->
   else
     yo.YoUser source
     client.ServicesLog "Yo'd #{source} back!"
-
-tetra.script.AddLuaHook "YO", "yo_callback"

@@ -3,7 +3,7 @@ require "modules/base"
 export db = FooDB "var/autojoin.json"
 export done = false
 
-export joincmd = elevated! .. (source, destination, message) ->
+joincmd = command("JOIN") .. elevated! .. (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -47,7 +47,7 @@ export joincmd = elevated! .. (source, destination, message) ->
 
   return "Joined #{service.Nick} to #{chan}"
 
-export partcmd = elevated! .. (source, destination, message) ->
+partcmd = command("PART") .. elevated! .. (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -90,7 +90,7 @@ export partcmd = elevated! .. (source, destination, message) ->
 
   return "Joined #{service.Nick} to #{chan}"
 
-export onBurst = (line) ->
+onBurst = protohook("PING") .. (line) ->
   if done
     return
 
@@ -103,9 +103,5 @@ export onBurst = (line) ->
 
   done = true
 
-tetra.script.AddLuaCommand "JOIN", "joincmd"
-tetra.script.AddLuaCommand "PART", "partcmd"
-tetra.protohook "PING", "onBurst"
-
-client.Commands["JOIN"].NeedsOper = true
-client.Commands["PART"].NeedsOper = true
+client.Commands.JOIN.NeedsOper = true
+client.Commands.PART.NeedsOper = true

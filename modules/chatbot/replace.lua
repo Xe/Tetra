@@ -1,6 +1,6 @@
 channel_data = {}
 
-function scan_replace(line)
+scan_replace = protohook("PRIVMSG") .. function(line)
   local source, destination, message = parseLine(line)
 
   if not is_common_channel(destination) then return end
@@ -44,7 +44,7 @@ function scan_replace(line)
   end
 end
 
-function replay(line)
+replay = protohook("JOIN") .. function(line)
   local source = tetra.bot.Clients.ByUID[line.Source]
   local channel = line.Args[2]:upper()
 
@@ -55,6 +55,3 @@ function replay(line)
     end
   end
 end
-
-tetra.script.AddLuaProtohook("PRIVMSG", "scan_replace")
-tetra.script.AddLuaProtohook("JOIN", "replay")

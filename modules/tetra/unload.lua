@@ -1,4 +1,4 @@
-UNLOAD = elevated() .. function(source, destination, message)
+UNLOAD = command("UNLOAD") .. elevated() .. function(source, destination, message)
   message = luar.slice2table(message)
   if message == nil then
     return "Need a script name"
@@ -25,5 +25,4 @@ UNLOAD = elevated() .. function(source, destination, message)
   return "Script " .. name .. " unloaded"
 end
 
-tetra.script.AddLuaCommand("UNLOAD", "UNLOAD")
 client.Commands.UNLOAD.NeedOper = true

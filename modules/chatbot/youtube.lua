@@ -12,7 +12,7 @@ function ytlookup(id)
   return "^ Youtube - " .. title .. " Posted by: " .. author
 end
 
-function youtube_scrape(line)
+youtube_scrape = protohook("PRIVMSG") .. function(line)
   local source, destination, message = parseLine(line)
 
   if destination.IsChannel() then

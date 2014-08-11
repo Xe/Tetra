@@ -30,7 +30,7 @@ function shorten(url)
   return res.data.url
 end
 
-function shorten_if_long(line)
+shorten_if_long = protohook("PRIVMSG") .. function(line)
   local source, destination, message = parseLine(line)
 
   if not is_common_channel(destination) then return end
@@ -43,6 +43,3 @@ function shorten_if_long(line)
     end
   end
 end
-
-tetra.script.AddLuaProtohook("PRIVMSG", "shorten_if_long")
-

@@ -1,6 +1,6 @@
 ld = nil
 
-function eval_channel(line)
+eval_channel = protohook("PRIVMSG") .. function(line)
   local source, destination, message = parseLine(line)
 
   if not is_common_channel(destination) then
@@ -24,7 +24,7 @@ function eval_channel(line)
       return
     end
 
-    client.ServicesLog(source.nick .. ": EVAL: " .. toeval)
+    client.ServicesLog(source.Nick .. ": EVAL: " .. toeval)
 
     local res, err = func()
 
@@ -37,5 +37,3 @@ function eval_channel(line)
     end
   end
 end
-
-tetra.script.AddLuaProtohook("PRIVMSG", "eval_channel")

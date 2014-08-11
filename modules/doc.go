@@ -22,21 +22,17 @@ the lua file will be preferred over the moonscript one.
 An example moonscript module is as follows:
     require "modules/base" -- Needed for now
 
-    export handler = (line) ->
+    handler = protohook("PRIVMSG) .. (line) ->
       source, destination, message = parseLine line
       print "#{destination.Target!} <#{source.Nick}> #{table.concat message, " "}"
-
-    tetra.protohook "PRIVMSG", "handler"
 
 Please note that handler/command functions myst be exported for Tetra to be able
 to use them. This is a moonscript-specific problem.
 
 An example lua module is as follows:
 
-    function ping(client, target, message)
+    ping = command("PING") .. function(client, target, message)
       return "PONG"
     end
-
-    tetra.script.AddLuaCommand("PING", "ping")
 */
 package modules

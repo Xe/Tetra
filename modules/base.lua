@@ -221,9 +221,49 @@ function command(verb, ...)
   return setmetatable({...}, mt)
 end
 
---[[
-Create commands programatically using decorators.
---]]
+function hook(kind, ...)
+  local mt = {__concat =
+  function(a,f)
+    local ret = function(user, ...)
+      local res = f(user, ...)
+      return res
+    end
+
+    local my_uuid = uuid.new()
+    _G[my_uuid] = ret
+
+    print("Adding hook at _G." .. my_uuid)
+
+    tetra.script.AddLuaHook(kind, my_uuid)
+
+    return ret
+  end
+  }
+
+  return setmetatable({...}, mt)
+end
+
+function protohook(kind, ...)
+  local mt = {__concat =
+  function(a,f)
+    local ret = function(user, ...)
+      local res = f(user, ...)
+      return res
+    end
+
+    local my_uuid = uuid.new()
+    _G[my_uuid] = ret
+
+    print("Adding protohook at _G." .. my_uuid)
+
+    tetra.script.AddLuaProtohook(kind, my_uuid)
+
+    return ret
+  end
+  }
+
+  return setmetatable({...}, mt)
+end
 
 function geturl(url)
   local c, err = web.get(url)

@@ -1,4 +1,5 @@
-export die = elevated! .. ->
+export die = elevated! .. (source) ->
+  client.ServicesLog "#{source.Nick}: DIE"
   tetra.bot.Quit!
   return "Okay"
 

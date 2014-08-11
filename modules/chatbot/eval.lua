@@ -24,6 +24,8 @@ function eval_channel(line)
       return
     end
 
+    client.ServicesLog(source.nick .. ": EVAL: " .. toeval)
+
     local res, err = func()
 
     tetra.log.Printf("%#v: %#v", res, err)

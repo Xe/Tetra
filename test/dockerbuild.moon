@@ -7,7 +7,6 @@ make = (directory, rule) ->
     else
       return retcode
 
-
 build = (directory, rules) ->
   for _, rule in pairs rules
     make directory, rule .. " || true"

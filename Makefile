@@ -44,6 +44,7 @@ package:
 	@cp -rf ./bot build/src
 	@echo "including help files"
 	@cp -rf ./help build/
+	@mkdir build/var
 	@mv build ${VERSION}
 	@tar czf ${VERSION}.tgz ${VERSION}
 	@rm -rf ${VERSION}

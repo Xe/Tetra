@@ -169,7 +169,7 @@ function os.capture(cmd, raw)
   return s
 end
 
--- A decorator for requiring elevated permissions
+-- decorator for requiring elevated permissions
 function elevated(...)
   local mt = {__concat =
   function(a,f)
@@ -184,9 +184,9 @@ function elevated(...)
       return res
     end
   end
-}
+  }
 
-return setmetatable({...}, mt)
+  return setmetatable({...}, mt)
 end
 
 --[[
@@ -196,6 +196,33 @@ elevatedtest = elevated() .. function(user, message)
 return "Hi master"
 end
 
+--]]
+
+-- Okay this is pretty much hacking
+function command(verb, ...)
+  local mt = {__concat =
+  function(a,f)
+    local ret = function(user, ...)
+      local res = f(user, ...)
+      return res
+    end
+
+    local my_uuid = uuid.new()
+    _G[my_uuid] = ret
+
+    print("Adding command at _G." .. my_uuid)
+
+    tetra.script.AddLuaCommand(verb, my_uuid)
+
+    return ret
+  end
+  }
+
+  return setmetatable({...}, mt)
+end
+
+--[[
+Create commands programatically using decorators.
 --]]
 
 function geturl(url)

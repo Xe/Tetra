@@ -1,8 +1,6 @@
-export die = elevated! .. (source) ->
+export die = command("DIE") .. elevated! .. (source) ->
   client.ServicesLog "#{source.Nick}: DIE"
   tetra.bot.Quit!
   return "Okay"
-
-tetra.script.AddLuaCommand "DIE", "die"
 
 client.Commands.DIE.NeedsOper = true

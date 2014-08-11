@@ -1,5 +1,6 @@
 # autoload is a list of all the modules you want to have loaded at start
 autoload:
+  - tetra/dispatch # Please don't run Tetra without this loaded.
   - tetra/load
   - tetra/unload
   - tetra/version

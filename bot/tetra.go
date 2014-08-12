@@ -138,7 +138,6 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
 		if destination[0] == '#' {
-			// We don't support fantasy yet
 			return
 
 			if !strings.HasPrefix(strings.Split(strings.ToUpper(text), " ")[0], strings.ToUpper(client.Nick)) {

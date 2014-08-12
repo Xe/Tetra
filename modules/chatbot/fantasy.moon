@@ -9,6 +9,10 @@ hook("CHATBOT-CHANMSG") .. (source, dest, msg) ->
       args = [i for i in *msg[2,]]
 
       res, err = script.Call command, source, dest, args
-      client.Privmsg dest, res
+
+      if command == "HELP"
+        client.Notice source, res
+      else
+        client.Privmsg dest, res
 
 -- TODO: implement ping-prefixing

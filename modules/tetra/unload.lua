@@ -1,4 +1,4 @@
-UNLOAD = command("UNLOAD") .. elevated() .. function(source, destination, message)
+UNLOAD = command("UNLOAD", true) .. function(source, destination, message)
   message = luar.slice2table(message)
   if message == nil then
     return "Need a script name"

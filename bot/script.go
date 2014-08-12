@@ -77,7 +77,9 @@ func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
 		return script, err
 	}
 
-	script.Log.Printf("lua script %s loaded at %s", script.Name, script.Uuid)
+	if tetra.Config.General.Debug || tetra.Bursted {
+		script.Log.Printf("lua script %s loaded at %s", script.Name, script.Uuid)
+	}
 
 	script.Kind = "lua"
 
@@ -105,7 +107,7 @@ func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
 
 		if err ~= nil then
 			tetra.log.Printf("Moonscript error, %#v", err)
-			return
+			error(err)
 		end
 
 		func()`)
@@ -114,7 +116,9 @@ func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
 		return nil, err
 	}
 
-	script.Log.Printf("moonscript script %s loaded at %s", script.Name, script.Uuid)
+	if tetra.Config.General.Debug || tetra.Bursted {
+		script.Log.Printf("moonscript script %s loaded at %s", script.Name, script.Uuid)
+	}
 
 	script.Kind = "moonscript"
 

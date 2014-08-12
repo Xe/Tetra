@@ -451,7 +451,10 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		tetra.wg.Add(1)
 		go func() {
 			uid := uuid.New()
-			tetra.Log.Printf("Worker %s started", uid)
+			if tetra.Config.General.Debug {
+				tetra.Log.Printf("Worker %s started", uid)
+			}
+
 			for line := range tetra.tasks {
 				tetra.ProcessLine(line)
 				time.Sleep(5 * time.Millisecond)

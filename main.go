@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 
+	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/Tetra/bot"
 	"github.com/codegangsta/cli"
 	"gopkg.in/yaml.v1"
@@ -27,6 +28,10 @@ func main() {
 			Usage:  "Configuration file to use. This can be overridden by TETRA_CONFIG_PATH.",
 			EnvVar: "TETRA_CONFIG_PATH",
 		},
+		cli.BoolFlag{
+			Name:  "debug",
+			Usage: "Enables the debug flag in the config.",
+		},
 	}
 
 	app.Commands = []cli.Command{
@@ -35,6 +40,18 @@ func main() {
 			Usage:       "runs the bot",
 			Action:      startBot,
 			Description: "Kick off the bot and all of its associated goroutines.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:   "conf, c",
+					Value:  "etc/config.yaml",
+					Usage:  "Configuration file to use. This can be overridden by TETRA_CONFIG_PATH.",
+					EnvVar: "TETRA_CONFIG_PATH",
+				},
+				cli.BoolFlag{
+					Name:  "debug",
+					Usage: "Enables the debug flag in the config.",
+				},
+			},
 		},
 		{
 			Name:        "checkconfig",
@@ -44,7 +61,7 @@ func main() {
 				cli.StringFlag{
 					Name:   "conf, c",
 					Value:  "etc/config.yaml",
-					Usage:  "Configuration file to use. This can be overridden by TETRA_CONFIG_PATH.",
+					Usage:  "configuration file to use",
 					EnvVar: "TETRA_CONFIG_PATH",
 				},
 			},
@@ -66,47 +83,58 @@ func main() {
 				cli.StringFlag{
 					Name:   "conf, c",
 					Value:  "etc/config.yaml",
-					Usage:  "Configuration file to use. This can be overridden by TETRA_CONFIG_PATH.",
+					Usage:  "Configuration file to use.",
 					EnvVar: "TETRA_CONFIG_PATH",
 				},
 				cli.StringFlag{
 					Name:   "server, s",
 					Value:  "127.0.0.1",
-					Usage:  "Remote server to connect to. This can be overriden by TETRA_HOST.",
+					Usage:  "Remote server to connect to.",
 					EnvVar: "TETRA_HOST",
 				},
 				cli.StringFlag{
-					Name:  "port, p",
-					Value: "6667",
-					Usage: "The port the ircd is listening on.",
+					Name:   "port, p",
+					Value:  "6667",
+					Usage:  "The port the ircd is listening on.",
+					EnvVar: "TETRA_PORT",
 				},
 				cli.StringFlag{
-					Name:  "password, p",
-					Value: "shameless",
-					Usage: "Server password.",
+					Name:   "password",
+					Value:  "shameless",
+					Usage:  "Server password.",
+					EnvVar: "TETRA_PASSWORD",
 				},
 				cli.BoolFlag{
 					Name:  "ssl",
 					Usage: "Toggles SSL on the uplink Connection.",
 				},
 				cli.StringFlag{
-					Name:  "name, n",
-					Value: "tetra.int",
-					Usage: "Server name to send over TS6.",
+					Name:   "name, n",
+					Value:  "tetra.int",
+					Usage:  "Server name to send over TS6.",
+					EnvVar: "TETRA_SERVER_NAME",
 				},
 				cli.StringFlag{
-					Name:  "sid",
-					Value: "326",
-					Usage: "Server ID to send over TS6.",
+					Name:   "sid",
+					Value:  "326",
+					Usage:  "Server ID to send over TS6.",
+					EnvVar: "TETRA_SID",
 				},
 				cli.StringFlag{
-					Name:  "prefix, p",
-					Value: "`",
-					Usage: "Command prefix to use in channel.",
+					Name:   "prefix",
+					Value:  "`",
+					Usage:  "Command prefix to use in channel.",
+					EnvVar: "TETRA_PREFIX",
 				},
 				cli.BoolFlag{
 					Name:  "debug",
 					Usage: "Enables the debug flag in the config.",
+				},
+				cli.StringFlag{
+					Name:   "gecos, g",
+					Usage:  "Server GECOS",
+					Value:  "Tetra Services",
+					EnvVar: "TETRA_SERVER_GECOS",
 				},
 			},
 			Action: func(c *cli.Context) {
@@ -120,25 +148,54 @@ func main() {
 					file.Close()
 				}
 
-				config, err := tetra.NewConfig(c.String("conf"))
-
-				config.Uplink.Host = c.String("server")
-				config.Uplink.Port = c.String("port")
-				config.Uplink.Password = c.String("password")
-				config.Uplink.Ssl = c.Bool("ssl")
-				config.General.Debug = c.Bool("debug")
-				config.General.Prefix = c.String("prefix")
-				config.Server.Name = c.String("name")
-				config.Server.Sid = c.String("sid")
-
-				config.Autoload = []string{
-					"tetra/dispatch",
-					"chatbot/fantasy",
-					"tetra/load",
-					"tetra/scripts",
-					"tetra/unload",
-					"tetra/die",
-					"tetra/version",
+				config := &tetra.Config{
+					Uplink: &tetra.UplinkConfig{
+						Host:     c.String("server"),
+						Port:     c.String("port"),
+						Password: c.String("password"),
+						Ssl:      c.Bool("ssl"),
+					},
+					General: &tetra.GeneralConfig{
+						StaffChan: "#opers",
+						SnoopChan: "#services",
+						Debug:     c.Bool("debug"),
+						Prefix:    c.String("prefix"),
+					},
+					Server: &tetra.ServerConfig{
+						Gecos: c.String("gecos"),
+						Name:  c.String("name"),
+						Sid:   c.String("sid"),
+					},
+					Services: []*tetra.ServiceConfig{
+						&tetra.ServiceConfig{
+							Name:   "tetra",
+							Nick:   "Tetra",
+							User:   "tetra",
+							Host:   c.String("name"),
+							Gecos:  "Tetra admin client",
+							Certfp: uuid.New(),
+						},
+						&tetra.ServiceConfig{
+							Name:   "chatbot",
+							Nick:   "Chatbot",
+							User:   "chatbot",
+							Host:   c.String("name"),
+							Gecos:  "Chitty chatter bot!",
+							Certfp: uuid.New(),
+						},
+					},
+					Stats: &tetra.StatsConfig{
+						Host: "NOCOLLECTION",
+					},
+					Autoload: []string{
+						"tetra/dispatch",
+						"chatbot/fantasy",
+						"tetra/load",
+						"tetra/scripts",
+						"tetra/unload",
+						"tetra/die",
+						"tetra/version",
+					},
 				}
 
 				file, err := os.Create(c.String("conf"))
@@ -151,10 +208,12 @@ func main() {
 					panic(err)
 				}
 
-				fmt.Fprint(file, output)
+				plaintext := string(output)
+
+				fmt.Fprint(file, plaintext)
 				file.Close()
 
-				fmt.Println(output)
+				fmt.Println(plaintext)
 
 				fmt.Println("Wrote config to " + c.String("conf"))
 			},

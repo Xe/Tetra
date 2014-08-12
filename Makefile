@@ -29,13 +29,13 @@ package:
 	@rm build/modules/doc.go
 	@mkdir -p build/doc/bot
 	@echo "Bundling documentation..."
-	@godocdown . > build/doc/main.md
-	@godocdown ./modules > build/doc/modules.md
-	@godocdown ./atheme > build/doc/atheme.md
-	@godocdown ./1459 > build/doc/1459.md
-	@godocdown ./bot > build/doc/bot.md
+	@godocdown .           > build/doc/main.md
+	@godocdown ./modules   > build/doc/modules.md
+	@godocdown ./atheme    > build/doc/atheme.md
+	@godocdown ./1459      > build/doc/1459.md
+	@godocdown ./bot       > build/doc/bot.md
 	@godocdown ./bot/modes > build/doc/bot/modes.md
-	@godocdown ./bot/web > build/doc/bot/web.md
+	@godocdown ./bot/web   > build/doc/bot/web.md
 	@cp -rf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc

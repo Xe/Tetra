@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Xe/Tetra/bot/modes"
+	"github.com/Xe/Tetra/bot/web"
 	"github.com/codegangsta/negroni"
 	"github.com/drone/routes"
 	"gopkg.in/yaml.v1"
@@ -139,10 +140,10 @@ func (t *Tetra) WebApp() {
 		port = "3000"
 	}
 
-	fmt.Printf("listening on %v...\n", port)
+	t.Log.Printf("listening on %v...\n", port)
 
 	go func() {
-		n := negroni.Classic()
+		n := negroni.New(negroni.NewRecovery(), negroni.NewStatic(http.Dir("public")), web.NewLogger())
 		n.UseHandler(mux)
 
 		err := http.ListenAndServe(":"+port, n)

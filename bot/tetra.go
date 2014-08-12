@@ -472,6 +472,10 @@ func (tetra *Tetra) Auth() {
 func (tetra *Tetra) Burst() {
 	for _, client := range tetra.Services {
 		tetra.Conn.SendLine(client.Euid())
+		if client.Certfp != "" {
+			tetra.Conn.SendLine(":%s ENCAP * CERTFP :%s", client.Uid, client.Certfp)
+		}
+
 		client.Join(tetra.Config.Server.SnoopChan)
 	}
 
@@ -507,7 +511,7 @@ func (tetra *Tetra) Burst() {
 
 func (tetra *Tetra) StickConfig() {
 	for _, sclient := range tetra.Config.Services {
-		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos)
+		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos, sclient.Certfp)
 
 		client.NewCommand("HELP", func(source *Client, target Targeter, message []string) (ret string) {
 			if len(message) == 0 {
@@ -563,7 +567,7 @@ func (tetra *Tetra) Quit() {
 
 }
 
-func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Client) {
+func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
 	cli = &Client{
 		Nick:     nick,
 		User:     user,
@@ -579,6 +583,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 		Server:   tetra.Info,
 		Kind:     service,
 		Commands: make(map[string]*Command),
+		Certfp:   certfp,
 	}
 
 	tetra.Services[service] = cli
@@ -587,6 +592,9 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos string) (cli *Cl
 
 	if tetra.Bursted {
 		tetra.Conn.SendLine(cli.Euid())
+		if cli.Certfp != "" {
+			tetra.Conn.SendLine(":%s ENCAP * CERTFP :%s", cli.Uid, cli.Certfp)
+		}
 	}
 
 	return

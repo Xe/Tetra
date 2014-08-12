@@ -24,6 +24,7 @@ type Client struct {
 	Channels    map[string]*Channel
 	Server      *Server
 	Commands    map[string]*Command
+	Certfp      string
 }
 
 type Targeter interface {

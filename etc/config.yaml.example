@@ -11,17 +11,21 @@ autoload:
 
 # A list of the services you want Tetra to seed on the network, please do not
 # stray outside the folder list in `modules`
+#
+# A service is defined by a nick, user, host, gecos, name and certfp
 services:
-  - nick: Tetra
-    user: tetra
-    host: yolo-swag.com
-    gecos: Tetra administrative client
-    name: tetra
-  - nick: Chatbot
-    user: bot
-    host: yolo-swag.com
-    gecos: Chitty chatter bot!
-    name: chatbot
+  - nick:   Tetra
+    user:   tetra
+    host:   yolo-swag.com
+    gecos:  Tetra administrative client
+    name:   tetra
+    certfp: 02438d05-b3e5-47f1-babd-ebd727169b8c
+  - nick:   Chatbot
+    user:   bot
+    host:   yolo-swag.com
+    gecos:  Chitty chatter bot!
+    name:   chatbot
+    certfp: 02438d05-b3e5-47f1-babd-ebd727169b8c
 
 # Information we should send to the TS6 network
 server:

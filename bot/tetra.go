@@ -713,18 +713,16 @@ func (tetra *Tetra) ProcessLine(line string) {
 
 	if _, present := tetra.Handlers[rawline.Verb]; present {
 		for _, handler := range tetra.Handlers[rawline.Verb] {
-			func() {
-				defer func() {
-					if r := recover(); r != nil {
-						str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
-							handler.Verb, handler.Uuid, r)
-						tetra.Log.Print(str)
-						tetra.Log.Printf("%#v", r)
-						tetra.Services["tetra"].ServicesLog(str)
-					}
-				}()
-				handler.Impl(rawline)
+			defer func() {
+				if r := recover(); r != nil {
+					str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
+						handler.Verb, handler.Uuid, r)
+					tetra.Log.Print(str)
+					tetra.Log.Printf("%#v", r)
+					tetra.Services["tetra"].ServicesLog(str)
+				}
 			}()
+			handler.Impl(rawline)
 		}
 	}
 }

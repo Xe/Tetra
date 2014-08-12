@@ -30,11 +30,7 @@ function shorten(url)
   return res.data.url
 end
 
-shorten_if_long = protohook("PRIVMSG") .. function(line)
-  local source, destination, message = parseLine(line)
-
-  if not is_common_channel(destination) then return end
-
+shorten_if_long = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
   local url = scrapeurl(message)
 
   if url ~= nil then

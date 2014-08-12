@@ -12,16 +12,12 @@ function ytlookup(id)
   return "^ Youtube - " .. title .. " Posted by: " .. author
 end
 
-youtube_scrape = protohook("PRIVMSG") .. function(line)
-  local source, destination, message = parseLine(line)
-
-  if destination.IsChannel() then
-    if message:find("youtube%.com/watch") then
-      client.Privmsg(destination, ytlookup(message:match("v=(...........)")))
-    elseif message:find("youtu%.be/") then
-      client.Privmsg(destination, ytlookup(message:match("%.be/(...........)")))
-    else return end
-  end
+youtube_scrape = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+  if message:find("youtube%.com/watch") then
+    client.Privmsg(destination, ytlookup(message:match("v=(...........)")))
+  elseif message:find("youtu%.be/") then
+    client.Privmsg(destination, ytlookup(message:match("%.be/(...........)")))
+  else return end
 end
 
 tetra.script.AddLuaProtohook("PRIVMSG", "youtube_scrape")

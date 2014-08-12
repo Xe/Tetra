@@ -1,12 +1,6 @@
 ld = nil
 
-eval_channel = protohook("PRIVMSG") .. function(line)
-  local source, destination, message = parseLine(line)
-
-  if not is_common_channel(destination) then
-    return
-  end
-
+eval_channel = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
   if not source.IsOper() then
     return
   end

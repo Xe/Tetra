@@ -1,10 +1,6 @@
 channel_data = {}
 
-scan_replace = protohook("PRIVMSG") .. function(line)
-  local source, destination, message = parseLine(line)
-
-  if not is_common_channel(destination) then return end
-
+scan_replace = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
   target = destination.Target()
 
   if target == "#SERVICES" then return end

@@ -26,13 +26,7 @@ function summarize(info)
   return ret
 end
 
-db_scrape = protohook("PRIVMSG") .. function(line)
-  local source, destination, message = parseLine(line)
-
-  if not is_common_channel(destination) then
-    return
-  end
-
+db_scrape = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
   if message:find("derpiboo.ru/(%d+)") then
     local id = message:match("/(%d+)")
 

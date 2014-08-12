@@ -1,4 +1,4 @@
-Tetra Help Index: {{$client := .Target}}
+{{ .Me.Nick }} Help Index: {{$client := .Target}}
 
 Commands loaded:{{range .Me.Commands}} {{$seen := false}}
     {{.Verb}}{{end}}

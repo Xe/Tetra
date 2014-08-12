@@ -1,5 +1,7 @@
 # Tetra
---
+
+[![GoDoc](https://godoc.org/github.com/Xe/Tetra?status.svg)](https://godoc.org/github.com/Xe/Tetra)
+
 Tetra is an extended services package for TS6 IRC daemons with Lua and 
 Moonscript support.
 

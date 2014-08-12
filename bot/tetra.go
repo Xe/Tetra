@@ -179,8 +179,9 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 		go func() {
 			if command, ok := client.Commands[verb]; ok {
-				if command.NeedsOper && !client.IsOper() {
+				if command.NeedsOper && !source.IsOper() {
 					client.Notice(source, "Permission denied.")
+					return
 				}
 
 				reply := command.Impl(source, target, message)

@@ -1,9 +1,9 @@
 # Tetra
 --
-Command Tetra is an extended services package for TS6 IRC daemons with Lua and
+Tetra is an extended services package for TS6 IRC daemons with Lua and 
 Moonscript support.
 
-Tetra is more of a functional experiment than a services package right now. It
+Tetra is more of a functional experiment than a services package right now. It 
 still needs many things to be production ready, but here is what it has so far:
 
 - Yaml API
@@ -20,6 +20,15 @@ Things still in progress:
 - Atheme integration
 - Scripts being able to define webpages
 
+Building a script for Tetra is as easy as:
+
+```moonscript
+require "modules/base"
+
+command("PING") .. ->
+  return "PONG"
+```
+
 ## Installation
 
 ### From git
@@ -31,7 +40,7 @@ You need the following buildtime dependencies:
 
 ```console
 $ go get github.com/Xe/Tetra
-$ cd $GOPATH/
+$ cd $GOPATH/github.com/Xe/Tetra
 ```
 
 Continue with configuration.
@@ -51,3 +60,7 @@ Look at the example config, copy it to `etc/config.json` or set
 You need the following lua rocks:
 
 - `luasocket`
+- `moonscript`
+- `etlua`
+
+All are available in [moonrocks](http://rocks.moonscript.org).

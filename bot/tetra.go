@@ -138,7 +138,35 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	go tetra.Conn.sendLinesWait()
 
 	tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
-		os.Exit(0)
+		if line.Args[0] == tetra.Info.Sid {
+			os.Exit(0)
+		}
+
+		sid := line.Args[0]
+		server := tetra.Servers[sid]
+
+		// Remove all clients from the split server
+		for uid, client := range tetra.Clients.ByUID {
+			if strings.HasPrefix(uid, sid) {
+				tetra.Clients.DelClient(client)
+			}
+		}
+
+		delete(tetra.Servers, sid)
+
+		for _, link := range server.Links {
+			tetra.Log.Printf("%#v", link)
+
+			if link.Hops > server.Hops {
+				for uid, client := range tetra.Clients.ByUID {
+					if strings.HasPrefix(uid, link.Sid) {
+						tetra.Clients.DelClient(client)
+					}
+				}
+
+				delete(tetra.Servers, link.Sid)
+			}
+		}
 	})
 
 	tetra.AddHandler("ERROR", func(line *r1459.RawLine) {
@@ -404,6 +432,11 @@ func NewTetra(cpath string) (tetra *Tetra) {
 			Sid:     line.Args[2],
 			Links:   []*Server{parent},
 			Counter: metrics.NewGauge(),
+		}
+
+		server.Hops, err = strconv.Atoi(line.Args[1])
+		if err != nil {
+			return
 		}
 
 		parent.Links = append(parent.Links, server)

@@ -12,6 +12,7 @@ type Server struct {
 	Links   []*Server
 	count   int
 	Counter metrics.Gauge
+	Hops    int
 }
 
 // AddClient increments the server client counter.

@@ -15,6 +15,7 @@ type Connection struct {
 	Tp     *textproto.Reader
 	Buffer chan string
 	open   bool
+	Debug  bool
 }
 
 func (c *Connection) SendLine(line string, stuff ...interface{}) {
@@ -25,7 +26,11 @@ func (c *Connection) SendLine(line string, stuff ...interface{}) {
 func (c *Connection) sendLinesWait() {
 	for {
 		str := <-c.Buffer
-		c.Log.Printf(">>> " + str)
+
+		if c.Debug {
+			c.Log.Printf(">>> " + str)
+		}
+
 		fmt.Fprintf(c.Conn, "%s\r\n", str)
 	}
 }

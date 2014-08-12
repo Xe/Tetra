@@ -110,6 +110,8 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		Counter: nil,
 	}
 
+	tetra.Conn.Debug = tetra.Config.General.Debug
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
@@ -126,6 +128,14 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	metrics.Register(tetra.Config.Server.Name+"_clients", tetra.Info.Counter)
 
 	go tetra.Conn.sendLinesWait()
+
+	tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
+		os.Exit(0)
+	})
+
+	tetra.AddHandler("ERROR", func(line *r1459.RawLine) {
+		tetra.Log.Fatal(line.Raw)
+	})
 
 	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
 		source := tetra.Clients.ByUID[line.Source]
@@ -488,7 +498,7 @@ func (tetra *Tetra) Burst() {
 			tetra.Conn.SendLine(":%s ENCAP * CERTFP :%s", client.Uid, client.Certfp)
 		}
 
-		client.Join(tetra.Config.Server.SnoopChan)
+		client.Join(tetra.Config.General.SnoopChan)
 	}
 
 	for _, channel := range tetra.Channels {
@@ -578,11 +588,6 @@ func (tetra *Tetra) Quit() {
 	}
 
 	tetra.Conn.SendLine("SQUIT %s :Goodbye!", tetra.Info.Sid)
-
-	tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
-		os.Exit(0)
-	})
-
 }
 
 func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
@@ -638,7 +643,9 @@ func (tetra *Tetra) GetConn() *net.Conn {
 func (tetra *Tetra) ProcessLine(line string) {
 	rawline := r1459.NewRawLine(line)
 
-	tetra.Conn.Log.Printf("<<< %s", line)
+	if tetra.Config.General.Debug {
+		tetra.Conn.Log.Printf("<<< %s", line)
+	}
 
 	// This should just be hard-coded here.
 	if rawline.Verb == "PING" {

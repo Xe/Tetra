@@ -8,12 +8,17 @@ import (
 
 // Struct ServerConfig defines the server information for Tetra.
 type ServerConfig struct {
-	Name      string
-	Gecos     string
-	Sid       string
+	Name  string
+	Gecos string
+	Sid   string
+}
+
+// Struct GeneralConfig defines general configuration for Tetra.
+type GeneralConfig struct {
 	StaffChan string
 	SnoopChan string
 	Prefix    string
+	Debug     bool
 }
 
 // Struct ServiceConfig defines the configuration for a service.
@@ -50,6 +55,7 @@ type Config struct {
 	Uplink   *UplinkConfig
 	Stats    *StatsConfig
 	ApiKeys  map[string]string
+	General  *GeneralConfig
 }
 
 // NewConfig returns a new Config instance seeded by the file at fname.

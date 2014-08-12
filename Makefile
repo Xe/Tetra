@@ -26,27 +26,26 @@ package:
 	@echo "Packing modules..."
 	@cp -rf modules build
 	@rm build/modules/doc.go
-	@mkdir build/doc
+	@mkdir -p build/doc/bot
 	@echo "Bundling documentation..."
 	@godocdown . > build/doc/main.md
 	@godocdown ./modules > build/doc/modules.md
 	@godocdown ./atheme > build/doc/atheme.md
 	@godocdown ./1459 > build/doc/1459.md
 	@godocdown ./bot > build/doc/bot.md
+	@godocdown ./bot/modes > build/doc/bot/modes.md
+	@godocdown ./bot/web > build/doc/bot/web.md
 	@cp -rf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc
 	@cp README.md build
 	@cp LICENSE build
 	@echo "including source code"
-	@mkdir build/src
-	@cp -rf ./1459 build/src
-	@cp -rf ./bot build/src
 	@echo "including help files"
 	@cp -rf ./help build/
 	@mkdir build/var
 	@mv build ${VERSION}
-	@tar czf ${VERSION}.tgz ${VERSION}
+	@tar czvf ${VERSION}.tgz ${VERSION}
 	@rm -rf ${VERSION}
 	@echo "Package at ${VERSION}.tgz"
 

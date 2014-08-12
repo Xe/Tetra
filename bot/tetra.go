@@ -23,6 +23,8 @@ import (
 	"github.com/rcrowley/go-metrics/influxdb"
 )
 
+// Struct Clients defines the set of clients on the network, indexed by either
+// nickname (in capital letters) or UID.
 type Clients struct {
 	ByNick map[string]*Client
 	ByUID  map[string]*Client
@@ -30,11 +32,13 @@ type Clients struct {
 	Tetra  *Tetra
 }
 
+// AddClient adds a Client to the Clients structure.
 func (clients *Clients) AddClient(client *Client) {
-	clients.ByNick[client.Nick] = client
+	clients.ByNick[strings.ToUpper(client.Nick)] = client
 	clients.ByUID[client.Uid] = client
 }
 
+// DelClient deletes a Client from the Clients structure.
 func (clients *Clients) DelClient(client *Client) (err error) {
 	delete(clients.ByNick, client.Nick)
 	delete(clients.ByUID, client.Uid)

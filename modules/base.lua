@@ -199,7 +199,11 @@ end
 --]]
 
 -- Okay this is pretty much hacking
-function command(verb, ...)
+function command(verb, operonly, ...)
+  if operonly == nil then
+    operonly = false
+  end
+
   local mt = {__concat =
   function(a,f)
     local ret = function(user, ...)
@@ -207,12 +211,14 @@ function command(verb, ...)
       return res
     end
 
+    verb = verb:upper()
+
     local my_uuid = uuid.new()
     _G[my_uuid] = ret
 
-    print("Adding command at _G." .. my_uuid)
-
     tetra.script.AddLuaCommand(verb, my_uuid)
+
+    client.Commands[verb].NeedsOper = operonly
 
     return ret
   end
@@ -231,8 +237,6 @@ function hook(kind, ...)
 
     local my_uuid = uuid.new()
     _G[my_uuid] = ret
-
-    print("Adding hook at _G." .. my_uuid)
 
     tetra.script.AddLuaHook(kind, my_uuid)
 
@@ -253,8 +257,6 @@ function protohook(kind, ...)
 
     local my_uuid = uuid.new()
     _G[my_uuid] = ret
-
-    print("Adding protohook at _G." .. my_uuid)
 
     tetra.script.AddLuaProtohook(kind, my_uuid)
 

@@ -161,7 +161,16 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 		go func() {
 			if command, ok := client.Commands[verb]; ok {
+				if command.NeedsOper && !client.IsOper() {
+					client.Notice(source, "Permission denied.")
+				}
+
 				reply := command.Impl(source, target, message)
+
+				if command.NeedsOper {
+					client.ServicesLog(tetra.Clients.ByUID[source.Target()].Nick + ": " + reply)
+				}
+
 				if target.IsChannel() {
 					client.Privmsg(target, reply)
 				} else {

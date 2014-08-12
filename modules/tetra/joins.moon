@@ -3,7 +3,7 @@ require "modules/base"
 export db = FooDB "var/autojoin.json"
 export done = false
 
-command("JOIN") .. elevated! .. (source, destination, message) ->
+command("JOIN", true) .. (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -47,7 +47,7 @@ command("JOIN") .. elevated! .. (source, destination, message) ->
 
   return "Joined #{service.Nick} to #{chan}"
 
-command("PART") .. elevated! .. (source, destination, message) ->
+command("PART", true) .. (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -102,6 +102,3 @@ onBurst = protohook("PING") .. (line) ->
       service.Join(chan)
 
   done = true
-
-client.Commands.JOIN.NeedsOper = true
-client.Commands.PART.NeedsOper = true

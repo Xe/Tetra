@@ -23,6 +23,12 @@ func helpHas(service string, command string) bool {
 func (c *Client) showHelp(target *Client, service, command string) {
 	buffer := bytes.NewBufferString("")
 
+	command = strings.TrimSpace(command)
+
+	if command == "" {
+		command = "_index"
+	}
+
 	if command == "help" || command == "_index" {
 		service = "tetra"
 	}

@@ -31,6 +31,7 @@ function shorten(url)
 end
 
 shorten_if_long = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+  message = strings.join(message, " ")
   local url = scrapeurl(message)
 
   if url ~= nil then

@@ -13,6 +13,8 @@ function ytlookup(id)
 end
 
 youtube_scrape = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+  message = strings.join(message, " ")
+
   if message:find("youtube%.com/watch") then
     client.Privmsg(destination, ytlookup(message:match("v=(...........)")))
   elseif message:find("youtu%.be/") then

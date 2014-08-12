@@ -149,6 +149,37 @@ func (script *Script) seed() {
 		"readall":     ioutil.ReadAll,
 		"byte2string": byteSliceToString,
 	})
+
+	luar.Register(script.L, "strings", luar.Map{
+		"join":  strings.Join,
+		"split": strings.Split,
+		"first": func(str string) string {
+			if len(str) > 0 {
+				return string(str[0])
+			} else {
+				return ""
+			}
+		},
+		"rest": func(str string) string {
+			if len(str) > 0 {
+				return str[1:]
+			} else {
+				return ""
+			}
+		},
+	})
+}
+
+// Call calls a command in a Script.
+func (s *Script) Call(command string, source *Client, dest Targeter, args []string) (string, error) {
+	cmd, present := s.Client.Commands[command]
+	if !present {
+		return "", errors.New("No command " + command)
+	}
+
+	result := cmd.Impl(source, dest, args)
+
+	return result, nil
 }
 
 // AddLuaProtohook adds a lua function as a protocol hook

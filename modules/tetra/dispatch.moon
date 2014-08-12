@@ -3,6 +3,8 @@ require "modules/base"
 protohook("PRIVMSG") .. (line) ->
   source, destination, message = parseLine line
 
+  mymessage = strings.split message, " "
+
   if destination.IsChannel!
     destination.Name = destination.Name\upper!
 
@@ -10,4 +12,4 @@ protohook("PRIVMSG") .. (line) ->
       if client.Channels[destination.Target!] ~= nil
         if destination.Name == tetra.bot.Config.Server.SnoopChan\upper!
           return
-        tetra.bot.RunHook "#{kind\upper!}-CHANMSG", source, destination, message
+        tetra.bot.RunHook "#{kind\upper!}-CHANMSG", source, destination, mymessage

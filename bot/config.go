@@ -13,6 +13,7 @@ type ServerConfig struct {
 	Sid       string
 	StaffChan string
 	SnoopChan string
+	Prefix    string
 }
 
 // Struct ServiceConfig defines the configuration for a service.

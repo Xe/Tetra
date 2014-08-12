@@ -8,6 +8,7 @@ autoload:
   - tetra/joins
   - tetra/die
   - chatbot/eval
+  - chatbot/fantasy
 
 # A list of the services you want Tetra to seed on the network, please do not
 # stray outside the folder list in `modules`
@@ -34,6 +35,7 @@ server:
   sid: "420" # Needs to be a string
   staffchan: '#opers'
   snoopchan: '#services'
+  prefix: "`"
 
 # The server Tetra will connect to
 uplink:

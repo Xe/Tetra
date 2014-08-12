@@ -5,6 +5,8 @@ eval_channel = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
     return
   end
 
+  message = strings.join(message, " ")
+
   ld = destination
 
   if message:sub(1,1) == "=" then

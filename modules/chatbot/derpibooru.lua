@@ -27,6 +27,7 @@ function summarize(info)
 end
 
 db_scrape = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+  message = strings.join(message, " ")
   if message:find("derpiboo.ru/(%d+)") then
     local id = message:match("/(%d+)")
 

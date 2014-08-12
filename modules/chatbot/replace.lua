@@ -3,6 +3,8 @@ channel_data = {}
 scan_replace = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
   target = destination.Target()
 
+  message = strings.join(message, " ")
+
   if target == "#SERVICES" then return end
 
   if channel_data[target] == nil then

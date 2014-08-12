@@ -1,3 +1,7 @@
+/*
+Package tetra implements the core for a TS6 pseudoserver. It also has lua and
+moonscript loading support to add functionality at runtime.
+*/
 package tetra
 
 import (
@@ -46,6 +50,7 @@ func (clients *Clients) DelClient(client *Client) (err error) {
 	return
 }
 
+// Struct Tetra contains all fields for Tetra.
 type Tetra struct {
 	Conn     *Connection
 	Info     *Server
@@ -65,6 +70,9 @@ type Tetra struct {
 	wg       *sync.WaitGroup
 }
 
+// NewTetra returns a new instance of Tetra based on a config file located at cpath.
+// This also kicks off the worker goroutines and statistics collection, as well
+// as seeding basic protocol verb handlers.
 func NewTetra(cpath string) (tetra *Tetra) {
 	config, err := NewConfig(cpath)
 	if err != nil {
@@ -466,11 +474,13 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	return
 }
 
+// NextUID returns a new TS6 UID.
 func (tetra *Tetra) NextUID() string {
 	tetra.nextuid++
 	return tetra.Info.Sid + strconv.Itoa(tetra.nextuid)
 }
 
+// Connect connects to the uplink server.
 func (tetra *Tetra) Connect(host, port string) (err error) {
 	if tetra.Config.Uplink.Ssl {
 		config := &tls.Config{InsecureSkipVerify: true}
@@ -488,12 +498,14 @@ func (tetra *Tetra) Connect(host, port string) (err error) {
 	return
 }
 
+// Auth authenticates over TS6.
 func (tetra *Tetra) Auth() {
 	tetra.Conn.SendLine("PASS " + tetra.Config.Uplink.Password + " TS 6 :" + tetra.Config.Server.Sid)
 	tetra.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
 	tetra.Conn.SendLine("SERVER " + tetra.Config.Server.Name + " 1 :" + tetra.Config.Server.Gecos)
 }
 
+// Burst sends our local information after recieving the server's burst.
 func (tetra *Tetra) Burst() {
 	for _, client := range tetra.Services {
 		tetra.Conn.SendLine(client.Euid())
@@ -534,6 +546,8 @@ func (tetra *Tetra) Burst() {
 	tetra.Bursted = true
 }
 
+// StickConfig creates Clients based off of the config file and handles module
+// autoloads.
 func (tetra *Tetra) StickConfig() {
 	for _, sclient := range tetra.Config.Services {
 		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos, sclient.Certfp)
@@ -585,6 +599,7 @@ func (tetra *Tetra) StickConfig() {
 
 }
 
+// Quit kills Tetra gracefully.
 func (tetra *Tetra) Quit() {
 	for _, service := range tetra.Services {
 		tetra.DelService(service.Kind)
@@ -593,6 +608,7 @@ func (tetra *Tetra) Quit() {
 	tetra.Conn.SendLine("SQUIT %s :Goodbye!", tetra.Info.Sid)
 }
 
+// AddService adds a new service Client to the network.
 func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
 	cli = &Client{
 		Nick:     nick,
@@ -626,6 +642,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) 
 	return
 }
 
+// DelService deletes a service from the network or returns an error.
 func (tetra *Tetra) DelService(service string) (err error) {
 	if _, ok := tetra.Services[service]; !ok {
 		return errors.New("No such service " + service)
@@ -639,10 +656,7 @@ func (tetra *Tetra) DelService(service string) (err error) {
 	return
 }
 
-func (tetra *Tetra) GetConn() *net.Conn {
-	return &tetra.Conn.Conn
-}
-
+// ProcessLine processes a line as if it came from the server.
 func (tetra *Tetra) ProcessLine(line string) {
 	rawline := r1459.NewRawLine(line)
 
@@ -681,6 +695,7 @@ func (tetra *Tetra) ProcessLine(line string) {
 	}
 }
 
+// Main is the main loop.
 func (t *Tetra) Main() {
 	for {
 		line, err := t.Conn.GetLine()

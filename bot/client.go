@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Struct Client holds information about a client on the IRC network.
 type Client struct {
 	Nick        string
 	User        string
@@ -27,16 +28,20 @@ type Client struct {
 	Certfp      string
 }
 
+// Interface Targeter wraps around Client and Channel to make messaging to them
+// seamless.
 type Targeter interface {
-	Target() string
-	IsChannel() bool
+	Target() string  // Targetable version of name
+	IsChannel() bool // Is this a channel?
 }
 
+// Euid returns an EUID burst.
 func (r *Client) Euid() string {
 	return fmt.Sprintf("EUID %s 1 %d +oS %s %s %s %s %s %s :%s", r.Nick, r.Ts, r.User,
 		r.VHost, r.Host, r.Uid, r.Ip, r.Account, r.Gecos)
 }
 
+// Quit quits a client off of the network.
 func (r *Client) Quit() {
 	str := fmt.Sprintf(":%s QUIT :Service unloaded", r.Uid)
 	r.tetra.Conn.SendLine(str)
@@ -51,26 +56,32 @@ func (r *Client) message(source *Client, kind string, destination Targeter, mess
 	r.tetra.Conn.SendLine(str)
 }
 
+// Privmsg sends a PRIVMSG to destination with given message.
 func (r *Client) Privmsg(destination Targeter, message string) {
 	r.message(r, "PRIVMSG", destination, message)
 }
 
+// ServicesLog logs a given message to the services snoop channel.
 func (r *Client) ServicesLog(message string) {
-	r.Privmsg(r.tetra.Channels["#SERVICES"], message)
+	r.Privmsg(r.tetra.Channels[strings.ToUpper(r.tetra.Config.General.SnoopChan)], message)
 }
 
+// Notice sends a NOTICE to destination with given message.
 func (r *Client) Notice(destination Targeter, message string) {
 	r.message(r, "NOTICE", destination, message)
 }
 
+// Target returns a targetable version of a Client.
 func (r *Client) Target() string {
 	return r.Uid
 }
 
+// IsChannel returns false.
 func (r *Client) IsChannel() bool {
 	return false
 }
 
+// Join makes the client join a channel. This does not check bans.
 func (r *Client) Join(channame string) {
 	var channel *Channel
 
@@ -92,6 +103,7 @@ func (r *Client) Join(channame string) {
 	}
 }
 
+// Part makes the client leave a channel.
 func (r *Client) Part(channame string) bool {
 	upperchan := strings.ToUpper(channame)
 
@@ -111,6 +123,7 @@ func (r *Client) Part(channame string) bool {
 	return true
 }
 
+// IsOper returns if the client is an operator or not.
 func (r *Client) IsOper() bool {
 	return r.Umodes&modes.UPROP_IRCOP == modes.UPROP_IRCOP
 }

@@ -32,7 +32,7 @@ func (t *Tetra) NewHook(verb string, impl func(...interface{})) (h *Hook) {
 }
 
 // RunHook runs a hook in parallel across multiple goroutines, one per implementaion
-// of the hook
+// of the hook. Returns error if there is no such hook.
 func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
 	if _, present := t.Hooks[verb]; present {
 		for _, hook := range t.Hooks[verb] {
@@ -45,7 +45,7 @@ func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
 	return
 }
 
-// DelHook deletes a hook.
+// DelHook deletes a hook. Returns an error if there is no such hook to delete.
 func (t *Tetra) DelHook(hook *Hook) (err error) {
 	if _, present := t.Hooks[hook.Verb]; !present {
 		return errors.New("Improper hook.")

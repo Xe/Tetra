@@ -75,6 +75,7 @@ func convertClient(in *Client) (out client) {
 	return
 }
 
+// WebApp creates the web application and YAML api for Tetra.
 func (t *Tetra) WebApp() {
 	mux := routes.New()
 

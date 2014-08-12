@@ -15,6 +15,7 @@ import (
 	"github.com/stevedonovan/luar"
 )
 
+// Struct Script implements a Lua scripting interface to Tetra.
 type Script struct {
 	Name     string
 	L        *lua.State
@@ -29,6 +30,7 @@ type Script struct {
 	Kind     string
 }
 
+// LoadScript finds and loads the appropriate script by a given short name (tetra/die).
 func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	kind := strings.Split(name, "/")[0]
 	client, ok := tetra.Services[kind]
@@ -186,7 +188,7 @@ func (s *Script) Call(command string, source *Client, dest Targeter, args []stri
 	return result, nil
 }
 
-// AddLuaProtohook adds a lua function as a protocol hook
+// AddLuaProtohook adds a lua function as a protocol hook.
 func (script *Script) AddLuaProtohook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
@@ -208,7 +210,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) error {
 	return nil
 }
 
-// AddLuaCommand adds a new command to a script from a lua context
+// AddLuaCommand adds a new command to a script from a lua context.
 func (script *Script) AddLuaCommand(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
@@ -236,7 +238,7 @@ func (script *Script) AddLuaCommand(verb string, name string) error {
 	return nil
 }
 
-// Adds a hook from lua
+// AddLuaHook adds a named hook from lua.
 func (script *Script) AddLuaHook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 

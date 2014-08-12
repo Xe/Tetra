@@ -6,13 +6,17 @@ import (
 	"strings"
 )
 
+// Struct ChanUser is a wrapper around a Channel and a Client to represent membership
+// in a Channel.
 type ChanUser struct {
-	Client  *Client  `json:"client"`
-	Channel *Channel `json:"channel"`
+	Client  *Client
+	Channel *Channel
 	Prefix  int
 }
 
-// Implements Targeter
+// Struct Channel holds all the relevant data for an IRC channel. A lot of this
+// is not just things defined in RFC 1459, but extensions like the TS.
+// This implements Targeter
 type Channel struct {
 	Name    string               `json:"name"`
 	Ts      int64                `json:"ts"`
@@ -22,6 +26,7 @@ type Channel struct {
 	Gauge   metrics.Gauge
 }
 
+// NewChannel creates a new channel with a given name and ts.
 func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 	c = &Channel{
 		Name:    name,
@@ -39,6 +44,7 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 	return
 }
 
+// AddChanUser adds a client to the channel, returning the membership.
 func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 
 	cu = &ChanUser{
@@ -54,6 +60,7 @@ func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 	return
 }
 
+// DelChanUser deletes a client from a channel or returns an error.
 func (c *Channel) DelChanUser(client *Client) (err error) {
 	if _, ok := c.Clients[client.Uid]; !ok {
 		return errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid + " from " + c.Name)
@@ -65,10 +72,12 @@ func (c *Channel) DelChanUser(client *Client) (err error) {
 	return nil
 }
 
+// Target returns a targetable version of Channel.
 func (c *Channel) Target() string {
 	return strings.ToUpper(c.Name)
 }
 
+// IsChannel returns true.
 func (c *Channel) IsChannel() bool {
 	return true
 }

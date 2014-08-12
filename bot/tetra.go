@@ -530,11 +530,15 @@ func (tetra *Tetra) StickConfig() {
 
 			basecommand := strings.ToUpper(message[0])
 
-			if _, present := client.Commands[basecommand]; !present {
-				return "No such command " + basecommand
-			}
-
 			command := strings.ToLower(strings.Join(message, " "))
+
+			if _, present := client.Commands[basecommand]; !present {
+				if helpHas(client.Kind, command) {
+					client.showHelp(source, client.Kind, command)
+
+					return "End of help file"
+				}
+			}
 
 			if helpHas(client.Kind, command) {
 				if client.Commands[basecommand].NeedsOper && !source.IsOper() {
@@ -545,10 +549,12 @@ func (tetra *Tetra) StickConfig() {
 					return "End of help file"
 				}
 			} else {
-				ret = "Help for " + strings.ToUpper(command) + " not found."
+				if _, present := client.Commands[basecommand]; !present {
+					return "No such command " + basecommand
+				}
 			}
 
-			return "This should never happen"
+			return "Help for " + strings.ToUpper(command) + " not found."
 		})
 	}
 

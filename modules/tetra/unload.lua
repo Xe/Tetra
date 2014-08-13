@@ -1,4 +1,4 @@
-UNLOAD = command("UNLOAD", true) .. function(source, destination, message)
+Command("UNLOAD", true, function(source, destination, message)
   message = luar.slice2table(message)
   if message == nil then
     return "Need a script name"
@@ -23,6 +23,4 @@ UNLOAD = command("UNLOAD", true) .. function(source, destination, message)
   local err = tetra.bot.UnloadScript(name)
 
   return "Script " .. name .. " unloaded"
-end
-
-client.Commands.UNLOAD.NeedOper = true
+end)

@@ -3,7 +3,7 @@ require "modules/base"
 export db = FooDB "var/autojoin.json"
 export done = false
 
-command("JOIN", true) .. (source, destination, message) ->
+Command "JOIN", true, (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -47,7 +47,7 @@ command("JOIN", true) .. (source, destination, message) ->
 
   return "Joined #{service.Nick} to #{chan}"
 
-command("PART", true) .. (source, destination, message) ->
+Command "PART", true, (source, destination, message) ->
   parc = #message
 
   if parc == 0
@@ -90,7 +90,7 @@ command("PART", true) .. (source, destination, message) ->
 
   return "Joined #{service.Nick} to #{chan}"
 
-onBurst = protohook("PING") .. (line) ->
+Protohook "PING", (line) ->
   if done
     return
 

@@ -1,4 +1,4 @@
-LOAD = command("LOAD", true) .. function(source, destination, msg)
+Command("LOAD", true, function(source, destination, msg)
   print(msg)
 
   local message = luar.slice2table(msg)
@@ -19,4 +19,4 @@ LOAD = command("LOAD", true) .. function(source, destination, msg)
   end
 
   return "Script " .. script.Name .. " loaded with uuid " .. script.Uuid
-end
+end)

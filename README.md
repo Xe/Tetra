@@ -26,10 +26,8 @@ Things still in progress:
 Building a script for Tetra is as easy as:
 
 ```moonscript
-require "modules/base"
-
-command("PING") .. ->
-  return "PONG"
+Command "PING", ->
+  "PONG"
 ```
 
 ## Installation

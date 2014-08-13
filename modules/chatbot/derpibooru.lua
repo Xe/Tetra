@@ -26,7 +26,7 @@ function summarize(info)
   return ret
 end
 
-db_scrape = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+Hook("CHATBOT-CHANMSG", function(source, destination, message)
   message = strings.join(message, " ")
   if message:find("derpiboo.ru/(%d+)") then
     local id = message:match("/(%d+)")
@@ -44,4 +44,4 @@ db_scrape = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
 
     client.Privmsg(destination, summarize(info))
   end
-end
+end)

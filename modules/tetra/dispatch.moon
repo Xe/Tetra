@@ -1,6 +1,6 @@
 require "modules/base"
 
-protohook("PRIVMSG") .. (line) ->
+Protohook "PRIVMSG", (line) ->
   source, destination, message = parseLine line
 
   mymessage = strings.split message, " "

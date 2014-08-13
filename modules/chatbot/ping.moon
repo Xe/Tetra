@@ -1,4 +1,2 @@
-require "modules/base"
-
-command("PING") .. ->
-  return "PONG"
+Command "PING", ->
+  "PONG"

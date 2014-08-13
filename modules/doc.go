@@ -20,9 +20,8 @@ Modules may be written in either lua or moonscript. If there is a name conflict
 the lua file will be preferred over the moonscript one.
 
 An example moonscript module is as follows:
-    require "modules/base" -- Needed for now
 
-    handler = protohook("PRIVMSG") .. (line) ->
+    Protohook "PRIVMSG", (line) ->
       source, destination, message = parseLine line
       print "#{destination.Target!} <#{source.Nick}> #{table.concat message, " "}"
 
@@ -31,8 +30,8 @@ to use them. This is a moonscript-specific problem.
 
 An example lua module is as follows:
 
-    ping = command("PING") .. function(client, target, message)
+    Command("PING" .. function(client, target, message)
       return "PONG"
-    end
+    end)
 */
 package modules

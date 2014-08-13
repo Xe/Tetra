@@ -30,7 +30,7 @@ function shorten(url)
   return res.data.url
 end
 
-shorten_if_long = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+Hook("CHATBOT-CHANMSG", function(source, destination, message)
   message = strings.join(message, " ")
   local url = scrapeurl(message)
 
@@ -39,4 +39,4 @@ shorten_if_long = hook("CHATBOT-CHANMSG") .. function(source, destination, messa
       client.Privmsg(destination, "^ " .. shorten(url))
     end
   end
-end
+end)

@@ -1,6 +1,19 @@
 require "json"
 require "socket"
 
+-- http://stackoverflow.com/a/12674376
+function keys(tab)
+  local keyset={}
+  local n=0
+
+  for k,v in pairs(tab) do
+    n=n+1
+    keyset[n]=k
+  end
+
+  return keyset
+end
+
 -- http://lua-users.org/wiki/SplitJoin
 -- Compatibility: Lua-5.1
 function split(str, pat)
@@ -24,19 +37,6 @@ end
 
 function join(table, str)
   return table.concat(table, str)
-end
-
--- http://stackoverflow.com/a/12674376
-function keys(tab)
-  local keyset={}
-  local n=0
-
-  for k,v in pairs(tab) do
-    n=n+1
-    keyset[n]=k
-  end
-
-  return keyset
 end
 
 -- http://lua-users.org/wiki/SimpleLuaClasses
@@ -153,118 +153,52 @@ function FooDB:Commit()
   fhandle:close()
 end
 
--- http://stackoverflow.com/a/326715
-function os.capture(cmd, raw)
-  local f = assert(io.popen(cmd, 'r'))
-  local s = assert(f:read('*a'))
-  f:close()
 
-  if raw then
-    return s
-  end
 
-  s = string.gsub(s, '^%s+', '')
-  s = string.gsub(s, '%s+$', '')
-  s = string.gsub(s, '[\n\r]+', ' ')
-  return s
-end
-
--- decorator for requiring elevated permissions
-function elevated(...)
-  local mt = {__concat =
-  function(a,f)
-    return function(user, ...)
-      if not user.IsOper() then
-        return "No permissions"
-      end
-
-      local res = f(user, ...)
-
-      client.ServicesLog(user.Nick .. ": " .. res)
-      return res
-    end
-  end
-  }
-
-  return setmetatable({...}, mt)
-end
-
---[[
-Usage:
-
-elevatedtest = elevated() .. function(user, message)
-return "Hi master"
-end
-
---]]
-
--- Okay this is pretty much hacking
-function command(verb, operonly, ...)
-  if operonly == nil then
+--- Command wraps a function to be a bot command
+-- @param verb the command verb
+-- @param operonly if the command should be restricted to opers or not
+-- @param func the function to wrap
+function Command(verb, operonly, func)
+  if func == nil then
+    func = operonly
     operonly = false
   end
 
-  local mt = {__concat =
-  function(a,f)
-    local ret = function(user, ...)
-      local res = f(user, ...)
-      return res
-    end
+  verb = verb:upper()
 
-    verb = verb:upper()
-
-    local my_uuid = uuid.new()
-    _G[my_uuid] = ret
-
-    tetra.script.AddLuaCommand(verb, my_uuid)
-
-    client.Commands[verb].NeedsOper = operonly
-
-    return ret
+  local my_uuid = uuid.new()
+  _G[my_uuid] = function(...)
+    return func(...)
   end
-  }
 
-  return setmetatable({...}, mt)
+  tetra.script.AddLuaCommand(verb, my_uuid)
+
+  client.Commands[verb].NeedsOper = operonly
 end
 
-function hook(kind, ...)
-  local mt = {__concat =
-  function(a,f)
-    local ret = function(user, ...)
-      local res = f(user, ...)
-      return res
-    end
+--- Hook wraps a function to act as a hook
+-- @param verb the hook verb to listen for
+-- @param func the function to wrap
+function Hook(verb, func)
+  verb = verb:upper()
 
-    local my_uuid = uuid.new()
-    _G[my_uuid] = ret
+  local my_uuid = uuid.new()
+  _G[my_uuid] = function(...) func(...) end
 
-    tetra.script.AddLuaHook(kind, my_uuid)
-
-    return ret
-  end
-  }
-
-  return setmetatable({...}, mt)
+  tetra.script.AddLuaHook(verb, my_uuid)
 end
 
-function protohook(kind, ...)
-  local mt = {__concat =
-  function(a,f)
-    local ret = function(user, ...)
-      local res = f(user, ...)
-      return res
-    end
+--- Protohook wraps a function to be called on a protocol verb
+-- @param verb the protocol verb to be called on
+-- @param func the function to call
+function Protohook(verb, func)
+  verb = verb:upper()
 
-    local my_uuid = uuid.new()
-    _G[my_uuid] = ret
+  local my_uuid = uuid.new()
+  _G[my_uuid] = function(...) func(...) end
 
-    tetra.script.AddLuaProtohook(kind, my_uuid)
-
-    return ret
-  end
-  }
-
-  return setmetatable({...}, mt)
+  tetra.script.AddLuaProtohook(verb, my_uuid)
 end
 
 function geturl(url)

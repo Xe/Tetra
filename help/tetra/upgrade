@@ -1,0 +1,7 @@
+UPGRADE attempts to pull the latest upgrades from git and install them.
+
+This will not work if you installed Tetra from a tarball or are running Tetra
+in a Docker container.
+
+Usage:
+    UPGRADE

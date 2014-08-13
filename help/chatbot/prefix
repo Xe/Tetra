@@ -1,0 +1,4 @@
+PREFIX reminds you of {{ .Me.Nick }}'s command prefix.
+
+Example:
+    PREFIX

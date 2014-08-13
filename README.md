@@ -14,6 +14,7 @@ still needs many things to be production ready, but here is what it has so far:
 - Hooking on arbitrary events
 - Client/Channel/Server link tracking
 - Statistics via influxdb
+- Persistent data via etcd
 
 Things still in progress:
 
@@ -58,6 +59,10 @@ Look at the example config, copy it to `etc/config.json` or set
 `TETRA_CONFIG_PATH` to a file on the disk. Edit the config to your needs.
 
 ## Running
+
+You need to set up `etcd` for runtime key->value support for Tetra. You also 
+need to set up InfluxxDB if you want to have Tetra track channel and server 
+statistics.
 
 You need the following lua rocks:
 

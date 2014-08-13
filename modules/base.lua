@@ -302,3 +302,41 @@ end
 -- Golua sucks
 pcall = unsafe_pcall
 xpcall = unsafe_xpcall
+
+local yaml = require("yaml")
+
+do
+  local _base_0 = {
+    Commit = function(self)
+      return tetra.bot.Etcd.Set(self.path, yaml.dump(self.data), 0)
+    end
+  }
+  _base_0.__index = _base_0
+  local _class_0 = setmetatable({
+    __init = function(self, kind)
+      self.path = "/tetra/script/" .. script.Name .. "/" .. tostring(kind)
+      self.data = { }
+      local etcd_value = tetra.bot.Etcd.Get(self.path, false, false)
+      if etcd_value == nil then
+        return 
+      end
+      local err
+      self.data, err = yaml.load(etcd_value.Node.Value)
+      if err ~= nil then
+        return error(err)
+      end
+    end,
+    __base = _base_0,
+    __name = "EtcdStore"
+  }, {
+    __index = _base_0,
+    __call = function(cls, ...)
+      local _self_0 = setmetatable({}, _base_0)
+      cls.__init(_self_0, ...)
+      return _self_0
+    end
+  })
+  _base_0.__class = _class_0
+  EtcdStore = _class_0
+  return _class_0
+end

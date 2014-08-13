@@ -1,0 +1,4 @@
+BTC looks up the bitcoin prices and summarizes them to the channel.
+
+Example:
+    BTC

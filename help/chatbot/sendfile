@@ -1,0 +1,8 @@
+Usage: SENDFILE <destination> <file>
+
+SENDFILE sends a file to a channel or client. All the files available for
+sending are present in etc/sendfile.
+
+Examples:
+    SENDFILE AppleDash bigmatix
+    SENDFIEL #opers habi.txt

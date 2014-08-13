@@ -52,6 +52,7 @@ package:
 	@cp -rf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc
+	@cp -rf etc/sendfile build/etc
 	@cp README.md build
 	@cp LICENSE build
 	@echo "including source code"

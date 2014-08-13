@@ -1,0 +1,7 @@
+Usage: ROLL [number]<dice kind>
+
+ROLL simulates a roll of a number of dice in Dungeons and Dragons format.
+
+Examples:
+    ROLL d20
+    ROLL 4d20

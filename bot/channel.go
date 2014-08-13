@@ -18,26 +18,28 @@ type ChanUser struct {
 // is not just things defined in RFC 1459, but extensions like the TS.
 // This implements Targeter
 type Channel struct {
-	Name    string               `json:"name"`
-	Ts      int64                `json:"ts"`
-	Modes   int                  `json:"modes"`
-	Clients map[string]*ChanUser `json:"clients"`
-	Lists   map[int][]string
-	Gauge   metrics.Gauge
+	Name     string
+	Ts       int64
+	Modes    int
+	Clients  map[string]*ChanUser
+	Lists    map[int][]string
+	Gauge    metrics.Gauge
+	Metadata map[string]string
 }
 
 // NewChannel creates a new channel with a given name and ts.
 func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 	c = &Channel{
-		Name:    strings.ToUpper(name),
-		Ts:      ts,
-		Lists:   make(map[int][]string),
-		Clients: make(map[string]*ChanUser),
-		Modes:   0,
-		Gauge:   metrics.NewGauge(),
+		Name:     strings.ToUpper(name),
+		Ts:       ts,
+		Lists:    make(map[int][]string),
+		Clients:  make(map[string]*ChanUser),
+		Modes:    0,
+		Gauge:    metrics.NewGauge(),
+		Metadata: make(map[string]string),
 	}
 
-	tetra.Etcd.CreateDir("/tetra/channels/" + c.Name[1:], 0)
+	tetra.Etcd.CreateDir("/tetra/channels/"+c.Name[1:], 0)
 
 	tetra.Channels[c.Target()] = c
 

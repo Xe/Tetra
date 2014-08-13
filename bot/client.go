@@ -26,6 +26,7 @@ type Client struct {
 	Server      *Server
 	Commands    map[string]*Command
 	Certfp      string
+	Metadata    map[string]string
 }
 
 // Interface Targeter wraps around Client and Channel to make messaging to them

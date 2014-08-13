@@ -13,6 +13,7 @@ type Server struct {
 	count   int
 	Counter metrics.Gauge
 	Hops    int
+	Capab   []string
 }
 
 // AddClient increments the server client counter.

@@ -143,6 +143,7 @@ func (tetra *Tetra) seedHandlers() {
 			Umodes:   modeflags,
 			Channels: make(map[string]*Channel),
 			Server:   tetra.Servers[line.Source],
+			Metadata: make(map[string]string),
 		}
 
 		tetra.Clients.AddClient(client)
@@ -179,6 +180,7 @@ func (tetra *Tetra) seedHandlers() {
 			Umodes:   modeflags,
 			Channels: make(map[string]*Channel),
 			Server:   tetra.Servers[line.Source],
+			Metadata: make(map[string]string),
 		}
 
 		client.Server.AddClient()
@@ -371,5 +373,10 @@ func (tetra *Tetra) seedHandlers() {
 		for _, line := range temp {
 			tetra.Conn.SendLine(line)
 		}
+	})
+
+	// Handle ENCAP by sending out a hook in the form of ENCAP-VERB.
+	tetra.AddHandler("ENCAP", func(line *r1459.RawLine) {
+		tetra.RunHook("ENCAP-" + line.Args[1], line.Args[2:])
 	})
 }

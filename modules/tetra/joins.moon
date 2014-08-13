@@ -2,7 +2,7 @@ yaml = require "yaml"
 
 class EtcdStore
   new: (kind) =>
-    @path = "/tetra/script/" .. script.Name .. "/#{kind}"
+    @path = "/tetra/scripts/" .. script.Name .. "/#{kind}"
     @data = {}
 
     etcd_value = tetra.bot.Etcd.Get @path, false, false

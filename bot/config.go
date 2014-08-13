@@ -19,6 +19,7 @@ type GeneralConfig struct {
 	SnoopChan string
 	Prefix    string
 	Debug     bool
+	Workers   int
 }
 
 // Struct ServiceConfig defines the configuration for a service.

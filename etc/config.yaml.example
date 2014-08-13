@@ -1,14 +1,12 @@
 # autoload is a list of all the modules you want to have loaded at start
 autoload:
-  - tetra/dispatch # Please don't run Tetra without this loaded.
   - tetra/load
   - tetra/unload
   - tetra/version
-  - tetra/scripts
   - tetra/joins
   - tetra/die
   - chatbot/eval
-  - chatbot/fantasy
+  - chatbot/tell
 
 # A list of the services you want Tetra to seed on the network, please do not
 # stray outside the folder list in `modules`
@@ -33,16 +31,21 @@ server:
   name: tetra.int
   gecos: (H) Tetra in Go!
   sid: "420" # Needs to be a string
+
+# General network information
+general:
   staffchan: '#opers'
   snoopchan: '#services'
   prefix: "`"
+  debug: false
+  workers: 8
 
 # The server Tetra will connect to
 uplink:
   host: 127.0.0.1
   port: "6667"
   password: shameless
-  ssl: false #SSL not currently supported
+  ssl: false
 
 # InfluxDB credentials. To disable stats collection, set the host to "NOCOLLECTION"
 stats:
@@ -50,5 +53,13 @@ stats:
   database: Localnet_devel
   username: tetra
   password: foobar
+
+# API keys that scripts might need
+apikeys:
+
+# Settings for etcd
+etcd:
+  machines:
+    - "http://127.0.0.1:4001"
 
 # vim: set ts=2 sw=2 tw=0 et filetype=yaml

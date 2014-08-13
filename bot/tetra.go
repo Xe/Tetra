@@ -57,6 +57,10 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		panic(err)
 	}
 
+	if config.General.Workers == 0 {
+		config.General.Workers = 4
+	}
+
 	tetra = &Tetra{
 		Conn: &Connection{
 			Log:    log.New(os.Stdout, "CONN ", log.LstdFlags),
@@ -120,7 +124,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 	metrics.Register(tetra.Config.Server.Name+"_clients", tetra.Info.Counter)
 
-	tetra.startWorkers(4)
+	tetra.startWorkers(config.General.Workers)
 
 	go tetra.Conn.sendLinesWait()
 

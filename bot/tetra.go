@@ -14,6 +14,7 @@ import (
 	"net/textproto"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -95,10 +96,6 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	}
 
 	tetra.Conn.Debug = tetra.Config.General.Debug
-
-	if tetra.Config.General.Debug {
-		etcd.SetLogger(log.New(os.Stdout, "ETCD ", log.LstdFlags))
-	}
 
 	tetra.Etcd = etcd.NewClient(tetra.Config.Etcd.Machines)
 	tetra.Etcd.CreateDir("/tetra", 0)
@@ -208,6 +205,20 @@ func (tetra *Tetra) StickConfig() {
 	for _, sclient := range tetra.Config.Services {
 		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos, sclient.Certfp)
 
+		filepath.Walk("modules/" + client.Kind + "/core/", func(path string, info os.FileInfo, err error) error {
+			modname := strings.Split(path, ".")[0]
+			mods := strings.Split(modname, "/")
+			modname = mods[len(mods)-1]
+
+			if len(modname) == 0 {
+				return nil
+			}
+
+			tetra.LoadScript(client.Kind + "/core/" + modname)
+
+			return nil
+		})
+
 		client.NewCommand("HELP", func(source *Client, target Targeter, message []string) (ret string) {
 			if len(message) == 0 {
 				if helpHas(client.Kind, "_index") {
@@ -252,7 +263,6 @@ func (tetra *Tetra) StickConfig() {
 	for _, script := range tetra.Config.Autoload {
 		tetra.LoadScript(script)
 	}
-
 }
 
 // Quit kills Tetra gracefully.

@@ -23,6 +23,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) 
 		Kind:     service,
 		Commands: make(map[string]*Command),
 		Certfp:   certfp,
+		Metadata: make(map[string]string),
 	}
 
 	tetra.Services[service] = cli

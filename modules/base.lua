@@ -172,7 +172,9 @@ function Command(verb, operonly, func)
     return func(...)
   end
 
-  tetra.script.AddLuaCommand(verb, my_uuid)
+  local _, err = tetra.script.AddLuaCommand(verb, my_uuid)
+
+  if err ~= nil then error(err) end
 
   client.Commands[verb].NeedsOper = operonly
 end

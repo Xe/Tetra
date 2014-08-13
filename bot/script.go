@@ -273,6 +273,7 @@ func (tetra *Tetra) UnloadScript(name string) error {
 
 	for _, command := range script.Commands {
 		delete(script.Commands, command.Uuid)
+		delete(script.Client.Commands, command.Verb)
 	}
 
 	for _, hook := range script.Hooks {

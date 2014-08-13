@@ -56,6 +56,7 @@ type Config struct {
 	Stats    *StatsConfig
 	ApiKeys  map[string]string
 	General  *GeneralConfig
+	Modules  map[string]interface{}
 }
 
 // NewConfig returns a new Config instance seeded by the file at fname.

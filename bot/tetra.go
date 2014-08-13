@@ -23,6 +23,7 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/modes"
+	"github.com/coreos/go-etcd/etcd"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rcrowley/go-metrics/influxdb"
 )
@@ -68,6 +69,7 @@ type Tetra struct {
 	Uplink   *Server
 	tasks    chan string
 	wg       *sync.WaitGroup
+	Etcd     *etcd.Client
 }
 
 // NewTetra returns a new instance of Tetra based on a config file located at cpath.
@@ -119,6 +121,16 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	}
 
 	tetra.Conn.Debug = tetra.Config.General.Debug
+
+	if tetra.Config.General.Debug {
+		etcd.SetLogger(log.New(os.Stdout, "ETCD ", log.LstdFlags))
+	}
+
+	tetra.Etcd = etcd.NewClient(tetra.Config.Etcd.Machines)
+	tetra.Etcd.CreateDir("/tetra", 0)
+	tetra.Etcd.CreateDir("/tetra/channels", 0)
+	tetra.Etcd.CreateDir("/tetra/clients", 0)
+	tetra.Etcd.CreateDir("/tetra/scripts", 0)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -672,6 +684,8 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) 
 			tetra.Conn.SendLine(":%s ENCAP * CERTFP :%s", cli.Uid, cli.Certfp)
 		}
 	}
+
+	tetra.Etcd.CreateDir("/tetra/scripts/" + cli.Kind, 0)
 
 	return
 }

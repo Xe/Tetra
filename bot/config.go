@@ -57,6 +57,9 @@ type Config struct {
 	ApiKeys  map[string]string
 	General  *GeneralConfig
 	Modules  map[string]interface{}
+	Etcd     struct {
+		Machines []string
+	}
 }
 
 // NewConfig returns a new Config instance seeded by the file at fname.

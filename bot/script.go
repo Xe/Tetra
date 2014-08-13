@@ -67,6 +67,8 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 
 	tetra.Scripts[name] = script
 
+	tetra.Etcd.CreateDir("/tetra/scripts/" + name, 0)
+
 	return
 }
 

@@ -377,6 +377,6 @@ func (tetra *Tetra) seedHandlers() {
 
 	// Handle ENCAP by sending out a hook in the form of ENCAP-VERB.
 	tetra.AddHandler("ENCAP", func(line *r1459.RawLine) {
-		tetra.RunHook("ENCAP-" + line.Args[1], line.Args[2:])
+		tetra.RunHook("ENCAP-" + line.Args[1], line.Source, line.Args[2:])
 	})
 }

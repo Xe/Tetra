@@ -1,0 +1,8 @@
+Usage: TELL <person> a message
+
+Queues up to 10 messages to any given person (matched by nickname) to be
+replayed to said person after their next activity in the channel. This must be
+run in a channel.
+
+Example:
+    TELL Xena Good job implementing the TELL system

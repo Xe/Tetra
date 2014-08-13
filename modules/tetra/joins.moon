@@ -1,6 +1,24 @@
-require "modules/base"
+yaml = require "yaml"
 
-export db = FooDB "var/autojoin.json"
+class EtcdStore
+  new: (kind) =>
+    @path = "/tetra/script/" .. script.Name .. "/#{kind}"
+    @data = {}
+
+    etcd_value = tetra.bot.Etcd.Get @path, false, false
+
+    if etcd_value == nil
+      return
+
+    @data, err = yaml.load(etcd_value.Node.Value)
+
+    if err ~= nil
+      error(err)
+
+  Commit: =>
+    tetra.bot.Etcd.Set @path, yaml.dump(@data), 0
+
+export db = EtcdStore "joins"
 export done = false
 
 Command "JOIN", true, (source, destination, message) ->

@@ -20,8 +20,10 @@ build "..", {"clean", "build", "docker-build"}
 build "testnet/ircd", {"build", "kill"}
 
 ircd_id = capture "make --no-print-directory -C testnet/ircd run 2>/dev/null"
-tetra_id = capture "docker run -dit --link tetra-ircd:ircd --name tetra xena/tetra"
+etcd_id = capture "docker run -dit --name tetra-etcd xena/etcd-minimal /etcd 2>/dev/null"
+tetra_id = capture "docker run -dit --link tetra-ircd:ircd --link tetra-etcd:etcd --name tetra xena/tetra"
 
+print "etcd id:  #{etcd_id\sub 1,10}"
 print "ircd id:  #{ircd_id\sub 1,10}"
 print "tetra id: #{tetra_id\sub 1,10}"
 
@@ -43,6 +45,6 @@ with proc = io.popen "docker logs -f #{tetra_id\sub 1,10}"
 
       if pingcount > 1
         print "Tests passed"
-        capture "docker rm -f tetra tetra-ircd"
+        capture "docker rm -f tetra tetra-ircd tetra-etcd"
         os.exit(0)
 

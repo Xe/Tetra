@@ -33,6 +33,9 @@ with host = get_or_fail "IRCD_PORT_6667_TCP_ADDR", "ircd address"
   config.uplink.host = host
   config.uplink.port = port
 
+with etcd = get_or_fail "ETCD_PORT_4001_TCP_ADDR", "etcd host"
+  config.etcd.machines = { "http://#{etcd}:4001" }
+
 --with influxhost = get_or_fail "TETRA_INFLUX_HOST", "influxdb host"
 --  config.stats.host = influxhost
 
@@ -46,12 +49,8 @@ with fout = io.open cpath, "w"
   \write yaml.dump config
   \close!
 
-with indocker = os.getenv "TETRA_DOCKER"
-  if indocker == nil
-    os.execute "Tetra"
-  else
-    cmd = "/bin/sh -c 'cd /app; /app/Tetra'"
-    if cpath == "/app/etc/config.yaml.example"
-      cmd = "/bin/sh -c 'TETRA_CONFIG_PATH=" .. cpath .. " cd /app; /app/Tetra'"
-    os.execute cmd
+cmd = "/bin/sh -c 'cd /app; /app/Tetra'"
+if cpath == "/app/etc/config.yaml.example"
+  cmd = "/bin/sh -c 'TETRA_CONFIG_PATH=" .. cpath .. " cd /app; /app/Tetra'"
+os.execute cmd
 

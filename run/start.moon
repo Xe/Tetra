@@ -17,7 +17,8 @@ get_or_fail = (name, message) ->
 with cpath = os.getenv "TETRA_CONFIG_PATH"
   if cpath == nil
     print "Using default config path"
-    cpath = "/app/etc/config.yaml.example"
+    os.execute "cp /app/etc/config.yaml.example /app/etc/config.yaml"
+    cpath = "/app/etc/config.yaml"
 
 print "Loading config from " .. cpath
 
@@ -49,8 +50,7 @@ with fout = io.open cpath, "w"
   \write yaml.dump config
   \close!
 
-cmd = "/bin/sh -c 'cd /app; /app/Tetra'"
-if cpath == "/app/etc/config.yaml.example"
-  cmd = "/bin/sh -c 'TETRA_CONFIG_PATH=" .. cpath .. " cd /app; /app/Tetra'"
+cmd = "/bin/sh -c 'TETRA_CONFIG_PATH=" .. cpath .. " cd /app; /app/Tetra'"
+
 os.execute cmd
 

@@ -14,7 +14,6 @@ ADD . /app
 ADD run/runit /etc/service/tetra
 
 ENV TETRA_DOCKER YES
-ENV TETRA_CONFIG_PATH "/app/etc/config.yaml"
 ENV PORT 3000
 
 EXPOSE 3000

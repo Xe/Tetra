@@ -14,11 +14,11 @@ get_or_fail = (name, message) ->
       return var
 
 -- Figure out where the config is.
-with cpath = os.getenv "TETRA_CONFIG_PATH"
-  if cpath == nil
-    print "Using default config path"
-    os.execute "cp /app/etc/config.yaml.example /app/etc/config.yaml"
-    cpath = "/app/etc/config.yaml"
+cpath = os.getenv "TETRA_CONFIG_PATH"
+if cpath == nil
+  print "Using default config path"
+  os.execute "cp /app/etc/config.yaml.example /app/etc/config.yaml"
+  cpath = "/app/etc/config.yaml"
 
 print "Loading config from " .. cpath
 

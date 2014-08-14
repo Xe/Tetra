@@ -1,10 +1,7 @@
 #!/bin/bash
 
-cp /app/etc/config.yaml /app/run/config.yaml
-export TETRA_CONFIG_PATH=/app/run/config.yaml
-
-env
-whoami
+cp /app/etc/config.yaml /app/run/config.yaml || true
+#export TETRA_CONFIG_PATH=/app/run/config.yaml
 
 cd /app
 

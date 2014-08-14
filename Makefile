@@ -41,6 +41,9 @@ package:
 	@godoc github.com/rcrowley/go-metrics > build/doc/go/external/go-metrics
 	@godoc github.com/sjkaliski/go-yo     > build/doc/go/external/go-yo
 	@godoc github.com/stevedonovan/luar   > build/doc/go/external/luar
+	@godoc github.com/kolo/xmlrpc         > build/doc/go/external/xmlrpc
+	@godoc github.com/coreos/go-etcd      > build/doc/go/external/go-etcd
+	@godoc github.com/codegangsta/cli     > build/doc/go/external/cli
 	@godoc gopkg.in/yaml.v1               > build/doc/go/external/yaml
 	@godoc .                              > build/doc/go/main
 	@godoc ./modules                      > build/doc/go/modules

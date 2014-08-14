@@ -41,6 +41,7 @@ func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
 		wg.Add(len(t.Hooks[verb]))
 
 		for _, hook := range t.Hooks[verb] {
+			hook := hook
 			go func() {
 				hook.impl(args...)
 				wg.Done()

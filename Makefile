@@ -70,7 +70,8 @@ docker-build:
 docker-run:
 	make -C ./test/testnet/ircd kill || true
 	make -C ./test/testnet/ircd run
-	docker run --rm --link tetra-ircd:ircd -it --name tetra xena/tetra .
+	docker run -dit --name tetra-etcd xena/etcd-minimal /etcd
+	docker run --rm --link tetra-ircd:ircd --link tetra-etcd:etcd -it --name tetra xena/tetra .
 
 test:
 	make -C test test-build test-docker

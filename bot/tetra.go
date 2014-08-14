@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/Xe/Tetra/1459"
+	"github.com/Xe/Tetra/atheme"
 	"github.com/coreos/go-etcd/etcd"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rcrowley/go-metrics/influxdb"
@@ -45,6 +46,7 @@ type Tetra struct {
 	tasks    chan string
 	wg       *sync.WaitGroup
 	Etcd     *etcd.Client
+	Atheme   *atheme.Atheme
 }
 
 // NewTetra returns a new instance of Tetra based on a config file located at cpath.

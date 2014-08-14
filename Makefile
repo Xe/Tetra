@@ -33,22 +33,22 @@ package:
 	@mkdir -p build/doc/go/bot
 	@mkdir -p build/doc/go/external
 	@echo "Bundling documentation..."
-	@godocdown github.com/coreos/go-etcd/etcd > build/doc/go/external/etcd.md
-	@godocdown code.google.com/p/go-uuid/uuid > build/doc/go/external/go-uuid.md
-	@godocdown github.com/codegangsta/negroni > build/doc/go/external/negroni.md
-	@godocdown github.com/aarzilli/golua/lua  > build/doc/go/external/lua.md
-	@godocdown github.com/drone/routes        > build/doc/go/external/routes.md
-	@godocdown github.com/rcrowley/go-metrics > build/doc/go/external/go-metrics.md
-	@godocdown github.com/sjkaliski/go-yo     > build/doc/go/external/go-yo.md
-	@godocdown github.com/stevedonovan/luar   > build/doc/go/external/luar.md
-	@godocdown gopkg.in/yaml.v1               > build/doc/go/external/yaml.md
-	@godocdown .                              > build/doc/go/main.md
-	@godocdown ./modules                      > build/doc/go/modules.md
-	@godocdown ./atheme                       > build/doc/go/atheme.md
-	@godocdown ./1459                         > build/doc/go/1459.md
-	@godocdown ./bot                          > build/doc/go/tetra.md
-	@godocdown ./bot/modes                    > build/doc/go/bot/modes.md
-	@godocdown ./bot/web                      > build/doc/go/bot/web.md
+	@godoc github.com/coreos/go-etcd/etcd > build/doc/go/external/etcd
+	@godoc code.google.com/p/go-uuid/uuid > build/doc/go/external/go-uuid
+	@godoc github.com/codegangsta/negroni > build/doc/go/external/negroni
+	@godoc github.com/aarzilli/golua/lua  > build/doc/go/external/lua
+	@godoc github.com/drone/routes        > build/doc/go/external/routes
+	@godoc github.com/rcrowley/go-metrics > build/doc/go/external/go-metrics
+	@godoc github.com/sjkaliski/go-yo     > build/doc/go/external/go-yo
+	@godoc github.com/stevedonovan/luar   > build/doc/go/external/luar
+	@godoc gopkg.in/yaml.v1               > build/doc/go/external/yaml
+	@godoc .                              > build/doc/go/main
+	@godoc ./modules                      > build/doc/go/modules
+	@godoc ./atheme                       > build/doc/go/atheme
+	@godoc ./1459                         > build/doc/go/1459
+	@godoc ./bot                          > build/doc/go/tetra
+	@godoc ./bot/modes                    > build/doc/go/bot/modes
+	@godoc ./bot/web                      > build/doc/go/bot/web
 	@cp -rf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc

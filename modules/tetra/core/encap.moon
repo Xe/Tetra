@@ -33,8 +33,11 @@ Hook "ENCAP-CERTFP", (source, args) ->
 
 -- :00A ENCAP * SU 7RT100002 :Tetra
 Hook "ENCAP-SU", (source, args) ->
+  if #args == 1
+    args[2] = "*"
+
   target = args[1]
-  account = args[2] if args[2] ~= nil else "*"
+  account = args[2]
   tetra.bot.Clients.ByUID[target].Account = account
 
 -- :42F ENCAP * SNOTE s :Failed OPER attempt - host mismatch by xena (xena@0::z)

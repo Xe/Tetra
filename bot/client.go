@@ -64,6 +64,7 @@ func (r *Client) Privmsg(destination Targeter, message string) {
 
 // ServicesLog logs a given message to the services snoop channel.
 func (r *Client) ServicesLog(message string) {
+	r.tetra.Log.Printf("%s: %s", r.Nick, message)
 	r.Privmsg(r.tetra.Channels[strings.ToUpper(r.tetra.Config.General.SnoopChan)], message)
 }
 

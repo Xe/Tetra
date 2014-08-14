@@ -188,13 +188,18 @@ func main() {
 						Host: "NOCOLLECTION",
 					},
 					Autoload: []string{
-						"tetra/dispatch",
-						"chatbot/fantasy",
+						"tetra/upgrade",
 						"tetra/load",
 						"tetra/scripts",
 						"tetra/unload",
 						"tetra/die",
 						"tetra/version",
+						"chatbot/btc",
+						"chatbot/sendfile",
+						"chatbot/youtube",
+						"chatbot/source",
+						"chatbot/doge",
+						"chatbot/tell",
 					},
 				}
 

@@ -3,6 +3,7 @@ package tetra
 import (
 	"errors"
 	"strings"
+	"sync"
 
 	"code.google.com/p/go-uuid/uuid"
 )
@@ -35,9 +36,18 @@ func (t *Tetra) NewHook(verb string, impl func(...interface{})) (h *Hook) {
 // of the hook. Returns error if there is no such hook.
 func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
 	if _, present := t.Hooks[verb]; present {
+		wg := sync.WaitGroup{}
+
+		wg.Add(len(t.Hooks[verb]))
+
 		for _, hook := range t.Hooks[verb] {
-			go hook.impl(args...)
+			go func() {
+				hook.impl(args...)
+				wg.Done()
+			} ()
 		}
+
+		wg.Wait()
 	} else {
 		return errors.New("No such hook " + verb)
 	}

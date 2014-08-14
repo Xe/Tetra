@@ -1,6 +1,6 @@
 ld = nil
 
-eval_channel = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
+Hook("CHATBOT-CHANMSG", function(source, destination, message)
   if not source.IsOper() then
     return
   end
@@ -32,4 +32,4 @@ eval_channel = hook("CHATBOT-CHANMSG") .. function(source, destination, message)
       client.Privmsg(ld, "> nil")
     end
   end
-end
+end)  

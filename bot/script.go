@@ -1,6 +1,7 @@
 package tetra
 
 import (
+	"crypto/md5"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -156,6 +157,13 @@ func (script *Script) seed() {
 	luar.Register(script.L, "ioutil", luar.Map{
 		"readall":     ioutil.ReadAll,
 		"byte2string": byteSliceToString,
+	})
+
+	luar.Register(script.L, "crypto", luar.Map{
+		"hash": func(data string, salt string) string {
+			output := md5.Sum([]byte(data + salt))
+			return fmt.Sprintf("%x", output)
+		},
 	})
 
 	luar.Register(script.L, "strings", luar.Map{

@@ -1,0 +1,7 @@
+Usage: SCORES <#channel>
+
+SCORES will print out a fomatted table summarizing the scores that each tracked
+user in #channel has.
+
+Example:
+    SCORES #niichan

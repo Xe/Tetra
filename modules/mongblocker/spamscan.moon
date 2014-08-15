@@ -49,9 +49,6 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
   dest = destination.Target!
   src = source.Uid
 
-  if source.IsOper!
-    return
-
   if strings.first(msg[1]) == tetra.bot.Config.General.Prefix
     return
 

@@ -21,8 +21,7 @@ answers = {
   "Very doubtful",
 }
 
-math.randomseed(os.time())
+math.randomseed os.time!
 
-Command("8BALL", function()
-  return answers[math.random(#answers)]
-end)
+Command "8BALL", ->
+  "> " .. answers[math.random(#answers)]

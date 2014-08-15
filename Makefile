@@ -32,6 +32,8 @@ package:
 	@rm build/modules/doc.go
 	@mkdir -p build/doc/go/bot
 	@mkdir -p build/doc/go/external
+	@mkdir -p build/lib
+	@cp -rf lib build
 	@echo "Bundling documentation..."
 	@godoc github.com/coreos/go-etcd/etcd > build/doc/go/external/etcd
 	@godoc code.google.com/p/go-uuid/uuid > build/doc/go/external/go-uuid

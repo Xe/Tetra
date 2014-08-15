@@ -6,8 +6,9 @@ Scores = {}
 Filter = bayes.FileFilter "etc/spamscan/spam.txt", "etc/spamscan/ham.txt"
 
 class Client
-  new: (nick, score = 0, warnings = 0) =>
-    @nick = nick
+  new: (nick, uid, score = 0, warnings = 0) =>
+    @nick = nick\upper!
+    @uid = uid
     @score = score
     @warnings = warnings
 
@@ -19,7 +20,7 @@ class Client
     elseif @score > 10
       @score = 10
 
-Command "SCORES", true, (source, destination, msg) ->
+Command "SCORES", (source, destination, msg) ->
   parc = #msg
 
   if parc ~= 1
@@ -30,14 +31,8 @@ Command "SCORES", true, (source, destination, msg) ->
   if Scores[channel] == nil
     return "Scores for #{channel} not found."
 
-  print channel
-  print Scores[channel]
-  print source
-
   client.Notice source, "Scores for #{channel}"
   client.Notice source, strings.format("%-20s | %-4s | %s", "Nickname", "Warn", "Score")
-
-  print "Got here"
 
   for uid, scoree in pairs Scores[channel]
     client.Notice source,
@@ -56,7 +51,7 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
     Scores[dest] = {}
 
   if Scores[dest][src] == nil
-    Scores[dest][src] = Client source.Nick
+    Scores[dest][src] = Client source.Nick, src
 
   score = Filter\Test strings.join(msg, " ")
   clientscore = Scores[dest][src]
@@ -85,3 +80,16 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
       when 0
         client.Privmsg destination, "#{source.Nick}: please say more constructive things."
         clientscore.warnings = 1
+
+--- Delete information about users after they quit.
+Protohook "QUIT", (line) ->
+  local channel
+
+  for _, channel in pairs Scores
+    print channel
+    for _, cli in pairs channel
+      print cli.uid == line.Source
+      script.Log.Printf "%#v %#v", cli.uid, line.Source
+      print line.Source
+      if cli.uid == line.Source
+        channel[cli.uid] = nil

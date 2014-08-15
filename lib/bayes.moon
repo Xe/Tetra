@@ -1,3 +1,4 @@
+--- Module bayes implements Bayesian filtering tools.
 module "bayes", package.seeall
 
 export ^
@@ -16,6 +17,7 @@ Config = {
   InterestingWordCount: 15
 }
 
+--- Class Corpus specifies a text to analyze.
 class Corpus
   -- Pattern to select words that don't begin with a number
   @TokenPattern = '([a-zA-Z]%w+)%W*'
@@ -40,6 +42,7 @@ class Corpus
       @Tokens[rawPhrase] = 1
       @NumTokens = @NumTokens + 1
 
+--- Class Filter does score matching and returns scores on lines of test.
 class Filter
   new: (good, bad) =>
     @Good = good

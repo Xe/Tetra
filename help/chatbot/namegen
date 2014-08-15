@@ -1,0 +1,4 @@
+NAMEGEN generates a goofu heroku style app name.
+
+Example:
+    NAMEGEN

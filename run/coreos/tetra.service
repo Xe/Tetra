@@ -1,0 +1,14 @@
+[Unit]
+Description = Tetra IRC services
+After = tetra-ircd.service
+Requires = tetra-ircd.service
+
+[Service]
+TimeoutStartPre = 0
+ExecStartPre=-/usr/bin/docker rm -f tetra
+ExecStartPre=/usr/bin/docker pull xena/tetra
+ExecStart=/usr/bin/docker run --name tetra --link tetra-ircd:ircd -it --link tetra-etcd:etcd -P xena/tetra
+
+[X-Fleet]
+X-ConditionMachineOf=tetra-ircd.service
+X-ConditionMachineOf=tetra-etcd.service

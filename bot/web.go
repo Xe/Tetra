@@ -13,12 +13,13 @@ import (
 )
 
 type client struct {
-	Nick    string
-	User    string
-	Host    string
-	Account string
-	Server  string
-	Joins   []chanuser
+	Nick     string
+	User     string
+	Host     string
+	Account  string
+	Server   string
+	Joins    []chanuser
+	Metadata map[string]string
 }
 
 type chanuser struct {
@@ -28,10 +29,11 @@ type chanuser struct {
 }
 
 type channel struct {
-	Name    string
-	Ts      int64
-	Modes   int
-	Clients []chanuser
+	Name     string
+	Ts       int64
+	Modes    int
+	Clients  []chanuser
+	Metadata map[string]string
 }
 
 func convertChannel(in *Channel) (out channel) {
@@ -39,6 +41,7 @@ func convertChannel(in *Channel) (out channel) {
 		Name:  in.Name,
 		Ts:    in.Ts,
 		Modes: in.Modes,
+		Metadata: in.Metadata,
 	}
 
 	for _, chanclient := range in.Clients {
@@ -59,6 +62,7 @@ func convertClient(in *Client) (out client) {
 		Host:    in.VHost,
 		Account: in.Account,
 		Server:  in.Server.Name,
+		Metadata: in.Metadata,
 	}
 
 	for _, mychan := range in.Channels {

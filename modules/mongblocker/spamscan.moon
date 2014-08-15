@@ -79,11 +79,11 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
   if clientscore.score > 8 and clientscore.warnings >= 0
     switch clientscore.warnings
       when 2
-        --client.Privmsg destination, "!kick #{source.Nick}"
+        client.Privmsg destination, "!kick #{source.Nick}"
         clientscore.score = 3
       when 1
-        --client.Privmsg destination, "#{source.Nick}: please do not spam. If you continue I will kick you."
+        client.Privmsg destination, "#{source.Nick}: please do not spam. If you continue I will kick you."
         clientscore.warnings = 2
       when 0
-        --client.Privmsg destination, "#{source.Nick}: please say more constructive things."
+        client.Privmsg destination, "#{source.Nick}: please say more constructive things."
         clientscore.warnings = 1

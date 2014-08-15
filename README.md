@@ -53,7 +53,7 @@ configuration.
 
 ## Configuration
 
-Look at the example config, copy it to `etc/config.json` or set
+Look at the example config, copy it to `etc/config.yaml` or set
 `TETRA_CONFIG_PATH` to a file on the disk. Edit the config to your needs.
 
 ## Running

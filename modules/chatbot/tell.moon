@@ -1,4 +1,6 @@
-db = EtcdStore "tells"
+require "lib/etcd"
+
+db = etcd.Store "tells"
 
 Command "TELL", (source, destination, message) ->
   if not destination.IsChannel!

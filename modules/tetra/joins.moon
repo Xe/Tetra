@@ -1,4 +1,6 @@
-export db = EtcdStore "joins"
+require "lib/etcd"
+
+export db = etcd.Store "joins"
 export done = false
 
 Command "JOIN", true, (source, destination, message) ->

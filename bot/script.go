@@ -68,7 +68,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 
 	tetra.Scripts[name] = script
 
-	tetra.Etcd.CreateDir("/tetra/scripts/" + name, 0)
+	tetra.Etcd.CreateDir("/tetra/scripts/"+name, 0)
 
 	return
 }
@@ -182,6 +182,9 @@ func (script *Script) seed() {
 			} else {
 				return ""
 			}
+		},
+		"format": func(format string, args ...interface{}) string {
+			return fmt.Sprintf(format, args...)
 		},
 	})
 }

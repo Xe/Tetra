@@ -1,5 +1,3 @@
-require "modules/base"
-
 Protohook "PRIVMSG", (line) ->
   source, destination, message = parseLine line
 

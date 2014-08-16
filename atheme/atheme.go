@@ -20,6 +20,7 @@ type Atheme struct {
 	NickServ    *NickServ
 	ChanServ    *ChanServ
 	OperServ    *OperServ
+	HostServ    *HostServ
 }
 
 // Returns a new Atheme instance or raises an error.
@@ -40,6 +41,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		NickServ:    &NickServ{a: atheme},
 		ChanServ:    &ChanServ{a: atheme},
 		OperServ:    &OperServ{a: atheme},
+		HostServ:    &HostServ{a: atheme},
 	}
 
 	return

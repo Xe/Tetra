@@ -9,7 +9,6 @@ import (
 	"github.com/Xe/Tetra/bot/web"
 	"github.com/codegangsta/negroni"
 	"github.com/drone/routes"
-	"github.com/gorilla/sessions"
 	"github.com/phyber/negroni-gzip/gzip"
 	"gopkg.in/unrolled/render.v1"
 )
@@ -85,8 +84,6 @@ func convertClient(in *Client) (out client) {
 func (t *Tetra) WebApp() {
 	mux := routes.New()
 	r := render.New(render.Options{})
-
-	store := sessions.NewCookieStore([]byte(t.Config.Atheme.Password))
 
 	mux.Get("/", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(res, "error: No method chosen.")

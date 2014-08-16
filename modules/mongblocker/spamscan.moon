@@ -82,14 +82,12 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
         clientscore.warnings = 1
 
 --- Delete information about users after they quit.
-Protohook "QUIT", (line) ->
+Hook "CLIENTQUIT", (client) ->
   local channel
 
   for _, channel in pairs Scores
     print channel
     for _, cli in pairs channel
-      print cli.uid == line.Source
       script.Log.Printf "%#v %#v", cli.uid, line.Source
-      print line.Source
-      if cli.uid == line.Source
+      if cli.uid == client.Uid
         channel[cli.uid] = nil

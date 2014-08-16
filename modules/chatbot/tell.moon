@@ -31,7 +31,6 @@ Command "TELL", (source, destination, message) ->
   note = "<#{source.Nick}> #{msg}"
 
   table.insert(db.data[destination.Target!][rec], 1, note)
-  db\Commit!
 
   "I will try to let them know."
 
@@ -46,4 +45,3 @@ Hook "CHATBOT-CHANMSG", (source, destination, message) ->
       client.Notice source, "#{i}: #{message}"
 
     db.data[destination.Target!][source.Nick\upper!] = nil
-    db\Commit!

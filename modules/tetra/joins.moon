@@ -43,8 +43,6 @@ Command "JOIN", true, (source, destination, message) ->
   else
     table.insert db.data[service.Kind], chan
 
-  db\Commit!
-
   return "Joined #{service.Nick} to #{chan}"
 
 Command "PART", true, (source, destination, message) ->
@@ -85,8 +83,6 @@ Command "PART", true, (source, destination, message) ->
   do
     idx = find db.data[service.Kind], chan
     table.remove db.data[service.Kind], idx
-
-  db\Commit!
 
   return "Joined #{service.Nick} to #{chan}"
 

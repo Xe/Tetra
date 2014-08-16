@@ -8,7 +8,7 @@ function ytlookup(id)
   local res = getjson("http://gdata.youtube.com/feeds/api/videos/"..id.."?alt=json&fields=author,title")
   local author, title = res.entry.author[1].name["$t"], res.entry.title["$t"]
 
-  return "^ Youtube - " .. title .. " Posted by: " .. author
+  return "^ Youtube: " .. title .. " - Uploaded by: " .. author
 end
 
 Hook("CHATBOT-CHANMSG", function(source, destination, message)

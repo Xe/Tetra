@@ -45,6 +45,11 @@ func (ms *MemoServ) List() (memos []Memo, err error) {
 		- 2 From: Quora Sent: Apr 05 08:45:15 2014
 		- 3 From: Xe Sent: Apr 06 09:12:05 2014
 	*/
+
+	if len(lines) < 2 {
+		return
+	}
+
 	for _, line := range lines[2:] {
 		split := strings.Split(line, " ")
 		from := split[3]

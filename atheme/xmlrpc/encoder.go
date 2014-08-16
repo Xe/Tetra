@@ -66,7 +66,7 @@ func encodeValue(val reflect.Value) ([]byte, error) {
 		if _, ok := val.Interface().(Base64); ok {
 			b = []byte(fmt.Sprintf("<base64>%s</base64>", buf.String()))
 		} else {
-			b = []byte(fmt.Sprintf("<string>%s</string>", buf.String()))
+			b = []byte(fmt.Sprintf("<value><string>%s</string></value>", buf.String()))
 		}
 	default:
 		return nil, fmt.Errorf("xmlrpc encode error: unsupported type")

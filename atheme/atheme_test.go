@@ -6,6 +6,7 @@ const (
 	ACCNAME = "fooicus"                       // Test account name
 	PASS    = "foo"                           // Test password
 	SERVER  = "http://proxy.xeserv.us/xmlrpc" // Test server
+	//SERVER = "http://requestb.in/o5fvnjo5"
 )
 
 func Test_AthemeCreate(t *testing.T) {

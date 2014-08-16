@@ -13,7 +13,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) 
 		Host:     "0",
 		VHost:    host,
 		Gecos:    gecos,
-		Account:  nick,
+		Account:  "*",
 		Ip:       "0",
 		Ts:       time.Now().Unix(),
 		Uid:      tetra.NextUID(),
@@ -37,7 +37,7 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) 
 		}
 	}
 
-	tetra.Etcd.CreateDir("/tetra/scripts/" + cli.Kind, 0)
+	tetra.Etcd.CreateDir("/tetra/scripts/"+cli.Kind, 0)
 
 	return
 }
@@ -55,4 +55,3 @@ func (tetra *Tetra) DelService(service string) (err error) {
 
 	return
 }
-

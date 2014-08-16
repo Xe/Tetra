@@ -11,8 +11,8 @@ type ChanServ struct {
 	a *Atheme
 }
 
-// Struct ChanServFlagset is a simple flagset wrapper.
-type ChanServFlagset struct {
+// Struct Flagset is a simple flagset wrapper.
+type Flagset struct {
 	Id    int    `json:"id"`
 	Nick  string `json:"nick"`
 	Flags string `json:"flags"`
@@ -35,10 +35,10 @@ func (cs *ChanServ) Kick(channel, victim, reason string) (res string, err error)
 	return cs.a.Command("ChanServ", "KICK", channel, victim, reason)
 }
 
-// GetAccessList returns a slice of ChanServFlagsets representing the access
+// GetAccessList returns a slice of Flagsets representing the access
 // list of the channel you are requesting. This will fail if the Atheme call
 // fails.
-func (cs *ChanServ) GetAccessList(channel string) (res []ChanServFlagset, err error) {
+func (cs *ChanServ) GetAccessList(channel string) (res []Flagset, err error) {
 	var output string
 
 	output, err = cs.a.Command("ChanServ", "FLAGS", channel)
@@ -54,7 +54,7 @@ func (cs *ChanServ) GetAccessList(channel string) (res []ChanServFlagset, err er
 
 		id, _ := strconv.Atoi(data[0])
 
-		res = append(res, ChanServFlagset{
+		res = append(res, Flagset{
 			Id:    id,
 			Nick:  data[1],
 			Flags: data[2],

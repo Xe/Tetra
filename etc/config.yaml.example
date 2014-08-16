@@ -1,12 +1,11 @@
 # autoload is a list of all the modules you want to have loaded at start
 autoload:
-  - tetra/load
-  - tetra/unload
   - tetra/version
   - tetra/joins
   - tetra/die
-  - chatbot/eval
   - chatbot/tell
+  - chatbot/8ball
+  - chatbot/dice
 
 # A list of the services you want Tetra to seed on the network, please do not
 # stray outside the folder list in `modules`

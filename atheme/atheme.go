@@ -41,28 +41,37 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		url:         url,
 		Authcookie:  "*",
 		ipaddr:      "0",
-		NickServ:    &NickServ{a: atheme},
-		ChanServ:    &ChanServ{a: atheme},
-		OperServ:    &OperServ{a: atheme},
-		HostServ:    &HostServ{a: atheme},
-		MemoServ:    &MemoServ{a: atheme},
 		LastUsed:    time.Now(),
 	}
 
-	return
+	atheme.NickServ = &NickServ{a: atheme}
+	atheme.ChanServ = &ChanServ{a: atheme}
+	atheme.OperServ = &OperServ{a: atheme}
+	atheme.HostServ = &HostServ{a: atheme}
+	atheme.MemoServ = &MemoServ{a: atheme}
+
+	return atheme, nil
 }
 
 // Command runs an Atheme command and gives the output or an error.
-func (a *Atheme) Command(args ...string) (res string, err error) {
-	err = a.serverProxy.Call("atheme.command", args, &res)
+func (a *Atheme) Command(args ...string) (string, error) {
+	var result string
+
+	fullcommand := []string{a.Authcookie, a.Account, a.ipaddr}
+
+	for _, arg := range args {
+		fullcommand = append(fullcommand, arg)
+	}
+
+	err := a.serverProxy.Call("atheme.command", &fullcommand, &result)
 
 	a.LastUsed = time.Now()
 
-	return
+	return result, err
 }
 
 // Login attempts to log a user into Atheme. It returns true or false
-func (a *Atheme) Login(username, password string) (success bool, err error) {
+func (a *Atheme) Login(username, password string) (err error) {
 	var authcookie string
 
 	err = a.serverProxy.Call("atheme.login", []string{username, password, "::1"}, &authcookie)
@@ -70,9 +79,6 @@ func (a *Atheme) Login(username, password string) (success bool, err error) {
 	if err == nil {
 		a.Authcookie = authcookie
 		a.Account = username
-		success = true
-	} else {
-		return false, err
 	}
 
 	return

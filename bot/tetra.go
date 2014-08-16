@@ -117,7 +117,11 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		tetra.Log.Fatal(err)
 	}
 
-	tetra.Atheme.Login(tetra.Config.Atheme.Username, tetra.Config.Atheme.Password)
+	if tetra.Atheme == nil {
+		tetra.Log.Fatal("tetra.Atheme is nil.")
+	}
+
+	err = tetra.Atheme.Login(tetra.Config.Atheme.Username, tetra.Config.Atheme.Password)
 
 	tetra.Cron.AddFunc("0 30 * * * *", func() {
 		tetra.Log.Print("Keeping us logged into Atheme...")

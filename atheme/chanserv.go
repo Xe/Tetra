@@ -20,13 +20,10 @@ type Flagset struct {
 
 // Struct ChannelInfo is the information Atheme has on a channel.
 type ChannelInfo struct {
-	Name    string   `json:"name"`    // Channel name
-	Founder string   `json:"founder"` // Channel founder
-	Age     string   `json:"age"`     // Approximate age of channel
-	Mlock   string   `json:"mlock"`   // Channel mode lock
-	Email   string   `json:"email"`   // Channel email address
-	Flags   []string `json:"flags"`   // Channel SET flags
-	Prefix  string   `json:"prefix"`  // Channel FANTASY prefix
+	Name   string   `json:"name"`   // Channel name
+	Mlock  string   `json:"mlock"`  // Channel mode lock
+	Flags  []string `json:"flags"`  // Channel SET flags
+	Prefix string   `json:"prefix"` // Channel FANTASY prefix
 }
 
 // Kick sends a ChanServ KICK command to channel on victim with the denoted
@@ -76,7 +73,10 @@ func (cs *ChanServ) SetAccessList(channel, target, flags string) (err error) {
 func (cs *ChanServ) GetChannelInfo(channel string) (ci *ChannelInfo, err error) {
 	// I am sorry.
 	var output string
-	output, err = cs.a.Command("ChanServ", "INFO", channel)
+	output, err = cs.a.Command("ChanServ", "INFO", channel, "FOO")
+	if err != nil {
+		return nil, err
+	}
 
 	/*
 		Information on #niichan:
@@ -86,6 +86,10 @@ func (cs *ChanServ) GetChannelInfo(channel string) (ci *ChannelInfo, err error) 
 		Prefix     : ! (default)
 		*** End of Info ***
 	*/
+
+	ci = &ChannelInfo{
+		Name: channel,
+	}
 	for _, line := range strings.Split(output, "\n") {
 		if strings.HasPrefix(line, "Information on #") || strings.HasPrefix(line, "*") {
 			continue
@@ -94,22 +98,16 @@ func (cs *ChanServ) GetChannelInfo(channel string) (ci *ChannelInfo, err error) 
 		line = strings.Replace(line, "  ", "", -1)
 		data := strings.Split(line, ":")
 		key := strings.ToLower(data[0])
-		value := data[1]
+		value := strings.TrimSpace(data[1])
 
 		// TODO: replace this with reflect
 		switch key {
-		case "founder":
-			ci.Founder = value
 		case "mode lock":
 			ci.Mlock = value
 		case "flags":
 			ci.Flags = strings.Split(value, " ")
-		case "email":
-			ci.Email = value
 		case "prefix":
 			ci.Prefix = value
-		case "registered":
-			ci.Age = value
 		}
 	}
 

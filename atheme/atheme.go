@@ -4,6 +4,7 @@ package atheme
 
 import (
 	"strings"
+	"time"
 
 	"github.com/Xe/Tetra/atheme/xmlrpc"
 )
@@ -21,6 +22,7 @@ type Atheme struct {
 	ChanServ    *ChanServ
 	OperServ    *OperServ
 	HostServ    *HostServ
+	LastUsed    time.Time // When the last RPC call was made
 }
 
 // Returns a new Atheme instance or raises an error.
@@ -42,6 +44,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		ChanServ:    &ChanServ{a: atheme},
 		OperServ:    &OperServ{a: atheme},
 		HostServ:    &HostServ{a: atheme},
+		LastUsed:    time.Now(),
 	}
 
 	return
@@ -50,6 +53,8 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 // Command runs an Atheme command and gives the output or an error.
 func (a *Atheme) Command(args ...string) (res string, err error) {
 	err = a.serverProxy.Call("atheme.command", args, &res)
+
+	a.LastUsed = time.Now()
 
 	return
 }

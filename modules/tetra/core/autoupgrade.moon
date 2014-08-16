@@ -30,6 +30,10 @@ Hook "UPGRADE-GIT", (line) ->
   if modname == script.Name -- Don't upgrade self, currently has issues.
     return
 
+  if modname == "tetra/upgrade"
+    client.ServicesLog "UPDATER: Skipping tetra/upgrade"
+    return
+
   err = tetra.bot.UnloadScript modname
   if err ~= nil
     client.ServicesLog "UPDATER: unload error: #{err}"

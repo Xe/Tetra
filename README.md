@@ -5,10 +5,9 @@
 Tetra is an extended services package for TS6 IRC daemons with Lua and 
 Moonscript support.
 
-Tetra is more of a functional experiment than a services package right now. It 
-still needs many things to be production ready, but here is what it has so far:
+## Features
 
-- Yaml API
+- JSON API
 - Lua / Moonscript script loading
 - Hooking on protocol events
 - Hooking on arbitrary events
@@ -16,7 +15,7 @@ still needs many things to be production ready, but here is what it has so far:
 - Statistics via influxdb
 - Persistent data via etcd
 
-Things still in progress:
+### Things still in progress
 
 - Feature parity with Cod
 - Documentation on migration from Cod to Tetra

@@ -68,9 +68,9 @@ func (cs *ChanServ) SetAccessList(channel, target, flags string) (err error) {
 	return
 }
 
-// GetChannelInfo gets information on a channel, returning a ChannelInfo struct
+// Info gets information on a channel, returning a ChannelInfo struct
 // or an error describing the fault.
-func (cs *ChanServ) GetChannelInfo(channel string) (ci *ChannelInfo, err error) {
+func (cs *ChanServ) Info(channel string) (ci *ChannelInfo, err error) {
 	// I am sorry.
 	var output string
 	output, err = cs.a.Command("ChanServ", "INFO", channel, "FOO")
@@ -118,7 +118,7 @@ func (cs *ChanServ) GetChannelInfo(channel string) (ci *ChannelInfo, err error) 
 func (cs *ChanServ) GetChannelFlags(channel string) (flags []string, err error) {
 	var ci *ChannelInfo
 
-	ci, err = cs.GetChannelInfo(channel)
+	ci, err = cs.Info(channel)
 	if err != nil {
 		return nil, err
 	}

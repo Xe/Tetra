@@ -39,13 +39,13 @@ func (ns *NickServ) parseAccess(data string) (res NickServFlagset) {
 	return
 }
 
-// GetOwnInfo gets NickServ info for the "local" user in the Atheme instance.
-func (ns *NickServ) GetOwnInfo() (map[string]string, error) {
-	return ns.GetInfo(ns.a.Account)
+// OwnInfo gets NickServ info for the "local" user in the Atheme instance.
+func (ns *NickServ) OwnInfo() (map[string]string, error) {
+	return ns.Info(ns.a.Account)
 }
 
-// GetInfo gets NickServ info on an arbitrary user or returns an error.
-func (ns *NickServ) GetInfo(target string) (res map[string]string, err error) {
+// Info gets NickServ info on an arbitrary user or returns an error.
+func (ns *NickServ) Info(target string) (res map[string]string, err error) {
 	var output string
 	output, err = ns.a.Command("NickServ", "INFO", target)
 	lines := strings.Split(output, "\n")

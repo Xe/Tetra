@@ -31,8 +31,8 @@ func (hs *HostServ) Request(vhost string) (err error) {
 }
 
 // Rejects a vhost request for an account.
-func (hs *HostServ) Request(vhost string) (err error) {
-	_, err = hs.a.Command("HostServ", "REQUEST", vhost)
+func (hs *HostServ) Reject(account, message string) (err error) {
+	_, err = hs.a.Command("HostServ", "REJECT", account, message)
 
 	return
 }
@@ -56,10 +56,11 @@ func (hs *HostServ) ListPattern(pattern string) (res []VHost, err error) {
 
 	for _, vhost := range vhosts {
 		vhost = strings.Replace(vhost, "  ", "", -1)
+		split := strings.Split(vhost, " ")
 
 		res = append(res, VHost{
-			Nick:  vhost[1],
-			VHost: vhost[2],
+			Nick:  split[1],
+			VHost: split[2],
 		})
 	}
 
@@ -86,7 +87,7 @@ func (hs *HostServ) Waiting() (res []VHost, err error) {
 		date = strings.Split(date, " - ")[1]
 		date = strings.TrimSuffix(date, ")")
 
-		append(res, VHost{
+		res = append(res, VHost{
 			Nick:  nick,
 			VHost: vhost,
 			Date:  date,

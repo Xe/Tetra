@@ -22,6 +22,7 @@ type Atheme struct {
 	ChanServ    *ChanServ
 	OperServ    *OperServ
 	HostServ    *HostServ
+	MemoServ    *MemoServ
 	LastUsed    time.Time // When the last RPC call was made
 }
 
@@ -44,6 +45,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		ChanServ:    &ChanServ{a: atheme},
 		OperServ:    &OperServ{a: atheme},
 		HostServ:    &HostServ{a: atheme},
+		MemoServ:    &MemoServ{a: atheme},
 		LastUsed:    time.Now(),
 	}
 

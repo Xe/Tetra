@@ -15,8 +15,8 @@ type failedResponse struct {
 
 func (r *failedResponse) err() error {
 	return &xmlrpcError{
-		code: r.Code,
-		err:  r.Error,
+		Code: r.Code,
+		Err:  r.Error,
 	}
 }
 

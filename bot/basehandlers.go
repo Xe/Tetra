@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/modes"
@@ -25,6 +26,10 @@ func (tetra *Tetra) seedHandlers() {
 			tetra.RunHook("SHUTDOWN")
 
 			tetra.Log.Print("See you on the other side.")
+
+			fmt.Println("Waiting for goroutines to settle... (15 seconds)")
+
+			time.Sleep(15 * time.Second)
 
 			os.Exit(0)
 		}

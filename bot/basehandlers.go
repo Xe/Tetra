@@ -157,7 +157,9 @@ func (tetra *Tetra) seedHandlers() {
 
 		tetra.Clients.AddClient(client)
 
-		tetra.RunHook("NEWCLIENT", client)
+		if tetra.Bursted {
+			tetra.RunHook("NEWCLIENT", client)
+		}
 	})
 
 	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
@@ -198,7 +200,9 @@ func (tetra *Tetra) seedHandlers() {
 
 		tetra.Clients.AddClient(client)
 
-		tetra.RunHook("NEWCLIENT", client)
+		if tetra.Bursted {
+			tetra.RunHook("NEWCLIENT", client)
+		}
 	})
 
 	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {

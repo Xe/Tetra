@@ -5,7 +5,7 @@ package atheme
 import (
 	"strings"
 
-	"github.com/kolo/xmlrpc"
+	"github.com/Xe/Tetra/atheme/xmlrpc"
 )
 
 // An Atheme context. This contains everything a client needs to access Atheme
@@ -40,7 +40,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 }
 
 // Command runs an Atheme command and gives the output or an error.
-func (a *Atheme) Command(args ...[]string) (res string, err error) {
+func (a *Atheme) Command(args ...string) (res string, err error) {
 	err = a.serverProxy.Call("atheme.command", args, &res)
 
 	return
@@ -50,9 +50,9 @@ func (a *Atheme) Command(args ...[]string) (res string, err error) {
 func (a *Atheme) Login(username, password string) (success bool, err error) {
 	var authcookie string
 
-	err = a.serverProxy.Call("atheme.login", []string{username, password}, &authcookie)
+	err = a.serverProxy.Call("atheme.login", []string{username, password, "::1"}, &authcookie)
 
-	if err != nil {
+	if err == nil {
 		a.authcookie = authcookie
 		a.Account = username
 		success = true

@@ -15,7 +15,7 @@ type Atheme struct {
 	Account     string   // Account Atheme is logged in as
 	serverProxy *xmlrpc.Client
 	url         string
-	authcookie  string
+	Authcookie  string
 	ipaddr      string
 	NickServ    *NickServ
 }
@@ -33,7 +33,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		Account:     "*",
 		serverProxy: serverproxy,
 		url:         url,
-		authcookie:  "*",
+		Authcookie:  "*",
 		ipaddr:      "0",
 		NickServ:    &NickServ{a: atheme},
 	}
@@ -55,7 +55,7 @@ func (a *Atheme) Login(username, password string) (success bool, err error) {
 	err = a.serverProxy.Call("atheme.login", []string{username, password, "::1"}, &authcookie)
 
 	if err == nil {
-		a.authcookie = authcookie
+		a.Authcookie = authcookie
 		a.Account = username
 		success = true
 	} else {
@@ -66,13 +66,13 @@ func (a *Atheme) Login(username, password string) (success bool, err error) {
 }
 
 // Logout logs a user out of Atheme. There is no return.
-func (a *Atheme) Logout(authcookie, accountname string) {
+func (a *Atheme) Logout() {
 	var res string
 
-	a.serverProxy.Call("atheme.logout", []string{authcookie, accountname}, &res)
+	a.serverProxy.Call("atheme.logout", []string{a.Authcookie, a.Account}, &res)
 
 	a.Account = "*"
-	a.authcookie = "*"
+	a.Authcookie = "*"
 
 	return
 }
@@ -82,7 +82,7 @@ func (a *Atheme) GetPrivset() (privs []string) {
 	if a.Privset == nil {
 		var res string
 
-		a.serverProxy.Call("atheme.privset", []string{a.authcookie, a.Account}, &res)
+		a.serverProxy.Call("atheme.privset", []string{a.Authcookie, a.Account}, &res)
 
 		a.Privset = strings.Split(res, " ")
 	}

@@ -11,7 +11,7 @@ type OperServ struct {
 	a *Atheme
 }
 
-// Akill models an AKILL, also known as a K:Line. This preresents a network-wide
+// Akill models an AKILL, also known as a K:Line. This represents a network-wide
 // ban by user@host.
 type Akill struct {
 	Num    int    `json:"num"`

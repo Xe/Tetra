@@ -11,7 +11,7 @@ export logOrDie = (command, kind) ->
     return false
   true
 
-Command "UPGRADE", (source) ->
+Command "UPGRADE", true, (source) ->
   for _, group in pairs { {"git pull", "GIT"}, {"go get -u -v . 2>&1", "GOLANG"}, {"make build", "BUILD"}}
     if not logOrDie group[1], group[2]
       return "Upgrade failed"

@@ -27,9 +27,9 @@ func (tetra *Tetra) seedHandlers() {
 
 			tetra.Log.Print("See you on the other side.")
 
-			fmt.Println("Waiting for goroutines to settle... (15 seconds)")
+			fmt.Println("Waiting for goroutines to settle... (5 seconds)")
 
-			time.Sleep(15 * time.Second)
+			time.Sleep(5 * time.Second)
 
 			os.Exit(0)
 		}

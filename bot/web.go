@@ -9,38 +9,40 @@ import (
 	"github.com/Xe/Tetra/bot/web"
 	"github.com/codegangsta/negroni"
 	"github.com/drone/routes"
-	"gopkg.in/yaml.v1"
+	"github.com/gorilla/sessions"
+	"github.com/phyber/negroni-gzip/gzip"
+	"gopkg.in/unrolled/render.v1"
 )
 
 type client struct {
-	Nick     string
-	User     string
-	Host     string
-	Account  string
-	Server   string
-	Joins    []chanuser
-	Metadata map[string]string
+	Nick     string            `json:"nick"`
+	User     string            `json:"user"`
+	Host     string            `json:"host"`
+	Account  string            `json:"account"`
+	Server   string            `json:"server"`
+	Joins    []chanuser        `json:"joins"`
+	Metadata map[string]string `json:"metadata"`
 }
 
 type chanuser struct {
-	Client  string
-	Channel string
-	Prefix  int
+	Client  string `json:"client"`
+	Channel string `json:"channel"`
+	Prefix  int    `json:"prefix"`
 }
 
 type channel struct {
-	Name     string
-	Ts       int64
-	Modes    int
-	Clients  []chanuser
-	Metadata map[string]string
+	Name     string            `json:"name"`
+	Ts       int64             `json:"ts"`
+	Modes    int               `json:"modes"`
+	Clients  []chanuser        `json:"clients"`
+	Metadata map[string]string `json:"metadata"`
 }
 
 func convertChannel(in *Channel) (out channel) {
 	out = channel{
-		Name:  in.Name,
-		Ts:    in.Ts,
-		Modes: in.Modes,
+		Name:     in.Name,
+		Ts:       in.Ts,
+		Modes:    in.Modes,
 		Metadata: in.Metadata,
 	}
 
@@ -57,11 +59,11 @@ func convertChannel(in *Channel) (out channel) {
 
 func convertClient(in *Client) (out client) {
 	out = client{
-		Nick:    in.Nick,
-		User:    in.User,
-		Host:    in.VHost,
-		Account: in.Account,
-		Server:  in.Server.Name,
+		Nick:     in.Nick,
+		User:     in.User,
+		Host:     in.VHost,
+		Account:  in.Account,
+		Server:   in.Server.Name,
 		Metadata: in.Metadata,
 	}
 
@@ -82,12 +84,15 @@ func convertClient(in *Client) (out client) {
 // WebApp creates the web application and YAML api for Tetra.
 func (t *Tetra) WebApp() {
 	mux := routes.New()
+	r := render.New(render.Options{})
+
+	store := sessions.NewCookieStore([]byte(t.Config.Atheme.Password))
 
 	mux.Get("/", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(res, "error: No method chosen.")
 	})
 
-	mux.Get("/channels.yaml", func(res http.ResponseWriter, req *http.Request) {
+	mux.Get("/channels.json", func(w http.ResponseWriter, req *http.Request) {
 		var channels []channel
 
 		for _, in := range t.Channels {
@@ -96,17 +101,10 @@ func (t *Tetra) WebApp() {
 			}
 		}
 
-		out, err := yaml.Marshal(channels)
-		if err != nil {
-			res.WriteHeader(500)
-			fmt.Fprintf(res, `error: Bad yaml`)
-			return
-		}
-
-		fmt.Fprintf(res, "%s", out)
+		r.JSON(w, http.StatusOK, channels)
 	})
 
-	mux.Get("/clients.yaml", func(res http.ResponseWriter, req *http.Request) {
+	mux.Get("/clients.json", func(res http.ResponseWriter, req *http.Request) {
 		var clients []client
 
 		for _, in := range t.Clients.ByUID {
@@ -119,14 +117,7 @@ func (t *Tetra) WebApp() {
 			clients = append(clients, myclient)
 		}
 
-		out, err := yaml.Marshal(clients)
-		if err != nil {
-			res.WriteHeader(500)
-			fmt.Fprintf(res, `error: Bad yaml`)
-			return
-		}
-
-		fmt.Fprintf(res, "%s", out)
+		r.JSON(res, http.StatusOK, clients)
 	})
 
 	mux.Get("/yo/:id", func(res http.ResponseWriter, req *http.Request) {
@@ -149,6 +140,8 @@ func (t *Tetra) WebApp() {
 
 	go func() {
 		n := negroni.New(negroni.NewRecovery(), negroni.NewStatic(http.Dir("public")), web.NewLogger())
+
+		n.Use(gzip.Gzip(gzip.DefaultCompression))
 		n.UseHandler(mux)
 
 		err := http.ListenAndServe(":"+port, n)

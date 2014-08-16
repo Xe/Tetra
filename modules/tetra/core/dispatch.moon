@@ -9,5 +9,5 @@ Protohook "PRIVMSG", (line) ->
     for kind, client in pairs tetra.bot.Services
       if client.Channels[destination.Target!] ~= nil
         if destination.Name == tetra.bot.Config.General.SnoopChan\upper!
-          return
+          tetra.bot.RunHook "#{client.Nick\upper!}-SERVICELOG" mymessage
         tetra.bot.RunHook "#{kind\upper!}-CHANMSG", source, destination, mymessage

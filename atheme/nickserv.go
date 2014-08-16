@@ -4,25 +4,19 @@ import (
 	"strings"
 )
 
-const (
-	NICKSERV_HOLD       = "Hold"       // Account cannot expire
-	NICKSERV_HIDEMAIL   = "HideMail"   // Account email hidden
-	NICKSERV_NEVEROP    = "NeverOp"    // Account can't be added to access lists
-	NICKSERV_NOOP       = "NoOp"       // Account can't be opped by services
-	NICKSERV_NOMEMO     = "NoMemo"     // Account cannot receive memos
-	NICKSERV_EMAILMEMOS = "EMailMemos" // Account has memos emailed to it
-	NICKSERV_PRIVATE    = "Private"    // Account information is private
-)
-
 // Struct NickServ implements a Golang client to Atheme's NickServ. This is
 // mostly a port of Cod's Atheme parsing code
 type NickServ struct {
 	a *Atheme
 }
 
-type Flagset []map[string]string
+// NickServFlagset is a convenience wrapper around a slice of string->string
+// maps.
+type NickServFlagset []map[string]string
 
-func (ns *NickServ) parseAccess(data string) (res Flagset) {
+// parseAccess parses the access strings from Atheme and returns a nice usable
+// NickServFlagset.
+func (ns *NickServ) parseAccess(data string) (res NickServFlagset) {
 	lines := strings.Split(data, "\n")
 
 	for _, line := range lines {
@@ -45,8 +39,60 @@ func (ns *NickServ) parseAccess(data string) (res Flagset) {
 	return
 }
 
+// GetOwnInfo gets NickServ info for the "local" user in the Atheme instance.
+func (ns *NickServ) GetOwnInfo() (map[string]string, error) {
+	return ns.GetInfo(ns.a.Account)
+}
+
+// GetInfo gets NickServ info on an arbitrary user or returns an error.
+func (ns *NickServ) GetInfo(target string) (res map[string]string, err error) {
+	var output string
+	output, err = ns.a.Command("NickServ", "INFO", target)
+	lines := strings.Split(output, "\n")
+
+	for _, line := range lines {
+		if strings.HasPrefix(line, "Information on") {
+			//Information on fooicus (account fooicus):
+			split := strings.Split(line, " ")[5]
+			accname := split[:len(split)-2]
+			res["account"] = accname
+
+			continue
+		}
+
+		/*
+			Registered : Aug 15 19:44:03 2014 (2h 43m 55s ago)
+			Entity ID  : AAAAAAAEC
+			Last addr  : xena@62-059-087-073.tukw.qwest.net
+			Last seen  : Aug 15 20:34:53 2014 (1h 53m 5s ago)
+			User seen  : Aug 15 22:14:19 2014 (13m 39s ago)
+			Flags      : HideMail
+			Last quit  : Quit: Xaric: If you have a better quit message then submit a patch!
+		*/
+		fields := strings.Split(line, ":")
+		key := strings.TrimSpace(fields[0])
+		value := strings.TrimSpace(fields[1])
+
+		key = strings.Join(strings.Split(key, " "), "-")
+
+		if key == "Metadata" {
+			/*
+				Metadata   : friendcode = 0877-1711-6824
+				Metadata   : PGP = 0xF637E333
+			*/
+			metadata := strings.Split(value, " = ")
+			key = "meta-" + metadata[0]
+			value = metadata[1]
+		}
+
+		res[strings.ToLower(key)] = strings.TrimSpace(value)
+	}
+
+	return
+}
+
 // ListOwnAccess lists the channels this user has flags in.
-func (ns *NickServ) ListOwnAccess() (res Flagset, err error) {
+func (ns *NickServ) ListOwnAccess() (res NickServFlagset, err error) {
 	var temp string
 	temp, err = ns.a.Command("NickServ", "LISTCHANS")
 	if err != nil {
@@ -59,7 +105,7 @@ func (ns *NickServ) ListOwnAccess() (res Flagset, err error) {
 }
 
 // ListAccess lists the channels a user has flags in.
-func (ns *NickServ) ListAccess(target string) (res Flagset, err error) {
+func (ns *NickServ) ListAccess(target string) (res NickServFlagset, err error) {
 	var temp string
 	temp, err = ns.a.Command("NickServ", "LISTCHANS", target)
 	if err != nil {

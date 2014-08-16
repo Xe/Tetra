@@ -1,3 +1,6 @@
+// Package xmlrpc implements a simple xmlrpc client. This is modified to work
+// with the oddities that Atheme's XMLRPC server has. Do not use this fork of
+// this library for any reason other than to interface with Atheme.
 package xmlrpc
 
 import (

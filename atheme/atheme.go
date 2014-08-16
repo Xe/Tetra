@@ -17,6 +17,7 @@ type Atheme struct {
 	url         string
 	authcookie  string
 	ipaddr      string
+	NickServ    *NickServ
 }
 
 // Returns a new Atheme instance or raises an error.
@@ -34,6 +35,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		url:         url,
 		authcookie:  "*",
 		ipaddr:      "0",
+		NickServ:    &NickServ{a: atheme},
 	}
 
 	return

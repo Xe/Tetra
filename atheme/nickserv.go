@@ -17,7 +17,7 @@ const (
 // Struct NickServ implements a Golang client to Atheme's NickServ. This is
 // mostly a port of Cod's Atheme parsing code
 type NickServ struct {
-	a Atheme
+	a *Atheme
 }
 
 type Flagset []map[string]string
@@ -45,7 +45,7 @@ func (ns *NickServ) parseAccess(data string) (res Flagset) {
 	return
 }
 
-// ListOwnAccess lists the channels a user has flags in.
+// ListOwnAccess lists the channels this user has flags in.
 func (ns *NickServ) ListOwnAccess() (res Flagset, err error) {
 	var temp string
 	temp, err = ns.a.Command("NickServ", "LISTCHANS")
@@ -54,6 +54,33 @@ func (ns *NickServ) ListOwnAccess() (res Flagset, err error) {
 	}
 
 	res = ns.parseAccess(temp)
+
+	return
+}
+
+// ListAccess lists the channels a user has flags in.
+func (ns *NickServ) ListAccess(target string) (res Flagset, err error) {
+	var temp string
+	temp, err = ns.a.Command("NickServ", "LISTCHANS", target)
+	if err != nil {
+		return nil, err
+	}
+
+	res = ns.parseAccess(temp)
+
+	return
+}
+
+// SetPassword sets the password for an account.
+func (ns *NickServ) SetPassword(password string) (res string, err error) {
+	res, err = ns.a.Command("NickServ", "SET", "PASSWORD", password)
+
+	return
+}
+
+// SetEmail sets the email address for an account.
+func (ns *NickServ) SetEmail(email string) (res string, err error) {
+	res, err = ns.a.Command("NickServ", "SET", "EMAIL", email)
 
 	return
 }

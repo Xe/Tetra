@@ -2,9 +2,10 @@ package tetra
 
 import (
 	"fmt"
-	"github.com/Xe/Tetra/bot/modes"
 	"strings"
 	"time"
+
+	"github.com/Xe/Tetra/bot/modes"
 )
 
 // Struct Client holds information about a client on the IRC network.
@@ -66,6 +67,12 @@ func (r *Client) Privmsg(destination Targeter, message string) {
 func (r *Client) ServicesLog(message string) {
 	r.tetra.Log.Printf("%s: %s", r.Nick, message)
 	r.Privmsg(r.tetra.Channels[strings.ToUpper(r.tetra.Config.General.SnoopChan)], message)
+}
+
+// OperLog logs a given message to the operator channel.
+func (r *Client) OperLog(message string) {
+	r.tetra.Log.Printf("%s: %s", r.Nick, message)
+	r.Privmsg(r.tetra.Channels[strings.ToUpper(r.tetra.Config.General.StaffChan)], message)
 }
 
 // Notice sends a NOTICE to destination with given message.

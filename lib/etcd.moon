@@ -4,8 +4,6 @@ yaml = require "yaml"
 module "etcd", package.seeall
 export ^
 
-print "hi"
-
 --- Store implements a simple etcd-backed table using yaml serialization.
 -- It is pretty simple. Set data in self.table and then commit it with self.Commit.
 -- If path is nil, a path in the form of `/tetra/script/scriptname/kind` will

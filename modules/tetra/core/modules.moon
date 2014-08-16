@@ -5,7 +5,7 @@ db = etcd.Store "modules"
 if db.data.loads == nil
   db.data.loads = {}
 else
-  for _, script in pairs db.data
+  for _, script in pairs db.data.loads
     tetra.bot.LoadScript(script)
 
 Command "LOAD", true, (src, dest, msg) ->

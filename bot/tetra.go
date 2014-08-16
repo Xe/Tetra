@@ -128,6 +128,9 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		tetra.RunHook("CRON-HEARTBEAT")
 	})
 
+	tetra.NewHook("CRON-HEARTBEAT", tetra.GetChannelStats)
+	tetra.NewHook("CRON-HEARTBEAT", tetra.GetChannelStats)
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {

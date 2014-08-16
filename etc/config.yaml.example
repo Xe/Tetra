@@ -62,4 +62,9 @@ etcd:
   machines:
     - "http://127.0.0.1:4001"
 
+atheme:
+  url: "http://127.0.0.1:8080/xmlrpc"
+  username: Tetra
+  password: fooicus
+
 # vim: set ts=2 sw=2 tw=0 et filetype=yaml

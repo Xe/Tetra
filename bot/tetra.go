@@ -25,6 +25,7 @@ import (
 	"github.com/coreos/go-etcd/etcd"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rcrowley/go-metrics/influxdb"
+	"github.com/robfig/cron"
 )
 
 // Struct Tetra contains all fields for Tetra.
@@ -47,6 +48,7 @@ type Tetra struct {
 	wg       *sync.WaitGroup
 	Etcd     *etcd.Client
 	Atheme   *atheme.Atheme
+	Cron     *cron.Cron
 }
 
 // NewTetra returns a new instance of Tetra based on a config file located at cpath.
@@ -91,6 +93,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		},
 		tasks: make(chan string, 100),
 		wg:    &sync.WaitGroup{},
+		Cron:  cron.New(),
 	}
 
 	tetra.Info = &Server{
@@ -108,6 +111,22 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	tetra.Etcd.CreateDir("/tetra/channels", 0)
 	tetra.Etcd.CreateDir("/tetra/clients", 0)
 	tetra.Etcd.CreateDir("/tetra/scripts", 0)
+
+	tetra.Atheme, err = atheme.NewAtheme(tetra.Config.Atheme.URL)
+	if err != nil {
+		tetra.Log.Fatal(err)
+	}
+
+	tetra.Atheme.Login(tetra.Config.Atheme.Username, tetra.Config.Atheme.Password)
+
+	tetra.Cron.AddFunc("0 30 * * * *", func() {
+		tetra.Log.Print("Keeping us logged into Atheme...")
+		tetra.Atheme.MemoServ.List()
+	})
+
+	tetra.Cron.AddFunc("@every 5m", func() {
+		tetra.RunHook("CRON-HEARTBEAT")
+	})
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -211,7 +230,7 @@ func (tetra *Tetra) StickConfig() {
 	for _, sclient := range tetra.Config.Services {
 		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos, sclient.Certfp)
 
-		filepath.Walk("modules/" + client.Kind + "/core/", func(path string, info os.FileInfo, err error) error {
+		filepath.Walk("modules/"+client.Kind+"/core/", func(path string, info os.FileInfo, err error) error {
 			modname := strings.Split(path, ".")[0]
 			mods := strings.Split(modname, "/")
 			modname = mods[len(mods)-1]

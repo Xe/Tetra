@@ -6,6 +6,13 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
+// Atheme configuration
+type AthemeConfig struct {
+	URL      string
+	Username string
+	Password string
+}
+
 // Struct ServerConfig defines the server information for Tetra.
 type ServerConfig struct {
 	Name  string
@@ -61,6 +68,7 @@ type Config struct {
 	Etcd     struct {
 		Machines []string
 	}
+	Atheme *AthemeConfig
 }
 
 // NewConfig returns a new Config instance seeded by the file at fname.

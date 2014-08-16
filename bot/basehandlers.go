@@ -22,6 +22,10 @@ func (tetra *Tetra) seedHandlers() {
 
 	tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
 		if line.Args[0] == tetra.Info.Sid {
+			tetra.RunHook("SHUTDOWN")
+
+			tetra.Log.Print("See you on the other side.")
+
 			os.Exit(0)
 		}
 
@@ -377,6 +381,6 @@ func (tetra *Tetra) seedHandlers() {
 
 	// Handle ENCAP by sending out a hook in the form of ENCAP-VERB.
 	tetra.AddHandler("ENCAP", func(line *r1459.RawLine) {
-		tetra.RunHook("ENCAP-" + line.Args[1], line.Source, line.Args[2:])
+		tetra.RunHook("ENCAP-"+line.Args[1], line.Source, line.Args[2:])
 	})
 }

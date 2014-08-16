@@ -21,6 +21,12 @@ export class Store
 
     @Load!
 
+    Hook "CRON-HEARTBEAT", ->
+      @Commit!
+
+    Hook "SHUTDOWN", ->
+      @Commit!
+
   --- Load loads the table from etcd, discarding the local copy unless
   -- deserialization from the yaml document fails.
   -- @param self the instance of Store

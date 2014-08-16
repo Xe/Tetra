@@ -5,9 +5,13 @@ Protohook "PRIVMSG", (line) ->
 
   if destination.IsChannel!
     destination.Name = destination.Name\upper!
+  else
+    return
 
-    for kind, client in pairs tetra.bot.Services
-      if client.Channels[destination.Target!] ~= nil
-        if destination.Name == tetra.bot.Config.General.SnoopChan\upper!
-          tetra.bot.RunHook "#{client.Nick\upper!}-SERVICELOG", mymessage
-        tetra.bot.RunHook "#{kind\upper!}-CHANMSG", source, destination, mymessage
+  if destination.Name == tetra.bot.Config.General.SnoopChan\upper!
+    tetra.bot.RunHook "#{source.Nick\upper!}-SERVICELOG", mymessage
+    return
+
+  for kind, client in pairs tetra.bot.Services
+    if client.Channels[destination.Target!] ~= nil
+      tetra.bot.RunHook "#{kind\upper!}-CHANMSG", source, destination, mymessage

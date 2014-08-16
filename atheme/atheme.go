@@ -19,6 +19,7 @@ type Atheme struct {
 	ipaddr      string
 	NickServ    *NickServ
 	ChanServ    *ChanServ
+	OperServ    *OperServ
 }
 
 // Returns a new Atheme instance or raises an error.
@@ -38,6 +39,7 @@ func NewAtheme(url string) (atheme *Atheme, err error) {
 		ipaddr:      "0",
 		NickServ:    &NickServ{a: atheme},
 		ChanServ:    &ChanServ{a: atheme},
+		OperServ:    &OperServ{a: atheme},
 	}
 
 	return

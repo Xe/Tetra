@@ -59,12 +59,13 @@ Look at the example config, copy it to `etc/config.yaml` or set
 
 You need to set up `etcd` for runtime key->value support for Tetra. You also 
 need to set up InfluxxDB if you want to have Tetra track channel and server 
-statistics.
+statistics. An instance of Atheme with the XMLRPC module loaded is required.
 
 You need the following lua rocks:
 
 - `luasocket`
 - `moonscript`
 - `etlua`
+- `lua_json`
 
 All are available in [moonrocks](http://rocks.moonscript.org).

@@ -1,8 +1,3 @@
--- :752 ENCAP * GCAP :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMOD
-Hook "ENCAP-GCAP", (source, caps) ->
-  server = tetra.bot.Servers[source]
-  server.Capab = caps
-
 -- :6YK ENCAP * METADATA SET 7RT100001 CLOAKEDHOST :yolo-swag.com
 Hook "ENCAP-METADATA", (source, args) ->
   action = args[1]
@@ -30,15 +25,6 @@ Hook "ENCAP-METADATA", (source, args) ->
 -- :7RT100001 ENCAP * CERTFP :6d73b6c3-039e-40a3-a61f-db1e76d83ca2
 Hook "ENCAP-CERTFP", (source, args) ->
   tetra.bot.Clients.ByUID[source].Certfp = args[1]
-
--- :00A ENCAP * SU 7RT100002 :Tetra
-Hook "ENCAP-SU", (source, args) ->
-  if #args == 1
-    args[2] = "*"
-
-  target = args[1]
-  account = args[2]
-  tetra.bot.Clients.ByUID[target].Account = account
 
 -- :42F ENCAP * SNOTE s :Failed OPER attempt - host mismatch by xena (xena@0::z)
 Hook "ENCAP-SNOTE", (source, args) ->

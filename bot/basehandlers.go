@@ -68,34 +68,21 @@ func (tetra *Tetra) seedHandlers() {
 	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
 		source := tetra.Clients.ByUID[line.Source]
 		destination := line.Args[0]
-		text := line.Args[1]
-
-		var target Targeter
-		client := tetra.Clients.ByUID[destination]
-		verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
 		message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
 		if destination[0] == '#' {
 			return
-
-			if !strings.HasPrefix(strings.Split(strings.ToUpper(text), " ")[0], strings.ToUpper(client.Nick)) {
-				return
-			}
-
-			var ok bool
-			target, ok = tetra.Channels[strings.ToUpper(destination)]
-
-			if !ok {
-				tetra.Log.Fatal("asked to process a PRIVMSG for a channel that does not exist")
-			}
 		} else {
 			var ok bool
-			target, ok = tetra.Clients.ByUID[destination]
+			_, ok = tetra.Clients.ByUID[destination]
 
 			if !ok {
 				tetra.Log.Fatal("got a message from a ghost client. We are out of sync.")
 			}
 		}
+
+		client := tetra.Clients.ByUID[destination]
+		verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
 
 		go func() {
 			if command, ok := client.Commands[verb]; ok {
@@ -104,21 +91,44 @@ func (tetra *Tetra) seedHandlers() {
 					return
 				}
 
-				reply := command.Impl(source, target, message)
+				reply := command.Impl(source, client, message)
 
-				if command.NeedsOper {
+				if command.NeedsOper && reply != "" {
 					client.ServicesLog(tetra.Clients.ByUID[source.Target()].Nick + ": " + reply)
 				}
 
-				if target.IsChannel() {
-					client.Privmsg(target, reply)
-				} else {
-					client.Notice(source, reply)
-				}
+				client.Notice(source, reply)
 			} else {
 				client.Notice(source, "No such command "+verb)
 			}
 		}()
+	})
+
+	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
+		source := tetra.Clients.ByUID[line.Source]
+		destination := line.Args[0]
+		text := line.Args[1]
+
+		if destination[0] != '#' {
+			return
+		}
+
+		channel, ok := tetra.Channels[strings.ToUpper(destination)]
+		if !ok {
+			tetra.Log.Fatalf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
+		}
+
+		if channel.Name == strings.ToUpper(tetra.Config.General.SnoopChan) {
+			if strings.HasSuffix(source.Nick, "Serv") {
+				tetra.RunHook(strings.ToUpper(source.Nick)+"-SERVICELOG", strings.Split(text, " "))
+			}
+		} else {
+			for kind, client := range tetra.Services {
+				if _, ok := client.Channels[channel.Target()]; ok {
+					tetra.RunHook(strings.ToUpper(kind)+"-CHANMSG", source, channel, strings.Split(text, " "))
+				}
+			}
+		}
 	})
 
 	tetra.AddHandler("UID", func(line *r1459.RawLine) {
@@ -398,5 +408,60 @@ func (tetra *Tetra) seedHandlers() {
 	// Handle ENCAP by sending out a hook in the form of ENCAP-VERB.
 	tetra.AddHandler("ENCAP", func(line *r1459.RawLine) {
 		tetra.RunHook("ENCAP-"+line.Args[1], line.Source, line.Args[2:])
+	})
+
+	tetra.NewHook("ENCAP-GCAP", func(args ...interface{}) {
+		if len(args) != 2 {
+			return
+		}
+
+		var sid string
+		var caps []string
+
+		if targSid, ok := args[0].(string); ok {
+			sid = targSid
+		} else {
+			return
+		}
+
+		if targCaps, ok := args[1].([]string); ok {
+			caps = targCaps
+		} else {
+			return
+		}
+
+		server, ok := tetra.Servers[sid]
+		if !ok {
+			tetra.Log.Fatalf("Unknown server by ID %s. We are out of sync.", sid)
+		}
+
+		server.Capab = caps
+	})
+
+	tetra.NewHook("ENCAP-SU", func(parv ...interface{}) {
+		var args []string
+		var ok bool
+		if args, ok = parv[1].([]string); !ok {
+			return
+		}
+
+		if len(args) > 2 {
+			return
+		}
+
+		var source *Client
+		var accname string
+
+		if source, ok = tetra.Clients.ByUID[args[0]]; !ok {
+			return
+		}
+
+		if len(args[1]) == 1 {
+			accname = "*"
+		} else {
+			accname = args[1]
+		}
+
+		source.Account = accname
 	})
 }

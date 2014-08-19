@@ -4,8 +4,7 @@ After = tetra-ircd.service
 Requires = tetra-ircd.service
 
 [Service]
-TimeoutStartPre = 0
-ExecStartPre=-/usr/bin/docker rm -f tetra
+ExecStartPre=/bin/sh -c '/usr/bin/docker rm -f tetra || true'
 ExecStartPre=/usr/bin/docker pull xena/tetra
 ExecStart=/usr/bin/docker run --name tetra --link tetra-ircd:ircd -it --link tetra-etcd:etcd -P xena/tetra
 

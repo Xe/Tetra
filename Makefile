@@ -37,10 +37,6 @@ package:
 	@echo "Bundling documentation..."
 	@godoc github.com/coreos/go-etcd/etcd > build/doc/go/external/etcd
 	@godoc code.google.com/p/go-uuid/uuid > build/doc/go/external/go-uuid
-	@godoc github.com/codegangsta/negroni > build/doc/go/external/negroni
-	@godoc github.com/aarzilli/golua/lua  > build/doc/go/external/lua
-	@godoc github.com/drone/routes        > build/doc/go/external/routes
-	@godoc github.com/rcrowley/go-metrics > build/doc/go/external/go-metrics
 	@godoc github.com/sjkaliski/go-yo     > build/doc/go/external/go-yo
 	@godoc github.com/stevedonovan/luar   > build/doc/go/external/luar
 	@godoc github.com/kolo/xmlrpc         > build/doc/go/external/xmlrpc

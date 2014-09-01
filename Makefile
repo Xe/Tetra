@@ -25,7 +25,7 @@ package:
 	@echo "Setting up build prefix"
 	@mkdir build
 	@echo "Packing ${VERSION}..."
-	@upx Tetra
+	@upx Tetra --ultra-brute --preserve-build-id
 	@cp Tetra build
 	@echo "Packing modules..."
 	@cp -rf modules build

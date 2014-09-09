@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 
 	"code.google.com/p/go-uuid/uuid"
@@ -143,6 +144,7 @@ func (script *Script) seed() {
 		"log":       script.Log,
 		"bot":       script.Tetra,
 		"protohook": script.AddLuaProtohook,
+		"GC":        runtime.GC,
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{

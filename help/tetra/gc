@@ -1,0 +1,4 @@
+GC forces a garbage collection run
+
+Example:
+    GC

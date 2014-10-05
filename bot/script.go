@@ -30,6 +30,7 @@ type Script struct {
 	Client   *Client
 	Uuid     string
 	Kind     string
+	Trigger  chan []interface{}
 }
 
 // LoadScript finds and loads the appropriate script by a given short name (tetra/die).
@@ -54,6 +55,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 		Service:  kind,
 		Client:   client,
 		Uuid:     uuid.New(),
+		Trigger:  make(chan []interface{}, 5),
 	}
 
 	script.seed()
@@ -70,6 +72,81 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	tetra.Scripts[name] = script
 
 	tetra.Etcd.CreateDir("/tetra/scripts/"+name, 0)
+
+	go func() {
+		for args := range script.Trigger {
+			if len(args) == 2 {
+				// Protocol hook
+				debug("Protocol hook!")
+				line, ok := args[1].(*r1459.RawLine)
+				if !ok {
+					debugf("Arg is %t, not *rfc1459.RawLine", args[1])
+					return
+				}
+				debug(line.Raw)
+
+				function, ok := args[0].(*luar.LuaObject)
+				if !ok {
+					debugf("Arg is %t, not *luar.LuaObject", args[0])
+					return
+				}
+				debug(function.Type)
+
+				res, err := function.Call(line)
+				if err != nil {
+					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+					script.Log.Printf("%#v", err)
+					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+				}
+				debug(res)
+
+			} else {
+				// Command
+				debug("command")
+
+				function, ok := args[0].(*luar.LuaObject)
+				if !ok {
+					debugf("Arg is %t, not *luar.LuaObject", args[0])
+					return
+				}
+
+				client, ok := args[1].(*Client)
+				if !ok {
+					debugf("Arg is %t, not *Client", args[0])
+					return
+				}
+
+				target, ok := args[2].(Targeter)
+				if !ok {
+					debugf("Arg is %t, not Targeter", args[0])
+					return
+				}
+
+				cmdargs, ok := args[3].([]string)
+				if !ok {
+					debugf("Arg is %t, not []string", args[0])
+					return
+				}
+
+				reschan, ok := args[4].(chan string)
+				if !ok {
+					debugf("Arg is %t, not chan string", args[0])
+					return
+				}
+
+				reply, err := function.Call(client, target, cmdargs)
+				if err != nil {
+					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+					script.Log.Printf("%#v", err)
+					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+					reschan <- ""
+					return
+				}
+
+				reschan <- fmt.Sprintf("%s", reply)
+			}
+		}
+	}()
 
 	return
 }
@@ -191,12 +268,8 @@ func (script *Script) AddLuaProtohook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
 	handler, err := script.Tetra.AddHandler(verb, func(line *r1459.RawLine) {
-		_, err := function.Call(line)
-		if err != nil {
-			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-			script.Log.Printf("%#v", err)
-			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
-		}
+		debugf("sending %s", verb)
+		script.Trigger <- []interface{}{function, line}
 	})
 	if err != nil {
 		return err
@@ -213,16 +286,13 @@ func (script *Script) AddLuaCommand(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
 	command, err := script.Client.NewCommand(verb, func(client *Client, target Targeter, args []string) string {
-		reply, err := function.Call(client, target, args)
+		reschan := make(chan string)
 
-		if err != nil {
-			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-			script.Log.Printf("%#v", err)
-			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
-			return ""
+		script.Trigger <- []interface{}{
+			function, client, target, args, reschan,
 		}
 
-		return reply.(string)
+		return <-reschan
 	})
 
 	if err != nil {

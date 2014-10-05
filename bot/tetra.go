@@ -9,7 +9,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
-	"log/syslog"
 	"net"
 	"net/textproto"
 	"os"
@@ -220,9 +219,6 @@ func (tetra *Tetra) Burst() {
 	metrics.Register("clientcount", tetra.Clients.Gauge)
 
 	if tetra.Config.Stats.Host != "NOCOLLECTION" {
-		w, _ := syslog.Dial("unixgram", "/dev/log", syslog.LOG_INFO, "metrics")
-		go metrics.Syslog(metrics.DefaultRegistry, 60e9, w)
-
 		go tetra.GetNetworkStats()
 		go tetra.GetChannelStats()
 

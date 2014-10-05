@@ -456,7 +456,7 @@ func (tetra *Tetra) seedHandlers() {
 			return
 		}
 
-		if len(args[1]) == 1 {
+		if len(args) == 1 {
 			accname = "*"
 		} else {
 			accname = args[1]

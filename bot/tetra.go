@@ -124,7 +124,7 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	err = tetra.Atheme.Login(tetra.Config.Atheme.Username, tetra.Config.Atheme.Password)
 
 	tetra.Cron.AddFunc("0 30 * * * *", func() {
-		tetra.Log.Print("Keeping us logged into Atheme...")
+		debug("Keeping us logged into Atheme...")
 		tetra.Atheme.MemoServ.List()
 	})
 

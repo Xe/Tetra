@@ -83,9 +83,7 @@ func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
 		return script, err
 	}
 
-	if tetra.Config.General.Debug || tetra.Bursted {
-		script.Log.Printf("lua script %s loaded at %s", script.Name, script.Uuid)
-	}
+	debugf("lua script %s loaded at %s", script.Name, script.Uuid)
 
 	script.Kind = "lua"
 
@@ -103,28 +101,13 @@ func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
 		"moonscript_code_from_file": string(contents),
 	})
 
-	err := script.L.DoString(`
-		moonscript = require "moonscript"
-
-		xpcall = unsafe_xpcall
-		pcall = unsafe_pcall
-
-		local func, err = moonscript.loadstring(moonscript_code_from_file)
-
-		if err ~= nil then
-			tetra.log.Printf("Moonscript error, %#v", err)
-			error(err)
-		end
-
-		func()`)
+	err := script.L.DoString(`moonscript = require "moonscript" xpcall = unsafe_xpcall pcall = unsafe_pcall local func, err = moonscript.loadstring(moonscript_code_from_file) if err ~= nil then tetra.log.Printf("Moonscript error, %#v", err) error(err) end func()`)
 	if err != nil {
 		script.Log.Print(err)
 		return nil, err
 	}
 
-	if tetra.Config.General.Debug || tetra.Bursted {
-		script.Log.Printf("moonscript script %s loaded at %s", script.Name, script.Uuid)
-	}
+	debugf("moonscript script %s loaded at %s", script.Name, script.Uuid)
 
 	script.Kind = "moonscript"
 

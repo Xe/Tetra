@@ -31,9 +31,7 @@ func (c *Connection) sendLinesWait() {
 	for {
 		str := <-c.Buffer
 
-		if c.Debug {
-			c.Log.Printf(">>> " + str)
-		}
+		debugf(">>> " + str)
 
 		fmt.Fprintf(c.Conn, "%s\r\n", str)
 	}

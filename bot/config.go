@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"io/ioutil"
+	"log"
 
 	"gopkg.in/yaml.v1"
 )
@@ -79,6 +80,9 @@ func NewConfig(fname string) (conf *Config, err error) {
 	}
 
 	err = yaml.Unmarshal(contents, &conf)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return
 }

@@ -47,7 +47,7 @@ func (tetra *Tetra) seedHandlers() {
 		delete(tetra.Servers, sid)
 
 		for _, link := range server.Links {
-			tetra.Log.Printf("%#v", link)
+			debugf("%#v", link)
 
 			if link.Hops > server.Hops {
 				for uid, client := range tetra.Clients.ByUID {

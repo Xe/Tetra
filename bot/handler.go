@@ -1,8 +1,9 @@
 package tetra
 
 import (
-	"code.google.com/p/go-uuid/uuid"
 	"errors"
+
+	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/Tetra/1459"
 )
 
@@ -37,7 +38,9 @@ func (tetra *Tetra) AddHandler(verb string, impl func(*r1459.RawLine)) (handler 
 // DelHandler deletes a handler for a given protocol verb by the UUID of the handler.
 func (tetra *Tetra) DelHandler(verb string, uuid string) (err error) {
 	if _, present := tetra.Handlers[verb]; !present {
-		return errors.New("No such verb to delete handler for " + verb)
+		err = errors.New("No such verb to delete handler for " + verb)
+		debug(err)
+		return err
 	}
 
 	tetra.Handlers[verb][uuid].Go = false

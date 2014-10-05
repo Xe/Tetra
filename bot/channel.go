@@ -2,8 +2,9 @@ package tetra
 
 import (
 	"errors"
-	"github.com/rcrowley/go-metrics"
 	"strings"
+
+	"github.com/rcrowley/go-metrics"
 )
 
 // Struct ChanUser is a wrapper around a Channel and a Client to represent membership
@@ -67,7 +68,9 @@ func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 // DelChanUser deletes a client from a channel or returns an error.
 func (c *Channel) DelChanUser(client *Client) (err error) {
 	if _, ok := c.Clients[client.Uid]; !ok {
-		return errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid + " from " + c.Name)
+		err = errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid + " from " + c.Name)
+		debug(err)
+		return err
 	}
 
 	delete(c.Clients, client.Uid)

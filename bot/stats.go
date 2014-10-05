@@ -19,7 +19,7 @@ func (t *Tetra) GetNetworkStats(...interface{}) {
 		server.Counter.Update(int64(server.count))
 	}
 
-	t.Log.Printf("Logged stats for network and server populations")
+	debug("Logged stats for network and server populations")
 }
 
 func (t *Tetra) GetChannelStats(...interface{}) {
@@ -27,5 +27,5 @@ func (t *Tetra) GetChannelStats(...interface{}) {
 		channel.Gauge.Update(int64(len(channel.Clients)))
 	}
 
-	t.Log.Printf("Logged stats for channel populations")
+	debug("Logged stats for channel populations")
 }

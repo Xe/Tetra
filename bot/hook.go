@@ -35,7 +35,7 @@ func (t *Tetra) NewHook(verb string, impl func(...interface{})) (h *Hook) {
 // RunHook runs a hook in parallel across multiple goroutines, one per implementaion
 // of the hook. Returns error if there is no such hook.
 func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
-	t.Log.Printf("Running hooks for %s", verb)
+	debugf("Running hooks for %s", verb)
 
 	if _, present := t.Hooks[verb]; present {
 		wg := sync.WaitGroup{}

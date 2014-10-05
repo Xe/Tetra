@@ -194,6 +194,10 @@ func (tetra *Tetra) Auth() {
 
 // Burst sends our local information after recieving the server's burst.
 func (tetra *Tetra) Burst() {
+	for _, script := range tetra.Config.Autoload {
+		tetra.LoadScript(script)
+	}
+
 	for _, client := range tetra.Services {
 		tetra.Conn.SendLine(client.Euid())
 		if client.Certfp != "" {
@@ -292,10 +296,6 @@ func (tetra *Tetra) StickConfig() {
 
 			return "Help for " + strings.ToUpper(command) + " not found."
 		})
-	}
-
-	for _, script := range tetra.Config.Autoload {
-		tetra.LoadScript(script)
 	}
 }
 

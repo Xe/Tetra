@@ -1,4 +1,4 @@
-FROM deis/init
+FROM flitter/init
 
 RUN apt-get update &&\
     apt-get upgrade -yq &&\

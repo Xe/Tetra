@@ -248,6 +248,7 @@ func (script *Script) seed() {
 		"format": func(format string, args ...interface{}) string {
 			return fmt.Sprintf(format, args...)
 		},
+		"scan": fmt.Sscanf,
 	})
 }
 

@@ -312,9 +312,7 @@ func (tetra *Tetra) Quit() {
 func (tetra *Tetra) ProcessLine(line string) {
 	rawline := r1459.NewRawLine(line)
 
-	if tetra.Config.General.Debug {
-		tetra.Conn.Log.Printf("<<< %s", line)
-	}
+	debugf("<<< %s", line)
 
 	// This should just be hard-coded here.
 	if rawline.Verb == "PING" {
@@ -353,10 +351,14 @@ func (t *Tetra) Main() {
 			break
 		}
 
+		debug("Got line")
+
 		if t.Bursted {
 			t.tasks <- line
 		} else {
+			debug("begin process line")
 			t.ProcessLine(line)
+			debug("End process line")
 		}
 	}
 

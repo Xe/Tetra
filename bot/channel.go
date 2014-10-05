@@ -31,7 +31,7 @@ type Channel struct {
 // NewChannel creates a new channel with a given name and ts.
 func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 	c = &Channel{
-		Name:     strings.ToUpper(name),
+		Name:     name,
 		Ts:       ts,
 		Lists:    make(map[int][]string),
 		Clients:  make(map[string]*ChanUser),

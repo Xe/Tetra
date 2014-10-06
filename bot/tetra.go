@@ -231,6 +231,8 @@ func (tetra *Tetra) Burst() {
 	}
 
 	tetra.Bursted = true
+
+	tetra.RunHook("BURSTED")
 }
 
 // StickConfig creates Clients based off of the config file and handles module

@@ -16,7 +16,9 @@ export class Store
     @path = "/tetra/script/" .. script.Name .. "/#{kind}"
     @data = {}
     @Load!
+    @init!
 
+  init: =>
     Hook "CRON-HEARTBEAT", ->
       @Commit!
 
@@ -44,3 +46,10 @@ export class Store
   -- @param self the instance of Store to commit
   Commit: =>
     tetra.bot.Etcd.Set @path, yaml.dump(@data), 0
+
+export class PathStore extends Store
+  new: (path) =>
+    @path = "/tetra/store/#{path}"
+    @data = {}
+    @init!
+    @Load!

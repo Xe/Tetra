@@ -33,5 +33,24 @@ An example lua module is as follows:
     Command("PING" .. function(client, target, message)
       return "PONG"
     end)
+
+This package will compile but is not useful for anything but documentation.
 */
 package modules
+
+import (
+	"github.com/Xe/Tetra/bot"
+)
+
+// Command initializes and returns a new bot command in Lua space. It is
+// referenced by a type-4 UUID. Parameters are the command verb, if the command
+// is oper-only or not, and the lua function that represents the command.
+func Command(verb string, operonly bool, function func()) *tetra.Command { return nil }
+
+// Hook wraps a function to act as a named, event-like hook. It takes in the hook
+// verb and the function to run as a hook.
+func Hook(verb string, function func()) *tetra.Hook { return nil }
+
+// Protohook wraps a function to be called on a protocol verb. It takes in
+// the protocol verb and the function to call.
+func Protohook(verb string, function func()) *tetra.Handler { return nil }

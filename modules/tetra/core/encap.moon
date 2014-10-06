@@ -29,3 +29,5 @@ Hook "ENCAP-CERTFP", (source, args) ->
 -- :42F ENCAP * SNOTE s :Failed OPER attempt - host mismatch by xena (xena@0::z)
 Hook "ENCAP-SNOTE", (source, args) ->
   client.ServicesLog("Server notice #{args[1]}: #{args[2]}")
+
+  tetra.bot.RunHook("ENCAP-SNOTE-#{args[1]\upper!}", args[2])

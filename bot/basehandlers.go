@@ -94,7 +94,7 @@ func (tetra *Tetra) seedHandlers() {
 				reply := command.Impl(source, client, message)
 
 				if command.NeedsOper && reply != "" {
-					client.ServicesLog(tetra.Clients.ByUID[source.Target()].Nick + ": " + reply)
+					client.ServicesLog(tetra.Clients.ByUID[source.Target()].Nick + ": " + command.Verb + ": " + reply)
 				}
 
 				client.Notice(source, reply)

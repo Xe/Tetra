@@ -288,6 +288,7 @@ func (script *Script) AddLuaCommand(verb string, name string) error {
 
 	command, err := script.Client.NewCommand(verb, func(client *Client, target Targeter, args []string) string {
 		reschan := make(chan string)
+		defer close(reschan)
 
 		script.Trigger <- []interface{}{
 			function, client, target, args, reschan,
@@ -348,6 +349,7 @@ func (tetra *Tetra) UnloadScript(name string) error {
 	}
 
 	script.L.Close()
+	close(script.Trigger)
 
 	delete(tetra.Scripts, name)
 

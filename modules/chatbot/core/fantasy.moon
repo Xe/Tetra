@@ -1,5 +1,3 @@
-require "modules/base"
-
 Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
   command = strings.rest(msg[1])\upper!
   prefix = strings.first(msg[1])

@@ -73,7 +73,7 @@ Command "PART", true, (source, destination, message) ->
   chan = chan\upper!
 
   if not contains keys(service.Channels), chan
-    return "#{service.Nick} is not in #{chan}, cannot join again!"
+    return "#{service.Nick} is not in #{chan}, cannot part!"
 
   if tetra.bot.Channels[chan] == nil
     return "Cannot part #{chan} as it does not exist."
@@ -84,7 +84,7 @@ Command "PART", true, (source, destination, message) ->
     idx = find db.data[service.Kind], chan
     table.remove db.data[service.Kind], idx
 
-  return "Joined #{service.Nick} to #{chan}"
+  return "Parted #{service.Nick} from #{chan}"
 
 Protohook "PING", (line) ->
   if done

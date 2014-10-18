@@ -7,6 +7,7 @@ Requires = tetra-ircd.service
 ExecStartPre=/bin/sh -c '/usr/bin/docker rm -f tetra || true'
 ExecStartPre=/usr/bin/docker pull xena/tetra
 ExecStart=/usr/bin/docker run --name tetra --link tetra-ircd:ircd -it --link tetra-etcd:etcd -P xena/tetra
+ExecStop=/usr/bin/docker rm -rf tetra
 
 [X-Fleet]
 X-ConditionMachineOf=tetra-ircd.service

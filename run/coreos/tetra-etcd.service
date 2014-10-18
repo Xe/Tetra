@@ -1,9 +1,12 @@
 [Unit]
-Description = Tetra etcd instance
-After = docker.service
-Requires = docker.service
+Description=Tetra etcd instance
+After=docker.service
+Requires=docker.service
 
 [Service]
 ExecStartPre=/bin/sh -c '/usr/bin/docker rm -f tetra-etcd || true'
 ExecStartPre=/usr/bin/docker pull xena/etcd-minimal
-ExecStart=/usr/bin/docker run --name tetra-etcd xena/etcd-minimal /etcd
+ExecStart=-/usr/bin/docker run --name tetra-etcd xena/etcd-minimal /etcd
+ExecStart=/usr/bin/docker start tetra-ircd
+ExecStart=/usr/bin/docker logs -f tetra-ircd
+ExecStop=/usr/bin/docker stop tetra-etcd

@@ -40,7 +40,7 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 		Metadata: make(map[string]string),
 	}
 
-	tetra.Etcd.CreateDir("/tetra/channels/"+c.Name[1:], 0)
+	tetra.Etcd.CreateDir("/tetra/channels/"+c.Name, 0)
 
 	tetra.Channels[c.Target()] = c
 

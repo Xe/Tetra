@@ -33,6 +33,24 @@ type Script struct {
 	Trigger  chan []interface{}
 }
 
+// The different kinds of invocations that can be called upon.
+const (
+	INV_COMMAND = 0x0001
+	INV_NAMHOOK = 0x0002
+	INV_PROHOOK = 0x0004
+)
+
+// Struct Invocation represents an event from Go->Lua.
+type Invocation struct {
+	Kind     int
+	Args     []interface{}
+	Reply    chan string
+	Function *luar.LuaObject
+	Client   *Client
+	Target   Targeter
+	Line     *r1459.RawLine
+}
+
 // LoadScript finds and loads the appropriate script by a given short name (tetra/die).
 func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	kind := strings.Split(name, "/")[0]

@@ -19,7 +19,7 @@ end
 -- @param verb the command verb
 -- @param operonly if the command should be restricted to opers or not
 -- @param func the function to wrap
-function Command(verb, operonly, func)
+function Command(verb, operonly, func) --> *tetra.Command
   if func == nil then
     func = operonly
     operonly = false
@@ -44,7 +44,7 @@ end
 --- Hook wraps a function to act as a hook
 -- @param verb the hook verb to listen for
 -- @param func the function to wrap
-function Hook(verb, func)
+function Hook(verb, func) --> *tetra.Hook
   verb = verb:upper()
 
   local my_uuid = uuid.new()
@@ -56,7 +56,7 @@ end
 --- Protohook wraps a function to be called on a protocol verb
 -- @param verb the protocol verb to be called on
 -- @param func the function to call
-function Protohook(verb, func)
+function Protohook(verb, func) --> *tetra.Handler
   verb = verb:upper()
 
   local my_uuid = uuid.new()

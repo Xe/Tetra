@@ -1,5 +1,8 @@
 // Package modes contains a bunch of constants and lookup tables that are
 // a pain to use without this file.
+//
+// This package only has modes defined for Elemental-IRCd as that is the
+// daemon this is developed against and intended to run on.
 package modes
 
 // Converted from a python file

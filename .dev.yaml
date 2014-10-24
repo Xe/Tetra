@@ -1,0 +1,14 @@
+overlay: |
+  FROM xena/dev-moonscript
+
+  RUN moonrocks install yaml
+  RUN moonrocks install lua_json
+  RUN luarocks install luasocket
+
+  ENV PORT 3000
+
+repopath: github.com/Xe/Tetra
+golang: true
+user: xena
+projname: tetra
+ssh: true

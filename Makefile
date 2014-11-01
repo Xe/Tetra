@@ -31,6 +31,10 @@ package:
 	@echo "Packing ${VERSION}..."
 	@upx Tetra --ultra-brute --preserve-build-id
 	@cp Tetra build
+	@echo "Making debug binary"
+	@make debug
+	@upx Tetra --ultra-brute --preserve-build-id
+	@cp Tetra build/Tetra-debug
 	@echo "Packing modules..."
 	@cp -rf modules build
 	@rm build/modules/doc.go
@@ -60,7 +64,6 @@ package:
 	@cp -rf etc/sendfile build/etc
 	@cp README.md build
 	@cp LICENSE build
-	@echo "including source code"
 	@echo "including help files"
 	@cp -rf ./help build/
 	@mkdir build/var

@@ -136,3 +136,12 @@ func (r *Client) Part(channame string) bool {
 func (r *Client) IsOper() bool {
 	return r.Umodes&modes.UPROP_IRCOP == modes.UPROP_IRCOP
 }
+
+// Kill kills a target client
+func (r *Client) Kill(target *Client, reason string) {
+	str := fmt.Sprintf(":%s KILL %s :%s!%s (%s)", r.Uid, target.Uid,
+		r.tetra.Config.Server.Name, r.Nick, reason)
+
+	r.tetra.Conn.SendLine(str)
+	r.tetra.Clients.DelClient(target)
+}

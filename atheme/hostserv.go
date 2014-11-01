@@ -1,6 +1,7 @@
 package atheme
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -14,6 +15,12 @@ type VHost struct {
 	Nick  string `json:"nick"`
 	VHost string `json:"vhost"`
 	Date  string `json:"date"`
+}
+
+// String satisfies fmt.Stringer
+func (v *VHost) String() string {
+	return fmt.Sprintf("nick: %s - vhost: %s - date: %s",
+		v.Nick, v.VHost, v.Date)
 }
 
 // Activates a VHost request for account.

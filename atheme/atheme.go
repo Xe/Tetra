@@ -76,10 +76,12 @@ func (a *Atheme) Login(username, password string) (err error) {
 
 	err = a.serverProxy.Call("atheme.login", []string{username, password, "::1"}, &authcookie)
 
-	if err == nil {
-		a.Authcookie = authcookie
-		a.Account = username
+	if err != nil {
+		return err
 	}
+
+	a.Authcookie = authcookie
+	a.Account = username
 
 	return
 }

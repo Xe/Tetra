@@ -121,6 +121,9 @@ func NewTetra(cpath string) (tetra *Tetra) {
 	}
 
 	err = tetra.Atheme.Login(tetra.Config.Atheme.Username, tetra.Config.Atheme.Password)
+	if err != nil {
+		tetra.Log.Fatalf("Atheme error: %s", err.Error())
+	}
 
 	tetra.Cron.AddFunc("0 30 * * * *", func() {
 		debug("Keeping us logged into Atheme...")

@@ -1,6 +1,6 @@
 VERSION="Tetra-0.1-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
-.PHONY: build clean run package docker-build docker-run test pull
+.PHONY: build clean run package docker-build docker-run test pull debug
 
 pull:
 	git pull
@@ -8,6 +8,10 @@ pull:
 
 build:
 	go build
+
+debug:
+	go clean
+	go build -tags debug
 
 clean:
 	rm Tetra

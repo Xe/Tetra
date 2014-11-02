@@ -215,6 +215,27 @@ func (tetra *Tetra) seedHandlers() {
 		}
 	})
 
+	tetra.AddHandler("BMASK", func(line *r1459.RawLine) {
+		// :42F BMASK 1414880311 #services b :fun!*@*
+		channame := line.Args[1]
+		bankind, ok := modes.CHANMODES[0][line.Args[2]]
+
+		if !ok {
+			return
+		}
+
+		masks := strings.Split(line.Args[3], " ")
+		var channel *Channel
+
+		if mychannel, ok := tetra.Channels[channame]; ok {
+			channel = mychannel
+		} else {
+			return
+		}
+
+		channel.Lists[bankind] = append(channel.Lists[bankind], masks...)
+	})
+
 	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
 		// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
 		ts := line.Args[0]

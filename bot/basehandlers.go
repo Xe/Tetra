@@ -293,6 +293,63 @@ func (tetra *Tetra) seedHandlers() {
 		client.Umodes = modeflags
 	})
 
+	tetra.AddHandler("TMODE", func(line *r1459.RawLine) {
+		channame := line.Args[1]
+		modestring := line.Args[2]
+		params := line.Args[3:]
+
+		paramcounter := 0
+		set := true
+
+		channel, ok := tetra.Channels[strings.ToUpper(channame)]
+		if !ok {
+			return
+		}
+
+		for _, modechar := range modestring {
+			mode := string(modechar)
+			switch mode {
+			case "+":
+				set = true
+			case "-":
+				set = false
+			default:
+				if flag, ok := modes.CHANMODES[0][mode]; ok { // list-like mode
+					if set {
+						channel.Lists[flag] = append(channel.Lists[flag], params[paramcounter])
+					} else {
+						for i, str := range channel.Lists[flag] {
+							if str == params[paramcounter] {
+								channel.Lists[flag] = append(channel.Lists[flag][:i], channel.Lists[flag][i+1:]...)
+							}
+						}
+					}
+				} else if _, ok := modes.CHANMODES[1][mode]; ok { // channel set flag
+					if set {
+						channel.Modes = channel.Modes | modes.CHANMODES[1][mode]
+					} else {
+						channel.Modes = channel.Modes &^ (modes.CHANMODES[1][mode])
+					}
+				} else if _, ok := modes.CHANMODES[2][mode]; ok { // channel prefix flag
+					if set {
+						channel.Clients[params[paramcounter]].Prefix =
+							channel.Clients[params[paramcounter]].Prefix | modes.CHANMODES[2][mode]
+					} else {
+						channel.Clients[params[paramcounter]].Prefix =
+							channel.Clients[params[paramcounter]].Prefix &^ (modes.CHANMODES[2][mode])
+					}
+					paramcounter++
+				} else { // modes that exist yet we don't care about
+					if (mode == "j" || mode == "f") && set {
+						paramcounter++
+					} else if mode == "k" {
+						paramcounter++
+					}
+				}
+			}
+		}
+	})
+
 	tetra.AddHandler("JOIN", func(line *r1459.RawLine) {
 		client := tetra.Clients.ByUID[line.Source]
 		channel := tetra.Channels[strings.ToUpper(line.Args[1])]

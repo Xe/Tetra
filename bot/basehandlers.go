@@ -118,7 +118,7 @@ func (tetra *Tetra) seedHandlers() {
 			tetra.Log.Fatalf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
 		}
 
-		if channel.Name == strings.ToUpper(tetra.Config.General.SnoopChan) {
+		if strings.ToUpper(channel.Name) == strings.ToUpper(tetra.Config.General.SnoopChan) {
 			if strings.HasSuffix(source.Nick, "Serv") {
 				tetra.RunHook(strings.ToUpper(source.Nick)+"-SERVICELOG", strings.Split(text, " "))
 			}

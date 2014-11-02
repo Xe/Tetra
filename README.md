@@ -14,12 +14,12 @@ Moonscript support.
 - Client/Channel/Server link tracking
 - Statistics via influxdb
 - Persistent data via etcd
+- Atheme integration
 
 ### Things still in progress
 
 - Feature parity with Cod
 - Documentation on migration from Cod to Tetra
-- Atheme integration
 - Scripts being able to define webpages
 
 Building a script for Tetra is as easy as:

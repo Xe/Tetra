@@ -1,0 +1,6 @@
+Usage: INFO <channel name>
+
+INFO allows an oper to see extended information on a channel.
+
+Example:
+    INFO #services

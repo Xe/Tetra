@@ -286,6 +286,10 @@ func (tetra *Tetra) seedHandlers() {
 					cu.Prefix = modes.PREFIXES[string(char)] | cu.Prefix
 				}
 			}
+
+			if tetra.Bursted {
+				tetra.RunHook("JOINCHANNEL", cu)
+			}
 		}
 	})
 
@@ -376,6 +380,8 @@ func (tetra *Tetra) seedHandlers() {
 		channel := tetra.Channels[strings.ToUpper(line.Args[1])]
 
 		channel.AddChanUser(client)
+
+		tetra.RunHook("JOINCHANNEL", channel.Clients[client.Uid])
 	})
 
 	tetra.AddHandler("PART", func(line *r1459.RawLine) {

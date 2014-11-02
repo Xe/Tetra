@@ -88,6 +88,5 @@ Hook "CLIENTQUIT", (client) ->
   for _, channel in pairs Scores
     print channel
     for _, cli in pairs channel
-      script.Log.Printf "%#v %#v", cli.uid, line.Source
       if cli.uid == client.Uid
         channel[cli.uid] = nil

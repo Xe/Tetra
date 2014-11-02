@@ -56,7 +56,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	kind := strings.Split(name, "/")[0]
 	client, ok := tetra.Services[kind]
 	if !ok {
-		client = tetra.Services["tetra"]
+		return nil, errors.New("Cannot find target service " + kind)
 	}
 
 	if _, present := tetra.Scripts[name]; present {

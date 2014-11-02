@@ -1,0 +1,47 @@
+Usage: VHOSTPOLICY <subcommand> [args]
+
+VHOSTPOLICY is a way for administrators to automatically set a list of policies
+for vhosts to be rejected and activated without operator intervention. It can be
+used for quick turnarounds in HostServ requests or to maintain a list of "bad
+words" administrators want to forbid from being inside a vhost.
+
+Subcommands:
+    ADD <lua pattern> <REJECT|ACTIVATE>
+    DELETE <id>
+    INFO <id>
+    LIST
+
+ADD:
+    ADD adds a vhost policy to the list and immediately makes it effective. The
+    policy may be any valid lua pattern. http://www.lua.org/pil/20.2.html
+
+    Usage:
+        VHOSTPOLICY ADD <lua pattern> <REJECT|ACTIVATE>
+
+    Examples:
+        VHOSTPOLICY ADD foo REJECT
+        VHOSTPOLICY ADD bar ACTIVATE
+
+DELETE:
+    DELETE deletes a vhost policy from the list by id.
+
+    Usage:
+        VHOSTPOLICY DELETE <id>
+
+    Example:
+        VHOSTPOLICY DELETE 1
+
+INFO:
+    INFO displays information on a vhost policy by id.
+
+    Usage:
+        VHOSTPOLICY INFO <id>
+
+    Example:
+        VHOSTPOLICY INFO 1
+
+LIST:
+    LIST displays all vhost policies.
+
+    Example:
+        VHOSTPOLICY LIST

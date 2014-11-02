@@ -10,8 +10,8 @@ Command "INFO", true, (source, target, args) ->
   client.Notice source, "#{#channel.Clients} clients:"
 
   for _, chanuser in pairs channel.Clients
-    client.Notice source, "#{chanuser.Client.Nick}: (#{chanuser.Client.User}@#{chanuser.Client.VHost}: #{chanuser.Client.Ip}) #{"%x"\format chanuser.Prefix}"
+    client.Notice source, "#{chanuser.Client.Nick}: (#{chanuser.Client.User}@#{chanuser.Client.VHost}: #{chanuser.Client.Ip}) 0x#{"%x"\format chanuser.Prefix}"
 
-  client.Notice source, "Channel mode: #{"%x"\format channel.Modes}"
+  client.Notice source, "Channel mode: 0x#{"%x"\format channel.Modes}"
 
   "End info on #{args[1]}"

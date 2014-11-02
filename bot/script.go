@@ -267,6 +267,9 @@ func (script *Script) seed() {
 			return fmt.Sprintf(format, args...)
 		},
 		"scan": fmt.Sscanf,
+		"shuck": func(victim string) string {
+			return victim[1 : len(victim)-1]
+		},
 	})
 }
 

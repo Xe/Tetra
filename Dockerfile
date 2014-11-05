@@ -6,8 +6,8 @@ RUN apt-get update &&\
 RUN luarocks install --server=http://rocks.moonscript.org moonrocks
 RUN moonrocks install yaml
 RUN moonrocks install moonscript
-RUN moonrocks install lua_json
-RUN luarocks install luasocket
+RUN moonrocks install json4lua
+RUN luarocks install lua_socket
 
 ADD . /app
 ADD run/runit /etc/service/tetra

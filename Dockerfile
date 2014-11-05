@@ -6,7 +6,7 @@ RUN apt-get update &&\
 RUN luarocks install --server=http://rocks.moonscript.org moonrocks
 RUN moonrocks install yaml
 RUN moonrocks install moonscript
-RUN moonrocks install lua_json
+RUN moonrocks install dkjson
 RUN luarocks install luasocket
 
 ADD . /app

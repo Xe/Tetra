@@ -1,4 +1,4 @@
-require "json"
+json = require "dkjson"
 require "socket"
 require "moonscript"
 

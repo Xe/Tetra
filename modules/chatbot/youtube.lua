@@ -1,7 +1,6 @@
 -- Based on:
 -- https://github.com/TheLinx/Juiz/blob/master/modules/ytvlookup.lua
 
-local json = require "json"
 local http = require "socket.http"
 
 function ytlookup(id)

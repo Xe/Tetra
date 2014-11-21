@@ -23,7 +23,7 @@ func (c *Clients) AddClient(client *Client) {
 
 // DelClient deletes a Client from the Clients structure.
 func (c *Clients) DelClient(client *Client) (err error) {
-	delete(c.ByNick, client.Nick)
+	delete(c.ByNick, strings.ToUpper(client.Nick))
 	delete(c.ByUID, client.Uid)
 
 	return
@@ -41,4 +41,3 @@ func (c *Clients) ChangeNick(client *Client, newnick string) (err error) {
 
 	return
 }
-

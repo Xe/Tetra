@@ -83,10 +83,7 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
 
 --- Delete information about users after they quit.
 Hook "CLIENTQUIT", (client) ->
-  local channel
-
   for _, channel in pairs Scores
-    print channel
     for _, cli in pairs channel
       if cli.uid == client.Uid
         channel[cli.uid] = nil

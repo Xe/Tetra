@@ -35,7 +35,7 @@ Command "UNLOAD", true, (src, dest, msg) ->
   if name == script.Name
     return "Cannot unload this script!"
 
-  table.remove db.data, find(db.data name)
+  table.remove db.data, find(db.data, name)
 
   sleep(0.5)
 

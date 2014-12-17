@@ -1,13 +1,17 @@
+Hash = (foo, salt) ->
+  crypto.hash(foo, salt)\sub(1,8)\upper!
+
 Genvhost = (c) ->
   if c.Account == "*"
-    return "tor/anonymous/#{crypto.hash(c.User)\sub(1,14)}/#{c.Uid}", false
+    return "tor.anonymous.#{Hash c.Uid, c.Server.Name}.#{Hash c.User, c.Server.Name}.#{Hash c.Gecos, c.Server.Name}", false
 
-  return "tor/registered/#{c.Account}}/#{c.Uid}", true
+  return "tor.registered.#{Hash c.Uid, c.Server.Name}.#{Hash c.Account, c.Server.Name}.#{Hash c.Gecos, c.Server.Name}", true
 
 DoCloak = (c) ->
-  newhost, registered = Genvhost connclient
+  newhost, registered = Genvhost c
 
-  client.Chghost c, newhost
+  client.Chghost c, "" .. newhost
+  client.ServicesLog "#{c.Nick}: ANONYMOUS USER: VHOST: #{newhost}"
   client.Notice c, "Your host has been scrambled to #{newhost} to allow for accountability."
   client.Notice c, "Please use this anonymous hidden service with care."
 

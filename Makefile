@@ -4,14 +4,14 @@ VERSION="Tetra-0.1-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
 pull:
 	git pull
-	go get -v -u .
+	godep go get -v .
 
 build:
-	go build
+	godep go build
 
 debug:
-	go clean
-	go build -tags debug
+	godep go clean
+	godep go build -tags debug
 
 clean:
 	rm Tetra

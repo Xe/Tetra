@@ -1,0 +1,64 @@
+{
+	"ImportPath": "github.com/Xe/Tetra",
+	"GoVersion": "go1.2.1",
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go-uuid/uuid",
+			"Comment": "null-12",
+			"Rev": "7dda39b2e7d5e265014674c5af696ba4186679e9"
+		},
+		{
+			"ImportPath": "github.com/aarzilli/golua/lua",
+			"Rev": "baea951c38c89e5bf7c2a101e56315a3afcfce9e"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/negroni",
+			"Comment": "v0.1-32-gc64702c",
+			"Rev": "c64702ca03d0f858ab7866638b69e85f0d4c6ee7"
+		},
+		{
+			"ImportPath": "github.com/coreos/go-etcd/etcd",
+			"Comment": "v0.2.0-rc1-127-g6fe04d5",
+			"Rev": "6fe04d580dfb71c9e34cbce2f4df9eefd1e1241e"
+		},
+		{
+			"ImportPath": "github.com/drone/routes",
+			"Rev": "853bef2b231162bb7b09355720416d3af1510d88"
+		},
+		{
+			"ImportPath": "github.com/influxdb/influxdb/client",
+			"Comment": "v0.8.5-15-g87ef0d1",
+			"Rev": "87ef0d13e940f753a5966b6f0cdd94afc9f57b07"
+		},
+		{
+			"ImportPath": "github.com/phyber/negroni-gzip/gzip",
+			"Rev": "0b2752a07f05079c716e4409134b1f4c385f63ea"
+		},
+		{
+			"ImportPath": "github.com/rcrowley/go-metrics",
+			"Rev": "794bbe964d82f2d97785dc1eec4529e3ed0c25d9"
+		},
+		{
+			"ImportPath": "github.com/robfig/cron",
+			"Comment": "v1-3-gb024fc5",
+			"Rev": "b024fc5ea0e34bc3f83d9941c8d60b0622bfaca4"
+		},
+		{
+			"ImportPath": "github.com/sjkaliski/go-yo",
+			"Rev": "03415611092e21ea08774d812331227c1119ddf8"
+		},
+		{
+			"ImportPath": "github.com/stevedonovan/luar",
+			"Comment": "1.2-24-ga992b6f",
+			"Rev": "a992b6f52423167820d7118fd4f665dbdb500327"
+		},
+		{
+			"ImportPath": "gopkg.in/unrolled/render.v1",
+			"Rev": "bdfac4a8df10cc9dc03ee14ba2f655137fd70378"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v1",
+			"Rev": "9f9df34309c04878acc86042b16630b0f696e1de"
+		}
+	]
+}

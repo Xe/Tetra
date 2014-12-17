@@ -270,6 +270,9 @@ func (script *Script) seed() {
 		"shuck": func(victim string) string {
 			return victim[1 : len(victim)-1]
 		},
+		"hassuffix": func(s, pattern string) bool {
+			return strings.HasSuffix(s, pattern)
+		},
 	})
 }
 

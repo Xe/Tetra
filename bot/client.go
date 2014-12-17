@@ -145,3 +145,16 @@ func (r *Client) Kill(target *Client, reason string) {
 	r.tetra.Conn.SendLine(str)
 	r.tetra.Clients.DelClient(target)
 }
+
+// Chghost changes a client's visible host
+func (r *Client) Chghost(target *Client, newhost string) (err error) {
+	strings.Replace(newhost, "_", "--", -1)
+
+	target.VHost = newhost
+
+	line := fmt.Sprintf(":%s CHGHOST %s :%s", r.Uid, target.Target(), newhost)
+
+	r.tetra.Conn.SendLine(line)
+
+	return
+}

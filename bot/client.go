@@ -152,7 +152,7 @@ func (r *Client) Chghost(target *Client, newhost string) (err error) {
 
 	target.VHost = newhost
 
-	line := fmt.Sprintf(":%s CHGHOST %s :%s", r.Server.Sid, target.Target(), newhost)
+	line := fmt.Sprintf(":%s CHGHOST %s %s", r.Server.Sid, target.Target(), newhost)
 
 	r.tetra.Conn.SendLine(line)
 

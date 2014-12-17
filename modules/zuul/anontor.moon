@@ -3,9 +3,9 @@ Hash = (foo, salt) ->
 
 Genvhost = (c) ->
   if c.Account == "*"
-    return "tor.anonymous.#{Hash c.Uid, c.Server.Name}.#{Hash c.User, c.Server.Name}.#{Hash c.Gecos, c.Server.Name}", false
+    return "tor/#{Hash c.Uid, c.Server.Name}.#{Hash c.User, c.Server.Name}.#{Hash c.Gecos, c.Server.Name}/anonymous", false
 
-  return "tor.registered.#{Hash c.Uid, c.Server.Name}.#{Hash c.Account, c.Server.Name}.#{Hash c.Gecos, c.Server.Name}", true
+  return "tor/#{Hash c.Uid, c.Server.Name}.#{Hash c.Account, c.Server.Name}.#{Hash c.Gecos, c.Server.Name}/registered", true
 
 DoCloak = (c) ->
   newhost, registered = Genvhost c

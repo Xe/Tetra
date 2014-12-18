@@ -256,6 +256,7 @@ func (script *Script) seed() {
 
 			for _, char := range fmt.Sprintf("%d", hash) {
 				res = res + string(alphabet[(uint32(char)+hash)%26])
+				hash = (hash << 1) | (hash >> 31)
 			}
 
 			return res

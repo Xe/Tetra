@@ -224,6 +224,8 @@ func (script *Script) seed() {
 		"bot":       script.Tetra,
 		"protohook": script.AddLuaProtohook,
 		"GC":        runtime.GC,
+		"debug":     debug,
+		"debugf":    debugf,
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{

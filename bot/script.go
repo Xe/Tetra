@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -243,6 +244,21 @@ func (script *Script) seed() {
 		"hash": func(data string, salt string) string {
 			output := md5.Sum([]byte(data + salt))
 			return fmt.Sprintf("%x", output)
+		},
+		"fnv": func(data string) string {
+			h := fnv.New32()
+			h.Write([]byte(data))
+
+			hash := h.Sum32()
+
+			alphabet := "abcdefghijklmnopqrstuvwxyz"
+			res := ""
+
+			for _, char := range fmt.Sprintf("%d", hash) {
+				res = res + string(alphabet[(uint32(char)+hash)%26])
+			}
+
+			return res
 		},
 	})
 

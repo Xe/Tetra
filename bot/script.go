@@ -257,8 +257,15 @@ func (script *Script) seed() {
 			res := ""
 
 			for _, char := range fmt.Sprintf("%d", hash) {
+				// This line here takes the number passed to it and "hashes" it by adding the rune's
+				// unicode value (as a uint 32) and then takes the modulus of 26, letting the number
+				// be represented as a letter of the alphabet. This is not a cryptographically
+				// secure operation, it is purely to replace numbers with a human-readable string
+				// to satisfy the requirement that any vhost with a "/" in it cannot end in a number
+				// (to avoid someone obtaining a vhost that is a cidr mask, it can cause issues).
 				res = res + string(alphabet[(uint32(char)+hash)%26])
-				hash = (hash << 1) | (hash >> 31)
+
+				hash = (hash << 1) | (hash >> 31) // "rotate" the number for extra variance
 			}
 
 			return res

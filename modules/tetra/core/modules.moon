@@ -6,14 +6,14 @@ if db.data.loads == nil
   db.data.loads = {}
 else
   for _, script in pairs db.data.loads
-    tetra.bot.LoadScript(script)
+    tetra.LoadScript(script)
 
 Command "LOAD", true, (src, dest, msg) ->
   if #msg == 0
     return "Need a script name"
 
   name = msg[1]
-  script, err = tetra.bot.LoadScript(name)
+  script, err = tetra.LoadScript(name)
 
   if err ~= nil
     tetra.log.Printf("Can't load script " .. name .. ": %#v", err)
@@ -29,7 +29,7 @@ Command "UNLOAD", true, (src, dest, msg) ->
 
   name = msg[1]
 
-  if tetra.bot.Scripts[name] == nil
+  if tetra.Scripts[name] == nil
     return "#{name} is not loaded."
 
   if name == script.Name
@@ -39,6 +39,6 @@ Command "UNLOAD", true, (src, dest, msg) ->
 
   sleep(0.5)
 
-  script, err = tetra.bot.UnloadScript(name)
+  script, err = tetra.UnloadScript(name)
 
   "#{name} unloaded."

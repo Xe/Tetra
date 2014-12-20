@@ -90,15 +90,15 @@ function getjson(url)
 end
 
 function parseLine(line)
-  local source = tetra.bot.Clients.ByUID[line.Source]
+  local source = tetra.Clients.ByUID[line.Source]
   local destination = line.Args[1]
   local message = line.Args[2]
 
   if destination:sub(1,1) == "#" then
     destination = destination:upper()
-    destination = tetra.bot.Channels[destination]
+    destination = tetra.Channels[destination]
   else
-    destination = tetra.bot.Clients.ByUID[destination]
+    destination = tetra.Clients.ByUID[destination]
   end
 
   return source, destination, message

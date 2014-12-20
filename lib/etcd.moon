@@ -29,7 +29,7 @@ export class Store
   -- deserialization from the yaml document fails.
   -- @param self the instance of Store
   Load: =>
-    etcd_value = tetra.bot.Etcd.Get @path, false, false
+    etcd_value = tetra.Etcd.Get @path, false, false
 
     if etcd_value == nil
       return
@@ -45,7 +45,7 @@ export class Store
   -- table is big enough.
   -- @param self the instance of Store to commit
   Commit: =>
-    tetra.bot.Etcd.Set @path, yaml.dump(@data), 0
+    tetra..Etcd.Set @path, yaml.dump(@data), 0
 
 export class PathStore extends Store
   new: (path) =>

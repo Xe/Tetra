@@ -14,6 +14,7 @@ import (
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/script/crypto"
 	lua "github.com/aarzilli/golua/lua"
+	"github.com/sjkaliski/go-yo"
 	"github.com/stevedonovan/luar"
 )
 
@@ -216,30 +217,28 @@ func (script *Script) seed() {
 	})
 
 	luar.Register(script.L, "tetra", luar.Map{
-		"script": script,
-		"log":    script.Log,
-		"bot": luar.Map{
-			"Info":         Info,
-			"Clients":      Clients,
-			"Channels":     Channels,
-			"Bursted":      Bursted,
-			"Services":     Services,
-			"Config":       ActiveConfig,
-			"ActiveConfig": ActiveConfig,
-			"Log":          script.Log,
-			"Etcd":         Etcd,
-			"Atheme":       Atheme,
-			"RunHook":      RunHook,
-			"LoadScript":   LoadScript,
-			"UnloadScript": UnloadScript,
-			"Scripts":      Scripts,
-			"GetYo":        GetYo,
-		},
-		"protohook": script.AddLuaProtohook,
-		"GC":        runtime.GC,
-		"debug":     debug,
-		"debugf":    debugf,
-		"atheme":    Atheme,
+		"script":       script,
+		"log":          script.Log,
+		"Info":         Info,
+		"Clients":      Clients,
+		"Channels":     Channels,
+		"Bursted":      Bursted,
+		"Services":     Services,
+		"Config":       ActiveConfig,
+		"ActiveConfig": ActiveConfig,
+		"Log":          script.Log,
+		"Etcd":         Etcd,
+		"Atheme":       Atheme,
+		"RunHook":      RunHook,
+		"LoadScript":   func(name string) (script *Script, err error) { return LoadScript(name) },
+		"UnloadScript": func(name string) error { return UnloadScript(name) },
+		"Scripts":      Scripts,
+		"GetYo":        func(name string) (client *yo.Client, err error) { return GetYo(name) },
+		"protohook":    script.AddLuaProtohook,
+		"GC":           runtime.GC,
+		"debug":        debug,
+		"debugf":       debugf,
+		"atheme":       Atheme,
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{

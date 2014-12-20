@@ -15,7 +15,7 @@ function scrapeurl(str)
   return str:match("https?://[%w-_%.%?%.:/%+=&]+")
 end
 
-API_KEY = tetra.bot.Config.ApiKeys.bitly
+API_KEY = tetra.Config.ApiKeys.bitly
 
 URL = "https://api-ssl.bitly.com/v3/shorten?access_token=" .. API_KEY .. "&longUrl="
 

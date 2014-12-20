@@ -15,8 +15,8 @@ Command "JOIN", true, (source, destination, message) ->
   if parc == 2
     tmp = message[1]
 
-    if tetra.bot.Services[tmp] ~= nil
-      service = tetra.bot.Services[tmp]
+    if tetra.Services[tmp] ~= nil
+      service = tetra.Services[tmp]
       chan = message[2]
 
     else
@@ -33,7 +33,7 @@ Command "JOIN", true, (source, destination, message) ->
   if contains keys(service.Channels), chan
     return "#{service.Nick} is already in #{chan}, cannot join again!"
 
-  if tetra.bot.Channels[chan] == nil
+  if tetra.Channels[chan] == nil
     return "Cannot join #{chan} as it does not exist."
 
   service.Join(chan)
@@ -57,8 +57,8 @@ Command "PART", true, (source, destination, message) ->
   if parc == 2
     tmp = message[1]
 
-    if tetra.bot.Services[tmp] ~= nil
-      service = tetra.bot.Services[tmp]
+    if tetra.Services[tmp] ~= nil
+      service = tetra.Services[tmp]
       chan = message[2]
 
     else
@@ -75,7 +75,7 @@ Command "PART", true, (source, destination, message) ->
   if not contains keys(service.Channels), chan
     return "#{service.Nick} is not in #{chan}, cannot part!"
 
-  if tetra.bot.Channels[chan] == nil
+  if tetra.Channels[chan] == nil
     return "Cannot part #{chan} as it does not exist."
 
   service.Part(chan)
@@ -91,7 +91,7 @@ Protohook "PING", (line) ->
     return
 
   for name, channels in pairs db.data
-    service = tetra.bot.Services[name]
+    service = tetra.Services[name]
 
     for i, chan in pairs channels
       print "#{service.Kind} joining #{chan}"

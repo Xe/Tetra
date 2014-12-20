@@ -1,7 +1,7 @@
 -- Example hook via YO
 
 Hook "YO", (source, dest) ->
-  yo, err = tetra.bot.GetYo dest
+  yo, err = tetra.GetYo dest
 
   client.ServicesLog "#{dest} got a yo from #{source}!"
 

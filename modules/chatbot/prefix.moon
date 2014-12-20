@@ -1,2 +1,2 @@
 Command "PREFIX", ->
-  "My command prefix is #{tetra.bot.Config.General.Prefix}"
+  "My command prefix is #{tetra.Config.General.Prefix}"

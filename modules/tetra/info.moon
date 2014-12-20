@@ -2,7 +2,7 @@ Command "INFO", true, (source, target, args) ->
   if #args == 0
     return "INFO <channel name>"
 
-  channel = tetra.bot.Channels[args[1]\upper!]
+  channel = tetra.Channels[args[1]\upper!]
   if not channel
     return "Channel #{args[1]} does not exist"
 

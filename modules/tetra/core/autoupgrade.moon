@@ -24,7 +24,7 @@ Hook "UPGRADE-GIT", (line) ->
   -- tetra/upgrade
   modname = line[1]
 
-  if tetra.bot.Scripts[modname] == nil
+  if tetra.Scripts[modname] == nil
     return -- Can't upgrade a script that is not loaded
 
   if modname == script.Name -- Don't upgrade self, currently has issues.
@@ -34,14 +34,14 @@ Hook "UPGRADE-GIT", (line) ->
     client.ServicesLog "UPDATER: Skipping tetra/upgrade"
     return
 
-  err = tetra.bot.UnloadScript modname
+  err = tetra.UnloadScript modname
   if err ~= nil
     client.ServicesLog "UPDATER: unload error: #{err}"
     return
 
   sleep 0.5
 
-  s, err = tetra.bot.LoadScript modname
+  s, err = tetra.LoadScript modname
   if err ~= nil
     client.ServicesLog "UPDATER: load error: #{err}"
     return

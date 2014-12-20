@@ -4,7 +4,7 @@ export logOrDie = (command, kind) ->
   proc = io.popen command
   for line in proc\lines!
     client.ServicesLog "#{kind}: #{line}"
-    tetra.bot.RunHook "UPGRADE-"..kind, line
+    tetra.RunHook "UPGRADE-"..kind, line
 
   if not proc\close!
     client.ServicesLog "Error in upgrade process, aborting!"

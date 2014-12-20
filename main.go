@@ -35,14 +35,14 @@ func main() {
 
 	fmt.Printf("Using config file %s\n", confloc)
 
-	bot := tetra.NewTetra(confloc)
+	tetra.NewTetra(confloc)
 
-	bot.Connect(bot.Config.Uplink.Host, bot.Config.Uplink.Port)
-	defer bot.Conn.Conn.Close()
+	tetra.Connect(tetra.ActiveConfig.Uplink.Host, tetra.ActiveConfig.Uplink.Port)
+	defer tetra.Conn.Conn.Close()
 
-	bot.Auth()
-	bot.StickConfig()
-	go bot.WebApp()
+	tetra.Auth()
+	tetra.StickConfig()
+	go tetra.WebApp()
 
-	bot.Main()
+	tetra.Main()
 }

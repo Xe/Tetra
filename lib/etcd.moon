@@ -45,7 +45,7 @@ export class Store
   -- table is big enough.
   -- @param self the instance of Store to commit
   Commit: =>
-    tetra..Etcd.Set @path, yaml.dump(@data), 0
+    tetra.Etcd.Set @path, yaml.dump(@data), 0
 
 export class PathStore extends Store
   new: (path) =>

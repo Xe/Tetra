@@ -8,21 +8,20 @@ import (
 
 // Struct Clients defines the set of clients on the network, indexed by either
 // nickname (in capital letters) or UID.
-type Clients struct {
+type ClientSet struct {
 	ByNick map[string]*Client
 	ByUID  map[string]*Client
 	Gauge  metrics.Gauge
-	Tetra  *Tetra
 }
 
 // AddClient adds a Client to the Clients structure.
-func (c *Clients) AddClient(client *Client) {
+func (c *ClientSet) AddClient(client *Client) {
 	c.ByNick[strings.ToUpper(client.Nick)] = client
 	c.ByUID[client.Uid] = client
 }
 
 // DelClient deletes a Client from the Clients structure.
-func (c *Clients) DelClient(client *Client) (err error) {
+func (c *ClientSet) DelClient(client *Client) (err error) {
 	delete(c.ByNick, strings.ToUpper(client.Nick))
 	delete(c.ByUID, client.Uid)
 
@@ -30,9 +29,9 @@ func (c *Clients) DelClient(client *Client) (err error) {
 }
 
 // ChangeNick changes a client's nickname and updates the ByNick map.
-func (c *Clients) ChangeNick(client *Client, newnick string) (err error) {
+func (c *ClientSet) ChangeNick(client *Client, newnick string) (err error) {
 	if _, present := c.ByNick[strings.ToUpper(client.Nick)]; !present {
-		c.Tetra.Log.Fatalf("Client %s does not exist in Clients.ByNick. We are desynched. Exiting.", client.Nick)
+		Log.Fatalf("Client %s does not exist in Clients.ByNick. We are desynched. Exiting.", client.Nick)
 	}
 
 	delete(c.ByNick, client.Nick)

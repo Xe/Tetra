@@ -18,7 +18,7 @@ type Hook struct {
 }
 
 // NewHook allocates and returns a new Hook structure
-func (t *Tetra) NewHook(verb string, impl func(...interface{})) (h *Hook) {
+func NewHook(verb string, impl func(...interface{})) (h *Hook) {
 	verb = strings.ToUpper(verb)
 
 	h = &Hook{
@@ -27,22 +27,22 @@ func (t *Tetra) NewHook(verb string, impl func(...interface{})) (h *Hook) {
 		impl: impl,
 	}
 
-	t.Hooks[verb] = append(t.Hooks[verb], h)
+	Hooks[verb] = append(Hooks[verb], h)
 
 	return
 }
 
 // RunHook runs a hook in parallel across multiple goroutines, one per implementaion
 // of the hook. Returns error if there is no such hook.
-func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
+func RunHook(verb string, args ...interface{}) (err error) {
 	debugf("Running hooks for %s", verb)
 
-	if _, present := t.Hooks[verb]; present {
+	if _, present := Hooks[verb]; present {
 		wg := sync.WaitGroup{}
 
-		wg.Add(len(t.Hooks[verb]))
+		wg.Add(len(Hooks[verb]))
 
-		for _, hook := range t.Hooks[verb] {
+		for _, hook := range Hooks[verb] {
 			hook := hook
 			go func() {
 				hook.impl(args...)
@@ -59,14 +59,14 @@ func (t *Tetra) RunHook(verb string, args ...interface{}) (err error) {
 }
 
 // DelHook deletes a hook. Returns an error if there is no such hook to delete.
-func (t *Tetra) DelHook(hook *Hook) (err error) {
-	if _, present := t.Hooks[hook.Verb]; !present {
+func DelHook(hook *Hook) (err error) {
+	if _, present := Hooks[hook.Verb]; !present {
 		return errors.New("Improper hook.")
 	}
 
 	var target int
 
-	for _, myhook := range t.Hooks[hook.Verb] {
+	for _, myhook := range Hooks[hook.Verb] {
 		if hook.Uuid == myhook.Uuid {
 			break
 		}
@@ -74,7 +74,7 @@ func (t *Tetra) DelHook(hook *Hook) (err error) {
 		target++
 	}
 
-	t.Hooks[hook.Verb] = append(t.Hooks[hook.Verb][:target], t.Hooks[hook.Verb][target+1:]...)
+	Hooks[hook.Verb] = append(Hooks[hook.Verb][:target], Hooks[hook.Verb][target+1:]...)
 
 	return
 }

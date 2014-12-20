@@ -29,7 +29,7 @@ type Channel struct {
 }
 
 // NewChannel creates a new channel with a given name and ts.
-func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
+func NewChannel(name string, ts int64) (c *Channel) {
 	c = &Channel{
 		Name:     name,
 		Ts:       ts,
@@ -40,9 +40,9 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 		Metadata: make(map[string]string),
 	}
 
-	tetra.Etcd.CreateDir("/tetra/channels/"+c.Name, 0)
+	Etcd.CreateDir("/tetra/channels/"+c.Name, 0)
 
-	tetra.Channels[c.Target()] = c
+	Channels[c.Target()] = c
 
 	metrics.Register(strings.ToUpper(name)+"_stats", c.Gauge)
 
@@ -51,7 +51,6 @@ func (tetra *Tetra) NewChannel(name string, ts int64) (c *Channel) {
 
 // AddChanUser adds a client to the channel, returning the membership.
 func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
-
 	cu = &ChanUser{
 		Client:  client,
 		Channel: c,

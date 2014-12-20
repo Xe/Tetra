@@ -39,17 +39,15 @@ func (c *Client) showHelp(target *Client, service, command string) {
 
 	if err != nil {
 		c.ServicesLog(err.Error())
-		c.tetra.Log.Print(err)
+		Log.Print(err)
 		return
 	}
 
 	data := struct {
 		Me     *Client
-		Tetra  *Tetra
 		Target *Client
 	}{
 		c,
-		c.tetra,
 		target,
 	}
 

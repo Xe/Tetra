@@ -18,7 +18,7 @@ type Handler struct {
 }
 
 // AddHandler adds a handler for a given verb.
-func (tetra *Tetra) AddHandler(verb string, impl func(*r1459.RawLine)) (handler *Handler, err error) {
+func AddHandler(verb string, impl func(*r1459.RawLine)) (handler *Handler, err error) {
 	handler = &Handler{
 		Verb: verb,
 		Impl: impl,
@@ -26,26 +26,26 @@ func (tetra *Tetra) AddHandler(verb string, impl func(*r1459.RawLine)) (handler 
 		Go:   true,
 	}
 
-	if _, ok := tetra.Handlers[verb]; !ok {
-		tetra.Handlers[verb] = make(map[string]*Handler)
+	if _, ok := Handlers[verb]; !ok {
+		Handlers[verb] = make(map[string]*Handler)
 	}
 
-	tetra.Handlers[verb][handler.Uuid] = handler
+	Handlers[verb][handler.Uuid] = handler
 
 	return
 }
 
 // DelHandler deletes a handler for a given protocol verb by the UUID of the handler.
-func (tetra *Tetra) DelHandler(verb string, uuid string) (err error) {
-	if _, present := tetra.Handlers[verb]; !present {
+func DelHandler(verb string, uuid string) (err error) {
+	if _, present := Handlers[verb]; !present {
 		err = errors.New("No such verb to delete handler for " + verb)
 		debug(err)
 		return err
 	}
 
-	tetra.Handlers[verb][uuid].Go = false
+	Handlers[verb][uuid].Go = false
 
-	delete(tetra.Handlers[verb], uuid)
+	delete(Handlers[verb], uuid)
 
 	return nil
 }

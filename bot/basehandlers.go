@@ -12,20 +12,20 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-func (tetra *Tetra) seedHandlers() {
-	tetra.AddHandler("NICK", func(line *r1459.RawLine) {
-		source := tetra.Clients.ByUID[line.Source]
+func seedHandlers() {
+	AddHandler("NICK", func(line *r1459.RawLine) {
+		source := Clients.ByUID[line.Source]
 
-		tetra.Clients.ChangeNick(source, line.Args[0])
+		Clients.ChangeNick(source, line.Args[0])
 
 		source.Nick = line.Args[0]
 	})
 
-	tetra.AddHandler("SQUIT", func(line *r1459.RawLine) {
-		if line.Args[0] == tetra.Info.Sid {
-			tetra.RunHook("SHUTDOWN")
+	AddHandler("SQUIT", func(line *r1459.RawLine) {
+		if line.Args[0] == Info.Sid {
+			RunHook("SHUTDOWN")
 
-			tetra.Log.Print("See you on the other side.")
+			Log.Print("See you on the other side.")
 
 			fmt.Println("Waiting for goroutines to settle... (5 seconds)")
 
@@ -35,38 +35,38 @@ func (tetra *Tetra) seedHandlers() {
 		}
 
 		sid := line.Args[0]
-		server := tetra.Servers[sid]
+		server := Servers[sid]
 
 		// Remove all clients from the split server
-		for uid, client := range tetra.Clients.ByUID {
+		for uid, client := range Clients.ByUID {
 			if strings.HasPrefix(uid, sid) {
-				tetra.Clients.DelClient(client)
+				Clients.DelClient(client)
 			}
 		}
 
-		delete(tetra.Servers, sid)
+		delete(Servers, sid)
 
 		for _, link := range server.Links {
 			debugf("%#v", link)
 
 			if link.Hops > server.Hops {
-				for uid, client := range tetra.Clients.ByUID {
+				for uid, client := range Clients.ByUID {
 					if strings.HasPrefix(uid, link.Sid) {
-						tetra.Clients.DelClient(client)
+						Clients.DelClient(client)
 					}
 				}
 
-				delete(tetra.Servers, link.Sid)
+				delete(Servers, link.Sid)
 			}
 		}
 	})
 
-	tetra.AddHandler("ERROR", func(line *r1459.RawLine) {
-		tetra.Log.Fatal(line.Raw)
+	AddHandler("ERROR", func(line *r1459.RawLine) {
+		Log.Fatal(line.Raw)
 	})
 
-	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
-		source := tetra.Clients.ByUID[line.Source]
+	AddHandler("PRIVMSG", func(line *r1459.RawLine) {
+		source := Clients.ByUID[line.Source]
 		destination := line.Args[0]
 		message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
@@ -74,14 +74,14 @@ func (tetra *Tetra) seedHandlers() {
 			return
 		} else {
 			var ok bool
-			_, ok = tetra.Clients.ByUID[destination]
+			_, ok = Clients.ByUID[destination]
 
 			if !ok {
-				tetra.Log.Fatal("got a message from a ghost client. We are out of sync.")
+				Log.Fatal("got a message from a ghost client. We are out of sync.")
 			}
 		}
 
-		client := tetra.Clients.ByUID[destination]
+		client := Clients.ByUID[destination]
 		verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
 
 		go func() {
@@ -94,7 +94,7 @@ func (tetra *Tetra) seedHandlers() {
 				reply := command.Impl(source, client, message)
 
 				if command.NeedsOper && reply != "" {
-					client.ServicesLog(tetra.Clients.ByUID[source.Target()].Nick + ": " + command.Verb + ": " + reply)
+					client.ServicesLog(Clients.ByUID[source.Target()].Nick + ": " + command.Verb + ": " + reply)
 				}
 
 				client.Notice(source, reply)
@@ -104,8 +104,8 @@ func (tetra *Tetra) seedHandlers() {
 		}()
 	})
 
-	tetra.AddHandler("PRIVMSG", func(line *r1459.RawLine) {
-		source := tetra.Clients.ByUID[line.Source]
+	AddHandler("PRIVMSG", func(line *r1459.RawLine) {
+		source := Clients.ByUID[line.Source]
 		destination := line.Args[0]
 		text := line.Args[1]
 
@@ -113,25 +113,25 @@ func (tetra *Tetra) seedHandlers() {
 			return
 		}
 
-		channel, ok := tetra.Channels[strings.ToUpper(destination)]
+		channel, ok := Channels[strings.ToUpper(destination)]
 		if !ok {
-			tetra.Log.Fatalf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
+			Log.Fatalf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
 		}
 
-		if strings.ToUpper(channel.Name) == strings.ToUpper(tetra.Config.General.SnoopChan) {
+		if strings.ToUpper(channel.Name) == strings.ToUpper(ActiveConfig.General.SnoopChan) {
 			if strings.HasSuffix(source.Nick, "Serv") {
-				tetra.RunHook(strings.ToUpper(source.Nick)+"-SERVICELOG", strings.Split(text, " "))
+				RunHook(strings.ToUpper(source.Nick)+"-SERVICELOG", strings.Split(text, " "))
 			}
 		} else {
-			for kind, client := range tetra.Services {
+			for kind, client := range Services {
 				if _, ok := client.Channels[channel.Target()]; ok {
-					tetra.RunHook(strings.ToUpper(kind)+"-CHANMSG", source, channel, strings.Split(text, " "))
+					RunHook(strings.ToUpper(kind)+"-CHANMSG", source, channel, strings.Split(text, " "))
 				}
 			}
 		}
 	})
 
-	tetra.AddHandler("UID", func(line *r1459.RawLine) {
+	AddHandler("UID", func(line *r1459.RawLine) {
 		// <<< :0RS UID RServ 2 0 +Z rserv rserv.yolo-swag.com 0 0RSSR0001 :Ruby Services
 		nick := line.Args[0]
 		umodes := line.Args[3]
@@ -158,21 +158,20 @@ func (tetra *Tetra) seedHandlers() {
 			Ip:       ip,
 			Account:  "*",
 			Gecos:    line.Args[8],
-			tetra:    tetra,
 			Umodes:   modeflags,
 			Channels: make(map[string]*Channel),
-			Server:   tetra.Servers[line.Source],
+			Server:   Servers[line.Source],
 			Metadata: make(map[string]string),
 		}
 
-		tetra.Clients.AddClient(client)
+		Clients.AddClient(client)
 
-		if tetra.Bursted {
-			tetra.RunHook("NEWCLIENT", client)
+		if Bursted {
+			RunHook("NEWCLIENT", client)
 		}
 	})
 
-	tetra.AddHandler("EUID", func(line *r1459.RawLine) {
+	AddHandler("EUID", func(line *r1459.RawLine) {
 		// :47G EUID xena 1 1404369238 +ailoswxz xena staff.yolo-swag.com 0::1 47GAAAABK 0::1 * :Xena
 		nick := line.Args[0]
 		umodes := line.Args[3]
@@ -199,23 +198,22 @@ func (tetra *Tetra) seedHandlers() {
 			Ip:       ip,
 			Account:  line.Args[9],
 			Gecos:    line.Args[10],
-			tetra:    tetra,
 			Umodes:   modeflags,
 			Channels: make(map[string]*Channel),
-			Server:   tetra.Servers[line.Source],
+			Server:   Servers[line.Source],
 			Metadata: make(map[string]string),
 		}
 
 		client.Server.AddClient()
 
-		tetra.Clients.AddClient(client)
+		Clients.AddClient(client)
 
-		if tetra.Bursted {
-			tetra.RunHook("NEWCLIENT", client)
+		if Bursted {
+			RunHook("NEWCLIENT", client)
 		}
 	})
 
-	tetra.AddHandler("BMASK", func(line *r1459.RawLine) {
+	AddHandler("BMASK", func(line *r1459.RawLine) {
 		// :42F BMASK 1414880311 #services b :fun!*@*
 		channame := line.Args[1]
 		bankind, ok := modes.CHANMODES[0][line.Args[2]]
@@ -227,7 +225,7 @@ func (tetra *Tetra) seedHandlers() {
 		masks := strings.Split(line.Args[3], " ")
 		var channel *Channel
 
-		if mychannel, ok := tetra.Channels[channame]; ok {
+		if mychannel, ok := Channels[channame]; ok {
 			channel = mychannel
 		} else {
 			return
@@ -236,7 +234,7 @@ func (tetra *Tetra) seedHandlers() {
 		channel.Lists[bankind] = append(channel.Lists[bankind], masks...)
 	})
 
-	tetra.AddHandler("SJOIN", func(line *r1459.RawLine) {
+	AddHandler("SJOIN", func(line *r1459.RawLine) {
 		// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
 		ts := line.Args[0]
 		name := line.Args[1]
@@ -250,7 +248,7 @@ func (tetra *Tetra) seedHandlers() {
 
 		var channel *Channel
 
-		if mychannel, ok := tetra.Channels[name]; ok {
+		if mychannel, ok := Channels[name]; ok {
 			channel = mychannel
 		} else {
 			// The ircd should never give an invalid TS.
@@ -265,7 +263,7 @@ func (tetra *Tetra) seedHandlers() {
 				}
 			}
 
-			channel = tetra.NewChannel(name, numberts)
+			channel = NewChannel(name, numberts)
 			channel.Modes = modeflags
 		}
 
@@ -277,7 +275,7 @@ func (tetra *Tetra) seedHandlers() {
 			uid = user[pfxcount:]
 			prefixes := user[:pfxcount]
 
-			client := tetra.Clients.ByUID[uid]
+			client := Clients.ByUID[uid]
 
 			cu := channel.AddChanUser(client)
 
@@ -287,15 +285,15 @@ func (tetra *Tetra) seedHandlers() {
 				}
 			}
 
-			if tetra.Bursted {
-				tetra.RunHook("JOINCHANNEL", cu)
+			if Bursted {
+				RunHook("JOINCHANNEL", cu)
 			}
 		}
 	})
 
-	tetra.AddHandler("MODE", func(line *r1459.RawLine) {
+	AddHandler("MODE", func(line *r1459.RawLine) {
 		var give bool = true
-		client := tetra.Clients.ByUID[line.Args[0]]
+		client := Clients.ByUID[line.Args[0]]
 		modeflags := client.Umodes
 
 		umodes := line.Args[1]
@@ -318,7 +316,7 @@ func (tetra *Tetra) seedHandlers() {
 		client.Umodes = modeflags
 	})
 
-	tetra.AddHandler("TMODE", func(line *r1459.RawLine) {
+	AddHandler("TMODE", func(line *r1459.RawLine) {
 		channame := line.Args[1]
 		modestring := line.Args[2]
 		params := line.Args[3:]
@@ -326,7 +324,7 @@ func (tetra *Tetra) seedHandlers() {
 		paramcounter := 0
 		set := true
 
-		channel, ok := tetra.Channels[strings.ToUpper(channame)]
+		channel, ok := Channels[strings.ToUpper(channame)]
 		if !ok {
 			return
 		}
@@ -375,44 +373,44 @@ func (tetra *Tetra) seedHandlers() {
 		}
 	})
 
-	tetra.AddHandler("JOIN", func(line *r1459.RawLine) {
-		client := tetra.Clients.ByUID[line.Source]
-		channel := tetra.Channels[strings.ToUpper(line.Args[1])]
+	AddHandler("JOIN", func(line *r1459.RawLine) {
+		client := Clients.ByUID[line.Source]
+		channel := Channels[strings.ToUpper(line.Args[1])]
 
 		channel.AddChanUser(client)
 
-		tetra.RunHook("JOINCHANNEL", channel.Clients[client.Uid])
+		RunHook("JOINCHANNEL", channel.Clients[client.Uid])
 	})
 
-	tetra.AddHandler("PART", func(line *r1459.RawLine) {
+	AddHandler("PART", func(line *r1459.RawLine) {
 		// <<< :42FAAAAAB PART #help
 		channelname := strings.ToUpper(line.Args[0])
-		channel := tetra.Channels[channelname]
-		client := tetra.Clients.ByUID[line.Source]
+		channel := Channels[channelname]
+		client := Clients.ByUID[line.Source]
 
 		channel.DelChanUser(client)
 	})
 
-	tetra.AddHandler("KICK", func(line *r1459.RawLine) {
+	AddHandler("KICK", func(line *r1459.RawLine) {
 		// <<< :42FAAAAAB KICK #help 42FAAAAAB :foo
 		channelname := strings.ToUpper(line.Args[0])
-		channel := tetra.Channels[channelname]
-		client := tetra.Clients.ByUID[line.Source]
+		channel := Channels[channelname]
+		client := Clients.ByUID[line.Source]
 
 		channel.DelChanUser(client)
 	})
 
-	tetra.AddHandler("CHGHOST", func(line *r1459.RawLine) {
-		client := tetra.Clients.ByUID[line.Args[0]]
+	AddHandler("CHGHOST", func(line *r1459.RawLine) {
+		client := Clients.ByUID[line.Args[0]]
 		client.VHost = line.Args[1]
 	})
 
-	tetra.AddHandler("QUIT", func(line *r1459.RawLine) {
-		client := tetra.Clients.ByUID[line.Source]
+	AddHandler("QUIT", func(line *r1459.RawLine) {
+		client := Clients.ByUID[line.Source]
 
-		tetra.RunHook("CLIENTQUIT", client)
+		RunHook("CLIENTQUIT", client)
 
-		tetra.Clients.DelClient(client)
+		Clients.DelClient(client)
 
 		for _, channel := range client.Channels {
 			channel.DelChanUser(client)
@@ -421,9 +419,9 @@ func (tetra *Tetra) seedHandlers() {
 		client.Server.DelClient()
 	})
 
-	tetra.AddHandler("SID", func(line *r1459.RawLine) {
+	AddHandler("SID", func(line *r1459.RawLine) {
 		// <<< :42F SID cod.int 2 752 :Cod fishy
-		parent := tetra.Servers[line.Source]
+		parent := Servers[line.Source]
 
 		server := &Server{
 			Name:    line.Args[0],
@@ -441,26 +439,26 @@ func (tetra *Tetra) seedHandlers() {
 
 		parent.Links = append(parent.Links, server)
 
-		tetra.Servers[server.Sid] = server
+		Servers[server.Sid] = server
 
 		metrics.Register(server.Name+"_clients", server.Counter)
 	})
 
-	tetra.AddHandler("PASS", func(line *r1459.RawLine) {
+	AddHandler("PASS", func(line *r1459.RawLine) {
 		// <<< PASS shameless TS 6 :42F
-		tetra.Uplink.Sid = line.Args[3]
-		tetra.Servers[line.Args[3]] = tetra.Uplink
+		Uplink.Sid = line.Args[3]
+		Servers[line.Args[3]] = Uplink
 	})
 
-	tetra.AddHandler("SERVER", func(line *r1459.RawLine) {
+	AddHandler("SERVER", func(line *r1459.RawLine) {
 		// <<< SERVER fluttershy.yolo-swag.com 1 :shadowircd test server
-		tetra.Uplink.Name = line.Args[0]
-		tetra.Uplink.Gecos = line.Args[2]
+		Uplink.Name = line.Args[0]
+		Uplink.Gecos = line.Args[2]
 
-		metrics.Register(tetra.Uplink.Name+"_clients", tetra.Uplink.Counter)
+		metrics.Register(Uplink.Name+"_clients", Uplink.Counter)
 	})
 
-	tetra.AddHandler("WHOIS", func(line *r1459.RawLine) {
+	AddHandler("WHOIS", func(line *r1459.RawLine) {
 		/*
 			<<< :649AAAABQ WHOIS 376100000 :ShadowNET
 			>>> :376 311 649AAAABQ ShadowNET fishie cod.services * :Cod IRC services
@@ -470,31 +468,31 @@ func (tetra *Tetra) seedHandlers() {
 		*/
 
 		target := line.Args[0]
-		client := tetra.Clients.ByUID[target]
-		source := tetra.Clients.ByUID[line.Source]
+		client := Clients.ByUID[target]
+		source := Clients.ByUID[line.Source]
 
 		temp := []string{
-			fmt.Sprintf(":%s 311 %s %s %s %s * :%s", tetra.Info.Sid, source.Uid,
+			fmt.Sprintf(":%s 311 %s %s %s %s * :%s", Info.Sid, source.Uid,
 				client.Nick, client.User, client.VHost, client.Gecos),
-			fmt.Sprintf(":%s 312 %s %s %s :%s", tetra.Info.Sid, source.Uid,
-				client.Nick, tetra.Info.Name, tetra.Info.Gecos),
+			fmt.Sprintf(":%s 312 %s %s %s :%s", Info.Sid, source.Uid,
+				client.Nick, Info.Name, Info.Gecos),
 			fmt.Sprintf(":%s 313 %s %s :is a Network Service (%s)",
-				tetra.Info.Sid, source.Uid, client.Nick, client.Kind),
-			fmt.Sprintf(":%s 318 %s %s :End of /WHOIS list.", tetra.Info.Sid,
+				Info.Sid, source.Uid, client.Nick, client.Kind),
+			fmt.Sprintf(":%s 318 %s %s :End of /WHOIS list.", Info.Sid,
 				source.Uid, client.Nick),
 		}
 
 		for _, line := range temp {
-			tetra.Conn.SendLine(line)
+			Conn.SendLine(line)
 		}
 	})
 
 	// Handle ENCAP by sending out a hook in the form of ENCAP-VERB.
-	tetra.AddHandler("ENCAP", func(line *r1459.RawLine) {
-		tetra.RunHook("ENCAP-"+line.Args[1], line.Source, line.Args[2:])
+	AddHandler("ENCAP", func(line *r1459.RawLine) {
+		RunHook("ENCAP-"+line.Args[1], line.Source, line.Args[2:])
 	})
 
-	tetra.NewHook("ENCAP-GCAP", func(args ...interface{}) {
+	NewHook("ENCAP-GCAP", func(args ...interface{}) {
 		if len(args) != 2 {
 			return
 		}
@@ -514,15 +512,15 @@ func (tetra *Tetra) seedHandlers() {
 			return
 		}
 
-		server, ok := tetra.Servers[sid]
+		server, ok := Servers[sid]
 		if !ok {
-			tetra.Log.Fatalf("Unknown server by ID %s. We are out of sync.", sid)
+			Log.Fatalf("Unknown server by ID %s. We are out of sync.", sid)
 		}
 
 		server.Capab = caps
 	})
 
-	tetra.NewHook("ENCAP-SU", func(parv ...interface{}) {
+	NewHook("ENCAP-SU", func(parv ...interface{}) {
 		var args []string
 		var ok bool
 		if args, ok = parv[1].([]string); !ok {
@@ -536,7 +534,7 @@ func (tetra *Tetra) seedHandlers() {
 		var source *Client
 		var accname string
 
-		if source, ok = tetra.Clients.ByUID[args[0]]; !ok {
+		if source, ok = Clients.ByUID[args[0]]; !ok {
 			return
 		}
 

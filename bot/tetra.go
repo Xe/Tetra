@@ -27,33 +27,33 @@ import (
 	"github.com/robfig/cron"
 )
 
-// Struct Tetra contains all fields for Tetra.
-type Tetra struct {
-	Conn     *Connection
-	Info     *Server
-	Clients  *Clients
-	Channels map[string]*Channel
-	Bursted  bool
-	Handlers map[string]map[string]*Handler
-	Services map[string]*Client
-	Servers  map[string]*Server
-	Scripts  map[string]*Script
-	Hooks    map[string][]*Hook
-	nextuid  int
-	Config   *Config
-	Log      *log.Logger
-	Uplink   *Server
-	tasks    chan string
-	wg       *sync.WaitGroup
-	Etcd     *etcd.Client
-	Atheme   *atheme.Atheme
-	Cron     *cron.Cron
-}
+// Struct Tetra contains all fields for
+var (
+	Conn         *Connection
+	Info         *Server
+	Clients      *ClientSet
+	Channels     map[string]*Channel
+	Bursted      bool
+	Handlers     map[string]map[string]*Handler
+	Services     map[string]*Client
+	Servers      map[string]*Server
+	Scripts      map[string]*Script
+	Hooks        map[string][]*Hook
+	nextuid      int
+	ActiveConfig *Config
+	Log          *log.Logger
+	Uplink       *Server
+	tasks        chan string
+	wg           *sync.WaitGroup
+	Etcd         *etcd.Client
+	Atheme       *atheme.Atheme
+	Cron         *cron.Cron
+)
 
 // NewTetra returns a new instance of Tetra based on a config file located at cpath.
 // This also kicks off the worker goroutines and statistics collection, as well
 // as seeding basic protocol verb handlers.
-func NewTetra(cpath string) (tetra *Tetra) {
+func NewTetra(cpath string) {
 	config, err := NewConfig(cpath)
 	if err != nil {
 		fmt.Printf("No config file %s\n", cpath)
@@ -64,80 +64,77 @@ func NewTetra(cpath string) (tetra *Tetra) {
 		config.General.Workers = 4
 	}
 
-	tetra = &Tetra{
-		Conn: &Connection{
-			Log:    log.New(os.Stdout, "CONN ", log.LstdFlags),
-			Buffer: make(chan string, 100),
-			open:   true,
-		},
-		Info: &Server{},
-		Clients: &Clients{
-			ByNick: make(map[string]*Client),
-			ByUID:  make(map[string]*Client),
-			Tetra:  tetra,
-			Gauge:  metrics.NewGauge(),
-		},
-		Channels: make(map[string]*Channel),
-		Handlers: make(map[string]map[string]*Handler),
-		Services: make(map[string]*Client),
-		Servers:  make(map[string]*Server),
-		Scripts:  make(map[string]*Script),
-		Hooks:    make(map[string][]*Hook),
-		Bursted:  false,
-		nextuid:  100000,
-		Config:   config,
-		Log:      log.New(os.Stdout, "BOT ", log.LstdFlags),
-		Uplink: &Server{
-			Counter: metrics.NewGauge(),
-		},
-		tasks: make(chan string, 100),
-		wg:    &sync.WaitGroup{},
-		Cron:  cron.New(),
+	Conn = &Connection{
+		Log:    log.New(os.Stdout, "CONN ", log.LstdFlags),
+		Buffer: make(chan string, 100),
+		open:   true,
 	}
+	Info = &Server{}
+	Clients = &ClientSet{
+		ByNick: make(map[string]*Client),
+		ByUID:  make(map[string]*Client),
+		Gauge:  metrics.NewGauge(),
+	}
+	Channels = make(map[string]*Channel)
+	Handlers = make(map[string]map[string]*Handler)
+	Services = make(map[string]*Client)
+	Servers = make(map[string]*Server)
+	Scripts = make(map[string]*Script)
+	Hooks = make(map[string][]*Hook)
+	Bursted = false
+	nextuid = 100000
+	ActiveConfig = config
+	Log = log.New(os.Stdout, "BOT ", log.LstdFlags)
+	Uplink = &Server{
+		Counter: metrics.NewGauge(),
+	}
+	tasks = make(chan string, 100)
+	wg = &sync.WaitGroup{}
+	Cron = cron.New()
 
-	tetra.Info = &Server{
-		Sid:     tetra.Config.Server.Sid,
-		Name:    tetra.Config.Server.Name,
-		Gecos:   tetra.Config.Server.Gecos,
-		Links:   []*Server{tetra.Uplink},
+	Info = &Server{
+		Sid:     ActiveConfig.Server.Sid,
+		Name:    ActiveConfig.Server.Name,
+		Gecos:   ActiveConfig.Server.Gecos,
+		Links:   []*Server{Uplink},
 		Counter: nil,
 	}
 
-	tetra.Conn.Debug = tetra.Config.General.Debug
+	Conn.Debug = ActiveConfig.General.Debug
 
-	tetra.Etcd = etcd.NewClient(tetra.Config.Etcd.Machines)
-	tetra.Etcd.CreateDir("/tetra", 0)
-	tetra.Etcd.CreateDir("/tetra/channels", 0)
-	tetra.Etcd.CreateDir("/tetra/clients", 0)
-	tetra.Etcd.CreateDir("/tetra/scripts", 0)
+	Etcd = etcd.NewClient(ActiveConfig.Etcd.Machines)
+	Etcd.CreateDir("/tetra", 0)
+	Etcd.CreateDir("/tetra/channels", 0)
+	Etcd.CreateDir("/tetra/clients", 0)
+	Etcd.CreateDir("/tetra/scripts", 0)
 
-	tetra.Atheme, err = atheme.NewAtheme(tetra.Config.Atheme.URL)
+	Atheme, err = atheme.NewAtheme(ActiveConfig.Atheme.URL)
 	if err != nil {
-		tetra.Log.Fatal(err)
+		Log.Fatal(err)
 	}
 
-	if tetra.Atheme == nil {
-		tetra.Log.Fatal("tetra.Atheme is nil.")
+	if Atheme == nil {
+		Log.Fatal("Atheme is nil.")
 	}
 
-	err = tetra.Atheme.Login(tetra.Config.Atheme.Username, tetra.Config.Atheme.Password)
+	err = Atheme.Login(ActiveConfig.Atheme.Username, ActiveConfig.Atheme.Password)
 	if err != nil {
-		tetra.Log.Fatalf("Atheme error: %s", err.Error())
+		Log.Fatalf("Atheme error: %s", err.Error())
 	}
 
-	tetra.Cron.AddFunc("0 30 * * * *", func() {
+	Cron.AddFunc("0 30 * * * *", func() {
 		debug("Keeping us logged into Atheme...")
-		tetra.Atheme.MemoServ.List()
+		Atheme.MemoServ.List()
 	})
 
-	tetra.Cron.AddFunc("@every 5m", func() {
-		tetra.RunHook("CRON-HEARTBEAT")
+	Cron.AddFunc("@every 5m", func() {
+		RunHook("CRON-HEARTBEAT")
 	})
 
-	tetra.NewHook("CRON-HEARTBEAT", tetra.GetChannelStats)
-	tetra.NewHook("CRON-HEARTBEAT", tetra.GetChannelStats)
+	NewHook("CRON-HEARTBEAT", GetChannelStats)
+	NewHook("CRON-HEARTBEAT", GetChannelStats)
 
-	tetra.Cron.Start()
+	Cron.Start()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -148,101 +145,101 @@ func NewTetra(cpath string) (tetra *Tetra) {
 
 			fmt.Println(" <-- Control-C pressed!")
 
-			tetra.Quit()
+			Quit()
 		}
 	}()
 
-	tetra.seedHandlers()
+	seedHandlers()
 
-	metrics.Register(tetra.Config.Server.Name+"_clients", tetra.Info.Counter)
+	metrics.Register(ActiveConfig.Server.Name+"_clients", Info.Counter)
 
-	tetra.startWorkers(config.General.Workers)
+	startWorkers(config.General.Workers)
 
-	go tetra.Conn.sendLinesWait()
+	go Conn.sendLinesWait()
 
 	return
 }
 
 // NextUID returns a new TS6 UID.
-func (tetra *Tetra) NextUID() string {
-	tetra.nextuid++
-	return tetra.Info.Sid + strconv.Itoa(tetra.nextuid)
+func NextUID() string {
+	nextuid++
+	return Info.Sid + strconv.Itoa(nextuid)
 }
 
 // Connect connects to the uplink server.
-func (tetra *Tetra) Connect(host, port string) (err error) {
-	if tetra.Config.Uplink.Ssl {
+func Connect(host, port string) (err error) {
+	if ActiveConfig.Uplink.Ssl {
 		config := &tls.Config{InsecureSkipVerify: true}
-		tetra.Conn.Conn, err = tls.Dial("tcp", host+":"+port, config)
+		Conn.Conn, err = tls.Dial("tcp", host+":"+port, config)
 	} else {
-		tetra.Conn.Conn, err = net.Dial("tcp", host+":"+port)
+		Conn.Conn, err = net.Dial("tcp", host+":"+port)
 		if err != nil {
-			tetra.Log.Fatal(err)
+			Log.Fatal(err)
 		}
 	}
 
-	tetra.Conn.Reader = bufio.NewReader(tetra.Conn.Conn)
-	tetra.Conn.Tp = textproto.NewReader(tetra.Conn.Reader)
+	Conn.Reader = bufio.NewReader(Conn.Conn)
+	Conn.Tp = textproto.NewReader(Conn.Reader)
 
 	return
 }
 
 // Auth authenticates over TS6.
-func (tetra *Tetra) Auth() {
-	tetra.Conn.SendLine("PASS " + tetra.Config.Uplink.Password + " TS 6 :" + tetra.Config.Server.Sid)
-	tetra.Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
-	tetra.Conn.SendLine("SERVER " + tetra.Config.Server.Name + " 1 :" + tetra.Config.Server.Gecos)
+func Auth() {
+	Conn.SendLine("PASS " + ActiveConfig.Uplink.Password + " TS 6 :" + ActiveConfig.Server.Sid)
+	Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
+	Conn.SendLine("SERVER " + ActiveConfig.Server.Name + " 1 :" + ActiveConfig.Server.Gecos)
 }
 
 // Burst sends our local information after recieving the server's burst.
-func (tetra *Tetra) Burst() {
-	for _, script := range tetra.Config.Autoload {
-		tetra.LoadScript(script)
+func Burst() {
+	for _, script := range ActiveConfig.Autoload {
+		LoadScript(script)
 	}
 
-	for _, client := range tetra.Services {
-		tetra.Conn.SendLine(client.Euid())
+	for _, client := range Services {
+		Conn.SendLine(client.Euid())
 		if client.Certfp != "" {
-			tetra.Conn.SendLine(":%s ENCAP * CERTFP :%s", client.Uid, client.Certfp)
+			Conn.SendLine(":%s ENCAP * CERTFP :%s", client.Uid, client.Certfp)
 		}
 
-		client.Join(tetra.Config.General.SnoopChan)
+		client.Join(ActiveConfig.General.SnoopChan)
 	}
 
-	for _, channel := range tetra.Channels {
+	for _, channel := range Channels {
 		for uid, _ := range channel.Clients {
-			if !strings.HasPrefix(uid, tetra.Info.Sid) {
+			if !strings.HasPrefix(uid, Info.Sid) {
 				continue
 			}
-			str := fmt.Sprintf(":%s SJOIN %d %s + :%s", tetra.Info.Sid, channel.Ts, channel.Name, uid)
-			tetra.Conn.SendLine(str)
+			str := fmt.Sprintf(":%s SJOIN %d %s + :%s", Info.Sid, channel.Ts, channel.Name, uid)
+			Conn.SendLine(str)
 		}
 	}
 
-	metrics.Register("clientcount", tetra.Clients.Gauge)
+	metrics.Register("clientcount", Clients.Gauge)
 
-	if tetra.Config.Stats.Host != "NOCOLLECTION" {
-		go tetra.GetNetworkStats()
-		go tetra.GetChannelStats()
+	if ActiveConfig.Stats.Host != "NOCOLLECTION" {
+		go GetNetworkStats()
+		go GetChannelStats()
 
 		go influxdb.Influxdb(metrics.DefaultRegistry, 5*time.Minute, &influxdb.Config{
-			Host:     tetra.Config.Stats.Host,
-			Database: tetra.Config.Stats.Database,
-			Username: tetra.Config.Stats.Username,
-			Password: tetra.Config.Stats.Password,
+			Host:     ActiveConfig.Stats.Host,
+			Database: ActiveConfig.Stats.Database,
+			Username: ActiveConfig.Stats.Username,
+			Password: ActiveConfig.Stats.Password,
 		})
 	}
 
-	tetra.Bursted = true
+	Bursted = true
 
-	tetra.RunHook("BURSTED")
+	RunHook("BURSTED")
 }
 
 // StickConfig creates Clients based off of the config file and handles module
 // autoloads.
-func (tetra *Tetra) StickConfig() {
-	for _, sclient := range tetra.Config.Services {
-		client := tetra.AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos, sclient.Certfp)
+func StickConfig() {
+	for _, sclient := range ActiveConfig.Services {
+		client := AddService(sclient.Name, sclient.Nick, sclient.User, sclient.Host, sclient.Gecos, sclient.Certfp)
 
 		client.NewCommand("HELP", func(source *Client, target Targeter, message []string) (ret string) {
 			if len(message) == 0 {
@@ -287,7 +284,7 @@ func (tetra *Tetra) StickConfig() {
 
 	time.Sleep(500 * time.Millisecond)
 
-	for _, client := range tetra.Services {
+	for _, client := range Services {
 		filepath.Walk("modules/"+client.Kind+"/core/", func(path string, info os.FileInfo, err error) error {
 			modname := strings.Split(path, ".")[0]
 			mods := strings.Split(modname, "/")
@@ -297,7 +294,7 @@ func (tetra *Tetra) StickConfig() {
 				return nil
 			}
 
-			tetra.LoadScript(client.Kind + "/core/" + modname)
+			LoadScript(client.Kind + "/core/" + modname)
 
 			return nil
 		})
@@ -305,16 +302,16 @@ func (tetra *Tetra) StickConfig() {
 }
 
 // Quit kills Tetra gracefully.
-func (tetra *Tetra) Quit() {
-	for _, service := range tetra.Services {
-		tetra.DelService(service.Kind)
+func Quit() {
+	for _, service := range Services {
+		DelService(service.Kind)
 	}
 
-	tetra.Conn.SendLine("SQUIT %s :Goodbye!", tetra.Info.Sid)
+	Conn.SendLine("SQUIT %s :Goodbye!", Info.Sid)
 }
 
 // ProcessLine processes a line as if it came from the server.
-func (tetra *Tetra) ProcessLine(line string) {
+func ProcessLine(line string) {
 	rawline := r1459.NewRawLine(line)
 
 	debugf("<<< %s", line)
@@ -322,25 +319,25 @@ func (tetra *Tetra) ProcessLine(line string) {
 	// This should just be hard-coded here.
 	if rawline.Verb == "PING" {
 		if rawline.Source == "" {
-			if !tetra.Bursted {
-				tetra.Burst()
-				tetra.Log.Printf("Bursted!")
+			if !Bursted {
+				Burst()
+				Log.Printf("Bursted!")
 			}
-			tetra.Conn.SendLine("PONG :" + rawline.Args[0])
+			Conn.SendLine("PONG :" + rawline.Args[0])
 		} else {
-			tetra.Conn.SendLine(":%s PONG %s :%s", tetra.Info.Sid, tetra.Info.Name, rawline.Source)
+			Conn.SendLine(":%s PONG %s :%s", Info.Sid, Info.Name, rawline.Source)
 		}
 	}
 
-	if _, present := tetra.Handlers[rawline.Verb]; present {
-		for _, handler := range tetra.Handlers[rawline.Verb] {
+	if _, present := Handlers[rawline.Verb]; present {
+		for _, handler := range Handlers[rawline.Verb] {
 			defer func() {
 				if r := recover(); r != nil {
 					str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
 						handler.Verb, handler.Uuid, r)
-					tetra.Log.Print(str)
-					tetra.Log.Printf("%#v", r)
-					tetra.Services["tetra"].ServicesLog(str)
+					Log.Print(str)
+					Log.Printf("%#v", r)
+					Services["tetra"].ServicesLog(str)
 				}
 			}()
 			handler.Impl(rawline)
@@ -349,23 +346,23 @@ func (tetra *Tetra) ProcessLine(line string) {
 }
 
 // Main is the main loop.
-func (t *Tetra) Main() {
+func Main() {
 	for {
-		line, err := t.Conn.GetLine()
+		line, err := Conn.GetLine()
 		if err != nil {
 			break
 		}
 
 		debug("Got line")
 
-		if t.Bursted {
-			t.tasks <- line
+		if Bursted {
+			tasks <- line
 		} else {
 			debug("begin process line")
-			t.ProcessLine(line)
+			ProcessLine(line)
 			debug("End process line")
 		}
 	}
 
-	t.wg.Wait()
+	wg.Wait()
 }

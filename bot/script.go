@@ -1,10 +1,8 @@
 package tetra
 
 import (
-	"crypto/md5"
 	"errors"
 	"fmt"
-	"hash/fnv"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,6 +12,7 @@ import (
 
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/Tetra/1459"
+	"github.com/Xe/Tetra/bot/script/crypto"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/stevedonovan/luar"
 )
@@ -243,33 +242,8 @@ func (script *Script) seed() {
 	})
 
 	luar.Register(script.L, "crypto", luar.Map{
-		"hash": func(data string, salt string) string {
-			output := md5.Sum([]byte(data + salt))
-			return fmt.Sprintf("%x", output)
-		},
-		"fnv": func(data string) string {
-			h := fnv.New32()
-			h.Write([]byte(data))
-
-			hash := h.Sum32()
-
-			alphabet := "abcdefghijklmnopqrstuvwxyz"
-			res := ""
-
-			for _, char := range fmt.Sprintf("%d", hash) {
-				// This line here takes the number passed to it and "hashes" it by adding the rune's
-				// unicode value (as a uint 32) and then takes the modulus of 26, letting the number
-				// be represented as a letter of the alphabet. This is not a cryptographically
-				// secure operation, it is purely to replace numbers with a human-readable string
-				// to satisfy the requirement that any vhost with a "/" in it cannot end in a number
-				// (to avoid someone obtaining a vhost that is a cidr mask, it can cause issues).
-				res = res + string(alphabet[(uint32(char)+hash)%26])
-
-				hash = (hash << 1) | (hash >> 31) // "rotate" the number for extra variance
-			}
-
-			return res
-		},
+		"hash": crypto.Hash,
+		"fnv":  crypto.Fnv,
 	})
 
 	luar.Register(script.L, "strings", luar.Map{

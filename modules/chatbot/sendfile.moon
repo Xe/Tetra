@@ -5,10 +5,10 @@ Command "SENDFILE", true, (source, dest, message) ->
   target = message[1]
   filename = strings.split(message[2], "/")[1]
 
-  if tetra.bot.Clients.ByNick[target\upper!] ~= nil
-    target = tetra.bot.Clients.ByNick[target\upper!]
-  elseif tetra.bot.Channels[target\upper!] ~= nil
-    target = tetra.bot.Channels[target\upper!]
+  if tetra.Clients.ByNick[target\upper!] ~= nil
+    target = tetra.Clients.ByNick[target\upper!]
+  elseif tetra.Channels[target\upper!] ~= nil
+    target = tetra.Channels[target\upper!]
   else
     return "No such channel or user #{target}"
 

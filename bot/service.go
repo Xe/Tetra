@@ -6,7 +6,7 @@ import (
 )
 
 // AddService adds a new service Client to the network.
-func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
+func AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
 	cli = &Client{
 		Nick:     nick,
 		User:     user,
@@ -16,41 +16,40 @@ func (tetra *Tetra) AddService(service, nick, user, host, gecos, certfp string) 
 		Account:  "*",
 		Ip:       "0",
 		Ts:       time.Now().Unix(),
-		Uid:      tetra.NextUID(),
-		tetra:    tetra,
+		Uid:      NextUID(),
 		Channels: make(map[string]*Channel),
-		Server:   tetra.Info,
+		Server:   Info,
 		Kind:     service,
 		Commands: make(map[string]*Command),
 		Certfp:   certfp,
 		Metadata: make(map[string]string),
 	}
 
-	tetra.Services[service] = cli
+	Services[service] = cli
 
-	tetra.Clients.AddClient(cli)
+	Clients.AddClient(cli)
 
-	if tetra.Bursted {
-		tetra.Conn.SendLine(cli.Euid())
+	if Bursted {
+		Conn.SendLine(cli.Euid())
 		if cli.Certfp != "" {
-			tetra.Conn.SendLine(":%s ENCAP * CERTFP :%s", cli.Uid, cli.Certfp)
+			Conn.SendLine(":%s ENCAP * CERTFP :%s", cli.Uid, cli.Certfp)
 		}
 	}
 
-	tetra.Etcd.CreateDir("/tetra/scripts/"+cli.Kind, 0)
+	Etcd.CreateDir("/tetra/scripts/"+cli.Kind, 0)
 
 	return
 }
 
 // DelService deletes a service from the network or returns an error.
-func (tetra *Tetra) DelService(service string) (err error) {
-	if _, ok := tetra.Services[service]; !ok {
+func DelService(service string) (err error) {
+	if _, ok := Services[service]; !ok {
 		return errors.New("No such service " + service)
 	}
 
-	client := tetra.Services[service]
+	client := Services[service]
 
-	tetra.Clients.DelClient(client)
+	Clients.DelClient(client)
 	client.Quit()
 
 	return

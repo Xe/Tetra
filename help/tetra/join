@@ -3,7 +3,7 @@ Usage: JOIN <[service]|channel> [channel]
 Joins a service to a channel (by default the main service). This can be invoked
 in one of two ways. The first allows you to join the core service to a channel
 and the second allows you to join any arbitrary service to a channel. The service
-name is the short name ("tetra" instead of "{{$client := index .Tetra.Services "tetra"}}{{$client.Nick}}".)
+name is the short name ("{{ .Me.Kind }}" instead of "{{ .Me.Nick }}".)
 
 This command will fail if the channel does not exist on the network.
 

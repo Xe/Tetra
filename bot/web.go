@@ -81,7 +81,7 @@ func convertClient(in *Client) (out client) {
 }
 
 // WebApp creates the web application and YAML api for Tetra.
-func (t *Tetra) WebApp() {
+func WebApp() {
 	mux := routes.New()
 	r := render.New(render.Options{})
 
@@ -92,7 +92,7 @@ func (t *Tetra) WebApp() {
 	mux.Get("/channels.json", func(w http.ResponseWriter, req *http.Request) {
 		var channels []channel
 
-		for _, in := range t.Channels {
+		for _, in := range Channels {
 			if in.Modes&modes.PROP_SECRET != modes.PROP_SECRET {
 				channels = append(channels, convertChannel(in))
 			}
@@ -104,7 +104,7 @@ func (t *Tetra) WebApp() {
 	mux.Get("/clients.json", func(res http.ResponseWriter, req *http.Request) {
 		var clients []client
 
-		for _, in := range t.Clients.ByUID {
+		for _, in := range Clients.ByUID {
 			myclient := convertClient(in)
 
 			if len(myclient.Joins) == 0 {
@@ -122,8 +122,8 @@ func (t *Tetra) WebApp() {
 		id := params.Get(":id")
 		username := req.URL.Query()["username"][0]
 
-		t.RunHook("YO", username, id)
-		t.RunHook("YO_"+id, username)
+		RunHook("YO", username, id)
+		RunHook("YO_"+id, username)
 
 		fmt.Fprintf(res, "OK")
 	})
@@ -133,7 +133,7 @@ func (t *Tetra) WebApp() {
 		port = "3000"
 	}
 
-	t.Log.Printf("listening on %v...\n", port)
+	Log.Printf("listening on %v...\n", port)
 
 	go func() {
 		n := negroni.New(negroni.NewRecovery(), negroni.NewStatic(http.Dir("public")), web.NewLogger())
@@ -144,9 +144,9 @@ func (t *Tetra) WebApp() {
 		err := http.ListenAndServe(":"+port, n)
 
 		if err != nil {
-			t.Services["tetra"].ServicesLog("Web app died")
-			t.Services["tetra"].ServicesLog(err.Error())
-			t.Log.Fatal(err)
+			Services["tetra"].ServicesLog("Web app died")
+			Services["tetra"].ServicesLog(err.Error())
+			Log.Fatal(err)
 		}
 	}()
 }

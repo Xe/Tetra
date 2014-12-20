@@ -14,6 +14,7 @@ import (
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/script/crypto"
 	lua "github.com/aarzilli/golua/lua"
+	"github.com/sjkaliski/go-yo"
 	"github.com/stevedonovan/luar"
 )
 
@@ -21,7 +22,6 @@ import (
 type Script struct {
 	Name     string
 	L        *lua.State
-	Tetra    *Tetra
 	Log      *log.Logger
 	Handlers map[string]*Handler
 	Commands map[string]*Command
@@ -52,21 +52,20 @@ type Invocation struct {
 }
 
 // LoadScript finds and loads the appropriate script by a given short name (tetra/die).
-func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
+func LoadScript(name string) (script *Script, err error) {
 	kind := strings.Split(name, "/")[0]
-	client, ok := tetra.Services[kind]
+	client, ok := Services[kind]
 	if !ok {
 		return nil, errors.New("Cannot find target service " + kind)
 	}
 
-	if _, present := tetra.Scripts[name]; present {
+	if _, present := Scripts[name]; present {
 		return nil, errors.New("Double script load!")
 	}
 
 	script = &Script{
 		Name:     name,
 		L:        luar.Init(),
-		Tetra:    tetra,
 		Log:      log.New(os.Stdout, name+" ", log.LstdFlags),
 		Handlers: make(map[string]*Handler),
 		Commands: make(map[string]*Command),
@@ -78,18 +77,18 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 
 	script.seed()
 
-	script, err = tetra.loadLuaScript(script)
+	script, err = loadLuaScript(script)
 	if err != nil {
-		script, err = tetra.loadMoonScript(script)
+		script, err = loadMoonScript(script)
 
 		if err != nil {
 			return nil, errors.New("No such script " + name)
 		}
 	}
 
-	tetra.Scripts[name] = script
+	Scripts[name] = script
 
-	tetra.Etcd.CreateDir("/tetra/scripts/"+name, 0)
+	Etcd.CreateDir("/tetra/scripts/"+name, 0)
 
 	go func() {
 		for args := range script.Trigger {
@@ -169,7 +168,7 @@ func (tetra *Tetra) LoadScript(name string) (script *Script, err error) {
 	return
 }
 
-func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
+func loadLuaScript(script *Script) (*Script, error) {
 	script.L.DoFile("modules/base.lua")
 
 	err := script.L.DoFile("modules/" + script.Name + ".lua")
@@ -185,7 +184,7 @@ func (tetra *Tetra) loadLuaScript(script *Script) (*Script, error) {
 	return script, nil
 }
 
-func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
+func loadMoonScript(script *Script) (*Script, error) {
 	contents, failed := ioutil.ReadFile("modules/" + script.Name + ".moon")
 
 	if failed != nil {
@@ -196,7 +195,7 @@ func (tetra *Tetra) loadMoonScript(script *Script) (*Script, error) {
 		"moonscript_code_from_file": string(contents),
 	})
 
-	err := script.L.DoString(`moonscript = require "moonscript" xpcall = unsafe_xpcall pcall = unsafe_pcall local func, err = moonscript.loadstring(moonscript_code_from_file) if err ~= nil then tetra.log.Printf("Moonscript error, %#v", err) error(err) end func()`)
+	err := script.L.DoString(`moonscript = require "moonscript" xpcall = unsafe_xpcall pcall = unsafe_pcall local func, err = moonscript.loadstring(moonscript_code_from_file) if err ~= nil then log.Printf("Moonscript error, %#v", err) error(err) end func()`)
 	if err != nil {
 		script.Log.Print(err)
 		return nil, err
@@ -218,13 +217,28 @@ func (script *Script) seed() {
 	})
 
 	luar.Register(script.L, "tetra", luar.Map{
-		"script":    script,
-		"log":       script.Log,
-		"bot":       script.Tetra,
-		"protohook": script.AddLuaProtohook,
-		"GC":        runtime.GC,
-		"debug":     debug,
-		"debugf":    debugf,
+		"script":       script,
+		"log":          script.Log,
+		"Info":         Info,
+		"Clients":      Clients,
+		"Channels":     Channels,
+		"Bursted":      Bursted,
+		"Services":     Services,
+		"Config":       ActiveConfig,
+		"ActiveConfig": ActiveConfig,
+		"Log":          script.Log,
+		"Etcd":         Etcd,
+		"Atheme":       Atheme,
+		"RunHook":      RunHook,
+		"LoadScript":   func(name string) (script *Script, err error) { return LoadScript(name) },
+		"UnloadScript": func(name string) error { return UnloadScript(name) },
+		"Scripts":      Scripts,
+		"GetYo":        func(name string) (client *yo.Client, err error) { return GetYo(name) },
+		"protohook":    script.AddLuaProtohook,
+		"GC":           runtime.GC,
+		"debug":        debug,
+		"debugf":       debugf,
+		"atheme":       Atheme,
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{
@@ -292,7 +306,7 @@ func (s *Script) Call(command string, source *Client, dest Targeter, args []stri
 func (script *Script) AddLuaProtohook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
-	handler, err := script.Tetra.AddHandler(verb, func(line *r1459.RawLine) {
+	handler, err := AddHandler(verb, func(line *r1459.RawLine) {
 		debugf("sending %s", verb)
 		script.Trigger <- []interface{}{function, line}
 	})
@@ -336,7 +350,7 @@ func (script *Script) AddLuaCommand(verb string, name string) error {
 func (script *Script) AddLuaHook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
-	hook := script.Tetra.NewHook(verb, func(args ...interface{}) {
+	hook := NewHook(verb, func(args ...interface{}) {
 		_, err := function.Call(args...)
 		if err != nil {
 			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
@@ -351,15 +365,15 @@ func (script *Script) AddLuaHook(verb string, name string) error {
 }
 
 // Unload a script and delete its commands and handlers
-func (tetra *Tetra) UnloadScript(name string) error {
-	if _, ok := tetra.Scripts[name]; !ok {
+func UnloadScript(name string) error {
+	if _, ok := Scripts[name]; !ok {
 		panic("No such script " + name)
 	}
 
-	script := tetra.Scripts[name]
+	script := Scripts[name]
 
 	for _, handler := range script.Handlers {
-		tetra.DelHandler(handler.Verb, handler.Uuid)
+		DelHandler(handler.Verb, handler.Uuid)
 		delete(script.Handlers, handler.Uuid)
 	}
 
@@ -369,13 +383,13 @@ func (tetra *Tetra) UnloadScript(name string) error {
 	}
 
 	for _, hook := range script.Hooks {
-		tetra.DelHook(hook)
+		DelHook(hook)
 	}
 
 	script.L.Close()
 	close(script.Trigger)
 
-	delete(tetra.Scripts, name)
+	delete(Scripts, name)
 
 	return nil
 }

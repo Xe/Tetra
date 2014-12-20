@@ -44,7 +44,7 @@ Hook "MONGBLOCKER-CHANMSG", (source, destination, msg) ->
   dest = destination.Target!
   src = source.Uid
 
-  if strings.first(msg[1]) == tetra.bot.Config.General.Prefix
+  if strings.first(msg[1]) == tetra.Config.General.Prefix
     return
 
   if Scores[dest] == nil

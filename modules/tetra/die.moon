@@ -1,4 +1,4 @@
 Command "DIE", true, (source) ->
   client.ServicesLog "#{source.Nick}: DIE"
-  tetra.bot.Quit!
+  tetra.Quit!
   return "Okay"

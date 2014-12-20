@@ -25,7 +25,7 @@ if store.data.pc == nil
 Hook "HOSTSERV-REQUEST", (nick, vhost) ->
   client.OperLog "HostServ: #{nick} requested #{vhost}"
 
-  --info = tetra.bot.Atheme.NickServ.Info nick
+  --info = tetra.Atheme.NickServ.Info nick
 
   --if info == nil
   --  return
@@ -41,10 +41,10 @@ Hook "HOSTSERV-REQUEST", (nick, vhost) ->
 
     if vhost\match policy.pattern
       if policy.action == "REJECT"
-        tetra.bot.Atheme.HostServ.Reject nick, "Your vhost failed a policy test (#{policy.uuid})"
+        tetra.Atheme.HostServ.Reject nick, "Your vhost failed a policy test (#{policy.uuid})"
         client.OperLog "Vhost #{vhost} for #{name} matched test #{policy.pattern} (#{policy.uuid}) and was rejected"
       else if policy.action == "ACTIVATE"
-        tetra.bot.Atheme.HostServ.Activate nick
+        tetra.Atheme.HostServ.Activate nick
         client.OperLog "Vhost #{vhost} for #{name} matched test #{policy.pattern} (#{policy.uuid}) and was activated"
 
       break

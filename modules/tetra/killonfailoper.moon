@@ -8,7 +8,7 @@ Hook "ENCAP-SNOTE-S", (message) ->
   if user == nil
     return
 
-  target = tetra.bot.Clients.ByNick[user\upper!]
+  target = tetra.Clients.ByNick[user\upper!]
 
   for _, line in pairs {
     "You may not attempt to become an operator without being on staff.",

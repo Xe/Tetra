@@ -1,5 +1,5 @@
 Command("SCRIPTS", true, function(source, message)
-  for name, script in pairs(tetra.bot.Scripts) do
+  for name, script in pairs(tetra.Scripts) do
     local res = ""
 
     local res = name

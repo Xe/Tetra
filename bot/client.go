@@ -21,7 +21,6 @@ type Client struct {
 	Permissions int
 	Umodes      int
 	Kind        string
-	tetra       *Tetra
 	Ts          int64
 	Channels    map[string]*Channel
 	Server      *Server
@@ -46,7 +45,7 @@ func (r *Client) Euid() string {
 // Quit quits a client off of the network.
 func (r *Client) Quit() {
 	str := fmt.Sprintf(":%s QUIT :Service unloaded", r.Uid)
-	r.tetra.Conn.SendLine(str)
+	Conn.SendLine(str)
 }
 
 func (r *Client) message(source *Client, kind string, destination Targeter, message string) {
@@ -55,7 +54,7 @@ func (r *Client) message(source *Client, kind string, destination Targeter, mess
 	}
 
 	str := fmt.Sprintf(":%s %s %s :%s", source.Uid, kind, destination.Target(), message)
-	r.tetra.Conn.SendLine(str)
+	Conn.SendLine(str)
 }
 
 // Privmsg sends a PRIVMSG to destination with given message.
@@ -65,14 +64,14 @@ func (r *Client) Privmsg(destination Targeter, message string) {
 
 // ServicesLog logs a given message to the services snoop channel.
 func (r *Client) ServicesLog(message string) {
-	r.tetra.Log.Printf("%s: %s", r.Nick, message)
-	r.Privmsg(r.tetra.Channels[strings.ToUpper(r.tetra.Config.General.SnoopChan)], message)
+	Log.Printf("%s: %s", r.Nick, message)
+	r.Privmsg(Channels[strings.ToUpper(ActiveConfig.General.SnoopChan)], message)
 }
 
 // OperLog logs a given message to the operator channel.
 func (r *Client) OperLog(message string) {
-	r.tetra.Log.Printf("%s: %s", r.Nick, message)
-	r.Privmsg(r.tetra.Channels[strings.ToUpper(r.tetra.Config.General.StaffChan)], message)
+	Log.Printf("%s: %s", r.Nick, message)
+	r.Privmsg(Channels[strings.ToUpper(ActiveConfig.General.StaffChan)], message)
 }
 
 // Notice sends a NOTICE to destination with given message.
@@ -96,19 +95,19 @@ func (r *Client) Join(channame string) {
 
 	upperchan := strings.ToUpper(channame)
 
-	if _, ok := r.tetra.Channels[upperchan]; !ok {
-		channel = r.tetra.NewChannel(channame, time.Now().Unix())
+	if _, ok := Channels[upperchan]; !ok {
+		channel = NewChannel(channame, time.Now().Unix())
 	} else {
-		channel = r.tetra.Channels[upperchan]
+		channel = Channels[upperchan]
 	}
 
 	channel.AddChanUser(r)
 
-	if r.tetra.Bursted {
-		str := fmt.Sprintf(":%s SJOIN %d %s + :%s", r.tetra.Info.Sid, channel.Ts,
+	if Bursted {
+		str := fmt.Sprintf(":%s SJOIN %d %s + :%s", Info.Sid, channel.Ts,
 			channel.Name, r.Uid)
 
-		r.tetra.Conn.SendLine(str)
+		Conn.SendLine(str)
 	}
 }
 
@@ -116,17 +115,17 @@ func (r *Client) Join(channame string) {
 func (r *Client) Part(channame string) bool {
 	upperchan := strings.ToUpper(channame)
 
-	channel, err := r.tetra.Channels[upperchan]
+	channel, err := Channels[upperchan]
 	if !err {
 		return err
 	}
 
 	channel.DelChanUser(r)
 
-	if r.tetra.Bursted {
+	if Bursted {
 		str := fmt.Sprintf(":%s PART %s", r.Uid, channame)
 
-		r.tetra.Conn.SendLine(str)
+		Conn.SendLine(str)
 	}
 
 	return true
@@ -140,10 +139,10 @@ func (r *Client) IsOper() bool {
 // Kill kills a target client
 func (r *Client) Kill(target *Client, reason string) {
 	str := fmt.Sprintf(":%s KILL %s :%s!%s (%s)", r.Uid, target.Uid,
-		r.tetra.Config.Server.Name, r.Nick, reason)
+		ActiveConfig.Server.Name, r.Nick, reason)
 
-	r.tetra.Conn.SendLine(str)
-	r.tetra.Clients.DelClient(target)
+	Conn.SendLine(str)
+	Clients.DelClient(target)
 }
 
 // Chghost changes a client's visible host
@@ -154,7 +153,7 @@ func (r *Client) Chghost(target *Client, newhost string) (err error) {
 
 	line := fmt.Sprintf(":%s CHGHOST %s %s", r.Server.Sid, target.Target(), newhost)
 
-	r.tetra.Conn.SendLine(line)
+	Conn.SendLine(line)
 
 	return
 }

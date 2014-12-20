@@ -6,7 +6,7 @@ the following globals available:
     client:         the pseudoservice client that the script is running under
     tetra.script:   a reference to the script object
     tetra.log:      a reference to the script logger
-    tetra.bot:      a reference to the Tetra god object
+    tetra.:      a reference to the Tetra god object
     uuid.new:       a UUID generator for convenience
     web.get:        Go's http.Get
     web.post:       Go's http.Post

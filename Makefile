@@ -1,4 +1,4 @@
-VERSION="Tetra-0.1-`git rev-parse --short HEAD`-`uname`-`uname -m`"
+VERSION="Tetra-0.3-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
 .PHONY: build clean run package docker-build docker-run test pull debug
 
@@ -43,14 +43,6 @@ package:
 	@mkdir -p build/lib
 	@cp -rf lib build
 	@echo "Bundling documentation..."
-	@godoc github.com/coreos/go-etcd/etcd > build/doc/go/external/etcd
-	@godoc code.google.com/p/go-uuid/uuid > build/doc/go/external/go-uuid
-	@godoc github.com/sjkaliski/go-yo     > build/doc/go/external/go-yo
-	@godoc github.com/stevedonovan/luar   > build/doc/go/external/luar
-	@godoc github.com/kolo/xmlrpc         > build/doc/go/external/xmlrpc
-	@godoc github.com/coreos/go-etcd      > build/doc/go/external/go-etcd
-	@godoc github.com/codegangsta/cli     > build/doc/go/external/cli
-	@godoc gopkg.in/yaml.v1               > build/doc/go/external/yaml
 	@godoc .                              > build/doc/go/main
 	@godoc ./modules                      > build/doc/go/modules
 	@godoc ./atheme                       > build/doc/go/atheme

@@ -5,4 +5,4 @@ sending are present in etc/sendfile.
 
 Examples:
     SENDFILE AppleDash bigmatix
-    SENDFIEL #opers habi.txt
+    SENDFILE #opers habi.txt

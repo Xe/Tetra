@@ -1,0 +1,7 @@
+Usage: YT <search terms>
+
+YT has {{.Me.Nick}} search for videos on youtube based on the search
+terms provided.
+
+Example:
+    YT test

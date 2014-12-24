@@ -20,3 +20,16 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
     client.Privmsg(destination, ytlookup(message:match("%.be/(...........)")))
   else return end
 end)
+
+Command("YT", function(source, destination, message)
+  if #message < 1 then
+    return "Params: string to search youtube for"
+  end
+
+  local search = table.concat(luar.slice2table(message, " "))
+
+  local info = getjson("https://gdata.youtube.com/feeds/api/videos?q=" .. search .. "&v=2&alt=jsonc")
+  local video = info.data.items[1]
+
+  return "Youtube: " .. video.title .. " http://youtu.be/" .. video.id
+end)

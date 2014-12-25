@@ -16,7 +16,7 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
     local func, err = loadstring(toeval)
 
     if err ~= nil then
-      client.Privmsg(destination, string.format("error: %s",(err)))
+      client.Privmsg(destination, string.format("error: %s", err))
       return
     end
 

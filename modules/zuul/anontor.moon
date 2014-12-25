@@ -1,11 +1,11 @@
-Hash = (foo, salt) ->
+Hash = (foo) ->
   crypto.fnv(foo)
 
 Genvhost = (c) ->
   if c.Account == "*"
-    return "tor/anonymous/#{Hash c.Uid}/#{Hash c.User}/#{Hash c.Gecos}", false
+    return "tor/anonymous/#{Hash c.User}/#{Hash c.Gecos}", false
 
-  "tor/registered#{Hash c.Uid}/#{Hash c.Account}.#{Hash c.Gecos}", true
+  "tor/registered/#{Hash c.Account}.#{Hash c.Gecos}", true
 
 Info = (c) ->
   client.Notice c, "Here is what I know about you: "
@@ -15,8 +15,6 @@ Info = (c) ->
   client.Notice c, "   IP Address: #{c.Host}"
   "   Account     #{c.Account}"
 
-Command "INFO", Info
-
 DoCloak = (c) ->
   newhost, registered = Genvhost c
 
@@ -25,7 +23,7 @@ DoCloak = (c) ->
   client.Notice c, "Your host has been scrambled to #{newhost}."
   client.Notice c, "Please use this anonymous hidden service with care."
 
-  Info c
+  client.Notice c, Info c
 
   if registered
     client.Notice c, " "

@@ -239,6 +239,7 @@ func (script *Script) seed() {
 		"debug":        debug,
 		"debugf":       debugf,
 		"atheme":       Atheme,
+		"Quit":         Quit,
 	})
 
 	luar.Register(script.L, "uuid", luar.Map{

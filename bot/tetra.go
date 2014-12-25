@@ -21,6 +21,7 @@ import (
 
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/atheme"
+	"github.com/Xe/Tetra/bot/config"
 	"github.com/coreos/go-etcd/etcd"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rcrowley/go-metrics/influxdb"
@@ -40,7 +41,7 @@ var (
 	Scripts      map[string]*Script
 	Hooks        map[string][]*Hook
 	nextuid      int
-	ActiveConfig *Config
+	ActiveConfig *config.Config
 	Log          *log.Logger
 	Uplink       *Server
 	tasks        chan string
@@ -54,7 +55,7 @@ var (
 // This also kicks off the worker goroutines and statistics collection, as well
 // as seeding basic protocol verb handlers.
 func NewTetra(cpath string) {
-	config, err := NewConfig(cpath)
+	config, err := config.NewConfig(cpath)
 	if err != nil {
 		fmt.Printf("No config file %s\n", cpath)
 		panic(err)

@@ -1,4 +1,4 @@
-package tetra
+package config
 
 import (
 	"io/ioutil"

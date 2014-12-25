@@ -53,6 +53,8 @@ func (r *Client) message(source *Client, kind string, destination Targeter, mess
 		message = " "
 	}
 
+	message = strings.Replace(message, "%", "%%", -1)
+
 	str := fmt.Sprintf(":%s %s %s :%s", source.Uid, kind, destination.Target(), message)
 	Conn.SendLine(str)
 }
@@ -64,12 +66,14 @@ func (r *Client) Privmsg(destination Targeter, message string) {
 
 // ServicesLog logs a given message to the services snoop channel.
 func (r *Client) ServicesLog(message string) {
+	message = strings.Replace(message, "%", "%%", -1)
 	Log.Printf("%s: %s", r.Nick, message)
 	r.Privmsg(Channels[strings.ToUpper(ActiveConfig.General.SnoopChan)], message)
 }
 
 // OperLog logs a given message to the operator channel.
 func (r *Client) OperLog(message string) {
+	message = strings.Replace(message, "%", "%%", -1)
 	Log.Printf("%s: %s", r.Nick, message)
 	r.Privmsg(Channels[strings.ToUpper(ActiveConfig.General.StaffChan)], message)
 }

@@ -81,6 +81,10 @@ func seedHandlers() {
 			}
 		}
 
+		if line.Args[1][0] == '\x01' {
+			return
+		}
+
 		client := Clients.ByUID[destination]
 		verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
 
@@ -128,6 +132,26 @@ func seedHandlers() {
 					RunHook(strings.ToUpper(kind)+"-CHANMSG", source, channel, strings.Split(text, " "))
 				}
 			}
+		}
+	})
+
+	AddHandler("PRIVMSG", func(line *r1459.RawLine) {
+		if line.Args[0][0] == '#' {
+			return
+		}
+
+		source := Clients.ByUID[line.Source]
+		destination := Clients.ByUID[line.Args[0]]
+		text := line.Args[1]
+
+		verb := strings.Split(text, " ")[0]
+		verb = verb[1 : len(verb)-1]
+
+		switch verb {
+		case "VERSION":
+			destination.Notice(source, "\x01VERSION Tetra\x01")
+		default:
+			destination.Notice(source, "Unknown CTCP "+verb)
 		}
 	})
 

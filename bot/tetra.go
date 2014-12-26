@@ -132,9 +132,6 @@ func NewTetra(cpath string) {
 		RunHook("CRON-HEARTBEAT")
 	})
 
-	NewHook("CRON-HEARTBEAT", GetChannelStats)
-	NewHook("CRON-HEARTBEAT", GetChannelStats)
-
 	Cron.Start()
 
 	c := make(chan os.Signal, 1)
@@ -151,8 +148,6 @@ func NewTetra(cpath string) {
 	}()
 
 	seedHandlers()
-
-	metrics.Register(ActiveConfig.Server.Name+"_clients", Info.Counter)
 
 	startWorkers(config.General.Workers)
 
@@ -229,6 +224,8 @@ func Burst() {
 			Username: ActiveConfig.Stats.Username,
 			Password: ActiveConfig.Stats.Password,
 		})
+
+		metrics.Register(ActiveConfig.Server.Name+"_clients", Info.Counter)
 	}
 
 	Bursted = true

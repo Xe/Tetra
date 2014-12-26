@@ -1,7 +1,5 @@
 package tetra
 
-// Continuously reports the network statistics. Should be run in a
-// gorotutine.
 func GetNetworkStats(...interface{}) {
 	num := int64(len(Clients.ByNick))
 

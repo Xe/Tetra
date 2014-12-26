@@ -13,6 +13,7 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/script/crypto"
+	tstrings "github.com/Xe/Tetra/bot/script/strings"
 	lua "github.com/aarzilli/golua/lua"
 	"github.com/sjkaliski/go-yo"
 	"github.com/stevedonovan/luar"
@@ -275,27 +276,13 @@ func (script *Script) seed() {
 	luar.Register(script.L, "strings", luar.Map{
 		"join":  strings.Join,
 		"split": strings.Split,
-		"first": func(str string) string {
-			if len(str) > 0 {
-				return string(str[0])
-			} else {
-				return ""
-			}
-		},
-		"rest": func(str string) string {
-			if len(str) > 0 {
-				return str[1:]
-			} else {
-				return ""
-			}
-		},
+		"first": tstrings.First,
+		"rest":  tstrings.Rest,
 		"format": func(format string, args ...interface{}) string {
 			return fmt.Sprintf(format, args...)
 		},
-		"scan": fmt.Sscanf,
-		"shuck": func(victim string) string {
-			return victim[1 : len(victim)-1]
-		},
+		"scan":  fmt.Sscanf,
+		"shuck": tstrings.Shuck,
 		"hassuffix": func(s, pattern string) bool {
 			return strings.HasSuffix(s, pattern)
 		},

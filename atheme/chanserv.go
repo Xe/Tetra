@@ -20,10 +20,12 @@ type Flagset struct {
 
 // Struct ChannelInfo is the information Atheme has on a channel.
 type ChannelInfo struct {
-	Name   string   `json:"name"`   // Channel name
-	Mlock  string   `json:"mlock"`  // Channel mode lock
-	Flags  []string `json:"flags"`  // Channel SET flags
-	Prefix string   `json:"prefix"` // Channel FANTASY prefix
+	Name        string   `json:"name"`        // Channel name
+	Mlock       string   `json:"mlock"`       // Channel mode lock
+	Flags       []string `json:"flags"`       // Channel SET flags
+	Founder     string   `json:"founder"`     // Channel founder
+	Registered  string   `json:"registered"`  // Channel age
+	Description string   `json:"description"` // Channel description
 }
 
 // Kick sends a ChanServ KICK command to channel on victim with the denoted
@@ -97,8 +99,8 @@ func (cs *ChanServ) Info(channel string) (ci *ChannelInfo, err error) {
 
 		line = strings.Replace(line, "  ", "", -1)
 		data := strings.Split(line, ":")
-		key := strings.ToLower(data[0])
-		value := strings.TrimSpace(data[1])
+		key := strings.TrimSpace(strings.ToLower(data[0]))
+		value := strings.TrimSpace(strings.Join(data[1:], ":"))
 
 		// TODO: replace this with reflect
 		switch key {
@@ -106,8 +108,12 @@ func (cs *ChanServ) Info(channel string) (ci *ChannelInfo, err error) {
 			ci.Mlock = value
 		case "flags":
 			ci.Flags = strings.Split(value, " ")
-		case "prefix":
-			ci.Prefix = value
+		case "founder":
+			ci.Founder = value
+		case "registered":
+			ci.Registered = value
+		case "entrymsg":
+			ci.Description = value
 		}
 	}
 

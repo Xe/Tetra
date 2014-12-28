@@ -70,6 +70,34 @@ func (cs *ChanServ) SetAccessList(channel, target, flags string) (err error) {
 	return
 }
 
+// List lists all channels returning a slice of ChannelInfo structs
+// or an error describing the fault.
+func (cs *ChanServ) List() (res []*ChannelInfo, err error) {
+	var output string
+	output, err = cs.a.Command("ChanServ", "LIST")
+	if err != nil {
+		return nil, err
+	}
+
+	lines := strings.Split(output, "\n")
+	lines = lines[1 : len(lines)-1] // Shuck off the first and last lines as they are not useful.
+
+	for _, line := range lines {
+		// TODO: parse flags
+
+		// - #lobby ($oper) [held]
+		name := strings.Split(line, " ")[1]
+		founder := strings.Split(strings.Split(line, "(")[1], ")")[0]
+
+		res = append(res, &ChannelInfo{
+			Name:    name,
+			Founder: founder,
+		})
+	}
+
+	return
+}
+
 // Info gets information on a channel, returning a ChannelInfo struct
 // or an error describing the fault.
 func (cs *ChanServ) Info(channel string) (ci *ChannelInfo, err error) {

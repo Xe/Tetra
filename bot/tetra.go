@@ -331,11 +331,19 @@ func ProcessLine(line string) {
 		for _, handler := range Handlers[rawline.Verb] {
 			defer func() {
 				if r := recover(); r != nil {
-					str := fmt.Sprintf("Recovered in handler %s (%s): %#v (%s)",
-						handler.Verb, handler.Uuid, r, line)
-					Log.Print(str)
-					Log.Printf("%#v", r)
-					Services["tetra"].ServicesLog(str)
+					err, ok := r.(error)
+					if !ok {
+						str := fmt.Sprintf("Recovered in handler for %s %#v (%s), sleeping 1 ms and retrying",
+							handler.Verb, r, line)
+						Log.Print(str)
+						Services["tetra"].ServicesLog(str)
+					} else {
+						Log.Print(err.Error() + " (" + line + ")")
+						Services["tetra"].ServicesLog(err.Error() + " (" + line + ")")
+					}
+
+					time.Sleep(1 * time.Millisecond)
+					ProcessLine(line) // Try the line again
 				}
 			}()
 			handler.Impl(rawline)

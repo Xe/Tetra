@@ -11,7 +11,7 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
 
   if message:sub(1,1) == "=" then
     tetra.log.Printf(message)
-    toeval = "return " .. message:sub(3)
+    toeval = message:sub(3)
 
     local func, err = loadstring(toeval)
 
@@ -32,4 +32,4 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
       client.Privmsg(ld, "> nil")
     end
   end
-end)
+end)  

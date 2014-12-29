@@ -333,17 +333,17 @@ func ProcessLine(line string) {
 				if r := recover(); r != nil {
 					err, ok := r.(error)
 					if !ok {
-						str := fmt.Sprintf("Recovered in handler for %s %#v (%s), sleeping 1 ms and retrying",
+						str := fmt.Sprintf("Recovered in handler for %s %#v (%s), sleeping and retrying",
 							handler.Verb, r, line)
 						Log.Print(str)
-						Services["tetra"].ServicesLog(str)
 					} else {
 						Log.Print(err.Error() + " (" + line + ")")
-						Services["tetra"].ServicesLog(err.Error() + " (" + line + ")")
 					}
 
-					time.Sleep(1 * time.Millisecond)
-					ProcessLine(line) // Try the line again
+					go func() {
+						time.Sleep(75 * time.Millisecond)
+						ProcessLine(line) // Try the line again
+					}()
 				}
 			}()
 			handler.Impl(rawline)

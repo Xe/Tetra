@@ -35,7 +35,10 @@ func seedHandlers() {
 		}
 
 		sid := line.Args[0]
-		server := Servers[sid]
+		server, ok := Servers[sid]
+		if !ok {
+			Log.Fatalf("Unknown server by ID %s", sid)
+		}
 
 		// Remove all clients from the split server
 		for uid, client := range Clients.ByUID {
@@ -66,7 +69,11 @@ func seedHandlers() {
 	})
 
 	AddHandler("PRIVMSG", func(line *r1459.RawLine) {
-		source := Clients.ByUID[line.Source]
+		source, ok := Clients.ByUID[line.Source]
+		if !ok {
+			panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
+		}
+
 		destination := line.Args[0]
 		message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
@@ -109,7 +116,11 @@ func seedHandlers() {
 	})
 
 	AddHandler("PRIVMSG", func(line *r1459.RawLine) {
-		source := Clients.ByUID[line.Source]
+		source, ok := Clients.ByUID[line.Source]
+		if !ok {
+			panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
+		}
+
 		destination := line.Args[0]
 		text := line.Args[1]
 
@@ -144,7 +155,11 @@ func seedHandlers() {
 			return
 		}
 
-		source := Clients.ByUID[line.Source]
+		source, ok := Clients.ByUID[line.Source]
+		if !ok {
+			panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
+		}
+
 		destination := Clients.ByUID[line.Args[0]]
 		text := line.Args[1]
 
@@ -245,9 +260,8 @@ func seedHandlers() {
 		// :42F BMASK 1414880311 #services b :fun!*@*
 		channame := line.Args[1]
 		bankind, ok := modes.CHANMODES[0][line.Args[2]]
-
 		if !ok {
-			return
+			panic(fmt.Errorf("Unknown channel %s", line.Args[2]))
 		}
 
 		masks := strings.Split(line.Args[3], " ")
@@ -256,7 +270,7 @@ func seedHandlers() {
 		if mychannel, ok := Channels[channame]; ok {
 			channel = mychannel
 		} else {
-			return
+			panic(fmt.Errorf("Unknown channel %s", line.Args[2]))
 		}
 
 		channel.Lists[bankind] = append(channel.Lists[bankind], masks...)
@@ -354,7 +368,7 @@ func seedHandlers() {
 
 		channel, ok := Channels[strings.ToUpper(channame)]
 		if !ok {
-			return
+			panic(fmt.Errorf("Unknown channel name %s", channame))
 		}
 
 		for _, modechar := range modestring {
@@ -375,12 +389,17 @@ func seedHandlers() {
 							}
 						}
 					}
+
+					RunHook("LISTMODE", mode, flag, channel, params[paramcounter])
+					paramcounter++
 				} else if _, ok := modes.CHANMODES[1][mode]; ok { // channel set flag
 					if set {
 						channel.Modes = channel.Modes | modes.CHANMODES[1][mode]
 					} else {
 						channel.Modes = channel.Modes &^ (modes.CHANMODES[1][mode])
 					}
+
+					RunHook("SETMODE", mode, flag, channel)
 				} else if _, ok := modes.CHANMODES[2][mode]; ok { // channel prefix flag
 					if set {
 						channel.Clients[params[paramcounter]].Prefix =
@@ -389,11 +408,15 @@ func seedHandlers() {
 						channel.Clients[params[paramcounter]].Prefix =
 							channel.Clients[params[paramcounter]].Prefix &^ (modes.CHANMODES[2][mode])
 					}
+
+					RunHook("PREFIXMODE", mode, flag, channel, channel.Clients[params[paramcounter]])
 					paramcounter++
 				} else { // modes that exist yet we don't care about
 					if (mode == "j" || mode == "f") && set {
+						RunHook("PARAMETRICMODE", mode, flag, channel, params[paramcounter])
 						paramcounter++
 					} else if mode == "k" {
+						RunHook("KEYMODE", mode, flag, channel, params[paramcounter])
 						paramcounter++
 					}
 				}
@@ -402,19 +425,33 @@ func seedHandlers() {
 	})
 
 	AddHandler("JOIN", func(line *r1459.RawLine) {
-		client := Clients.ByUID[line.Source]
-		channel := Channels[strings.ToUpper(line.Args[1])]
+		client, ok := Clients.ByUID[line.Source]
+		if !ok {
+			panic(fmt.Errorf("Unknown client %s", line.Source))
+		}
 
-		channel.AddChanUser(client)
+		channel, ok := Channels[strings.ToUpper(line.Args[1])]
+		if !ok {
+			Log.Fatalf("Unknown channel %s, desync", strings.ToUpper(line.Args[1]))
+		}
 
-		RunHook("JOINCHANNEL", channel.Clients[client.Uid])
+		cu := channel.AddChanUser(client)
+
+		RunHook("JOINCHANNEL", cu)
 	})
 
 	AddHandler("PART", func(line *r1459.RawLine) {
 		// <<< :42FAAAAAB PART #help
 		channelname := strings.ToUpper(line.Args[0])
-		channel := Channels[channelname]
-		client := Clients.ByUID[line.Source]
+		client, ok := Clients.ByUID[line.Source]
+		if !ok {
+			Log.Fatalf("Unknown client %s, desync", line.Source)
+		}
+
+		channel, ok := Channels[channelname]
+		if !ok {
+			Log.Fatalf("Unknown channel %s, desync", channelname)
+		}
 
 		channel.DelChanUser(client)
 	})
@@ -422,19 +459,33 @@ func seedHandlers() {
 	AddHandler("KICK", func(line *r1459.RawLine) {
 		// <<< :42FAAAAAB KICK #help 42FAAAAAB :foo
 		channelname := strings.ToUpper(line.Args[0])
-		channel := Channels[channelname]
-		client := Clients.ByUID[line.Source]
+		client, ok := Clients.ByUID[line.Source]
+		if !ok {
+			panic(fmt.Errorf("Unknown client %s", line.Source))
+		}
+
+		channel, ok := Channels[channelname]
+		if !ok {
+			panic(fmt.Errorf("Unknown channel %s", line.Source))
+		}
 
 		channel.DelChanUser(client)
 	})
 
 	AddHandler("CHGHOST", func(line *r1459.RawLine) {
-		client := Clients.ByUID[line.Args[0]]
+		client, ok := Clients.ByUID[line.Args[0]]
+		if !ok {
+			Log.Fatalf("Unknown client %s, desync", line.Source)
+		}
+
 		client.VHost = line.Args[1]
 	})
 
 	AddHandler("QUIT", func(line *r1459.RawLine) {
-		client := Clients.ByUID[line.Source]
+		client, ok := Clients.ByUID[line.Source]
+		if !ok {
+			Log.Fatalf("Unknown client %s, desync", line.Source)
+		}
 
 		RunHook("CLIENTQUIT", client)
 
@@ -449,7 +500,10 @@ func seedHandlers() {
 
 	AddHandler("SID", func(line *r1459.RawLine) {
 		// <<< :42F SID cod.int 2 752 :Cod fishy
-		parent := Servers[line.Source]
+		parent, ok := Servers[line.Source]
+		if !ok {
+			Log.Fatal("No server by ID " + line.Source + ", desync")
+		}
 
 		server := &Server{
 			Name:    line.Args[0],
@@ -498,6 +552,10 @@ func seedHandlers() {
 		target := line.Args[0]
 		client := Clients.ByUID[target]
 		source := Clients.ByUID[line.Source]
+
+		if client.Kind == "" {
+			return
+		}
 
 		temp := []string{
 			fmt.Sprintf(":%s 311 %s %s %s %s * :%s", Info.Sid, source.Uid,

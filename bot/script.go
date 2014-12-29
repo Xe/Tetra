@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"runtime"
 	"strings"
@@ -259,8 +260,10 @@ func (script *Script) seed() {
 	})
 
 	luar.Register(script.L, "web", luar.Map{
-		"get":  http.Get,
-		"post": http.Post,
+		"get":    http.Get,
+		"post":   http.Post,
+		"encode": url.QueryEscape,
+		"decode": url.QueryUnescape,
 	})
 
 	luar.Register(script.L, "ioutil", luar.Map{

@@ -21,14 +21,17 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
   else return end
 end)
 
+--[[ --Removing this on 2014/12/28 because of incompatible youtube API changes
 Command("YT", function(source, destination, message)
   if #message < 1 then
     return "Params: string to search youtube for"
   end
 
   local search = table.concat(luar.slice2table(message, " "))
+  local url = "https://gdata.youtube.com/feeds/api/videos?q=" .. web.encode(search) .. "&v=2&alt=jsonc"
+  tetra.debug(url)
 
-  local info = getjson("https://gdata.youtube.com/feeds/api/videos?q=" .. url_encode(search) .. "&v=2&alt=jsonc")
+  local info = getjson("https://gdata.youtube.com/feeds/api/videos?q=" .. web.encode(search) .. "&v=2&alt=jsonc")
 
   if info.data.totalItems == 0 then
     print(json.encode(info))
@@ -39,3 +42,4 @@ Command("YT", function(source, destination, message)
 
   return "Youtube: " .. video.title .. " http://youtu.be/" .. video.id
 end)
+--]]

@@ -331,8 +331,8 @@ func ProcessLine(line string) {
 		for _, handler := range Handlers[rawline.Verb] {
 			defer func() {
 				if r := recover(); r != nil {
-					str := fmt.Sprintf("Recovered in handler %s (%s): %#v",
-						handler.Verb, handler.Uuid, r)
+					str := fmt.Sprintf("Recovered in handler %s (%s): %#v (%s)",
+						handler.Verb, handler.Uuid, r, line)
 					Log.Print(str)
 					Log.Printf("%#v", r)
 					Services["tetra"].ServicesLog(str)

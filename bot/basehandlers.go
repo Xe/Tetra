@@ -258,19 +258,20 @@ func seedHandlers() {
 
 	AddHandler("BMASK", func(line *r1459.RawLine) {
 		// :42F BMASK 1414880311 #services b :fun!*@*
-		channame := line.Args[1]
+		channame := strings.ToUpper(line.Args[1])
 		bankind, ok := modes.CHANMODES[0][line.Args[2]]
 		if !ok {
-			panic(fmt.Errorf("Unknown channel %s", line.Args[2]))
+			return
 		}
 
 		masks := strings.Split(line.Args[3], " ")
 		var channel *Channel
 
-		if mychannel, ok := Channels[channame]; ok {
-			channel = mychannel
+		if mychannel, ok := Channels[channame]; !ok {
+			Log.Printf("Unknown channel %s", channame)
+			return
 		} else {
-			panic(fmt.Errorf("Unknown channel %s", line.Args[2]))
+			channel = mychannel
 		}
 
 		channel.Lists[bankind] = append(channel.Lists[bankind], masks...)

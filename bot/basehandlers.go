@@ -140,6 +140,10 @@ func seedHandlers() {
 			return
 		}
 
+		if line.Args[1][0] != '\x01' {
+			return
+		}
+
 		source := Clients.ByUID[line.Source]
 		destination := Clients.ByUID[line.Args[0]]
 		text := line.Args[1]

@@ -28,7 +28,13 @@ Command("YT", function(source, destination, message)
 
   local search = table.concat(luar.slice2table(message, " "))
 
-  local info = getjson("https://gdata.youtube.com/feeds/api/videos?q=" .. search .. "&v=2&alt=jsonc")
+  local info = getjson("https://gdata.youtube.com/feeds/api/videos?q=" .. url_encode(search) .. "&v=2&alt=jsonc")
+
+  if info.data.totalItems == 0 then
+    print(json.encode(info))
+    return "No video found"
+  end
+
   local video = info.data.items[1]
 
   return "Youtube: " .. video.title .. " http://youtu.be/" .. video.id

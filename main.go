@@ -8,21 +8,18 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"runtime"
 
 	"github.com/Xe/Tetra/bot"
 )
 
 var (
 	config = flag.String("config", "etc/config.yaml", "configuration file for Tetra to use (or TETRA_CONFIG_PATH)")
-	procs  = flag.Int("procs", 1, "value for runtime.GOMAXPROCS")
 )
 
 func main() {
 	flag.Parse()
 
 	confloc := *config
-	runtime.GOMAXPROCS(*procs)
 
 	if envvar := os.Getenv("TETRA_CONFIG_PATH"); envvar != "" {
 		confloc = envvar

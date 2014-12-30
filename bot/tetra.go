@@ -338,6 +338,10 @@ func ProcessLine(line string) {
 						Log.Print(str)
 					} else {
 						Log.Print(err.Error() + " (" + line + ")")
+
+						if strings.Contains(err.Error(), "runtime") {
+							return
+						}
 					}
 
 					go func() {

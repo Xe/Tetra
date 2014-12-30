@@ -431,6 +431,12 @@ func seedHandlers() {
 			panic(fmt.Errorf("Unknown client %s", line.Source))
 		}
 
+		if line.Args[0] == "0" {
+			for _, channel := range client.Channels {
+				channel.DelChanUser(client)
+			}
+		}
+
 		channel, ok := Channels[strings.ToUpper(line.Args[1])]
 		if !ok {
 			Log.Fatalf("Unknown channel %s, desync", strings.ToUpper(line.Args[1]))

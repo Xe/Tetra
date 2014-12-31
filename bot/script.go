@@ -13,6 +13,7 @@ import (
 
 	"code.google.com/p/go-uuid/uuid"
 	"github.com/Xe/Tetra/1459"
+	"github.com/Xe/Tetra/bot/script/charybdis"
 	"github.com/Xe/Tetra/bot/script/crypto"
 	tstrings "github.com/Xe/Tetra/bot/script/strings"
 	lua "github.com/aarzilli/golua/lua"
@@ -289,6 +290,11 @@ func (script *Script) seed() {
 		"hassuffix": func(s, pattern string) bool {
 			return strings.HasSuffix(s, pattern)
 		},
+	})
+
+	luar.Register(script.L, "charybdis", luar.Map{
+		"cloakhost": charybdis.CloakHost,
+		"cloakip":   charybdis.CloakIP,
 	})
 }
 

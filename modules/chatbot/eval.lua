@@ -35,6 +35,7 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
       end,
       catch = function(e)
         client.Privmsg(ld, "uncaught lua error: " .. e)
+        client.ServicesLog("uncaught lua error: " .. e)
       end,
     }
 

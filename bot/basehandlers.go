@@ -220,7 +220,7 @@ func seedHandlers() {
 		umodes := line.Args[3]
 		user := line.Args[4]
 		host := line.Args[5]
-		ip := line.Args[8]
+		ip := line.Args[6]
 		uid := line.Args[7]
 
 		// TODO: make this its own function somewhere?
@@ -236,7 +236,7 @@ func seedHandlers() {
 			Nick:     nick,
 			User:     user,
 			VHost:    host,
-			Host:     line.Args[6],
+			Host:     line.Args[8],
 			Uid:      uid,
 			Ip:       ip,
 			Account:  line.Args[9],

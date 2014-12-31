@@ -140,10 +140,10 @@ end
 -- Usage:
 --
 -- try {
---  main: function()
+--  main = function()
 --    io.open("filethatDoesnOtexist", "r")
 --  end,
---  catch: function(e)
+--  catch = function(e)
 --    print("Caught error!", e)
 --  end,
 -- }

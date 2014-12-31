@@ -22,14 +22,21 @@ Hook("CHATBOT-CHANMSG", function(source, destination, message)
 
     client.ServicesLog(source.Nick .. ": EVAL: " .. toeval)
 
-    local res, err = func()
+    try {
+      main = function()
+        local res, err = func()
+        tetra.log.Printf("%#v: %#v", res, err)
 
-    tetra.log.Printf("%#v: %#v", res, err)
+        if res ~= nil then
+          client.Privmsg(ld, "> " .. res)
+        else
+          client.Privmsg(ld, "> nil")
+        end
+      end,
+      catch = function(e)
+        client.Privmsg(ld, "uncaught lua error: " .. e)
+      end,
+    }
 
-    if res ~= nil then
-      client.Privmsg(ld, "> " .. res)
-    else
-      client.Privmsg(ld, "> nil")
     end
-  end
-end)  
+end)

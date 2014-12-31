@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-/*
 func TestHostCloak(t *testing.T) {
 	str := "cyka.yolo-swag.com"
 
@@ -13,7 +12,7 @@ func TestHostCloak(t *testing.T) {
 	if output != "dhou.yolo-swag.com" {
 		t.Fatalf("Expected dhou.yolo-swag.com, got %s", output)
 	}
-}*/
+}
 
 func TestIPCloak(t *testing.T) {
 	str := "8.8.8.8"

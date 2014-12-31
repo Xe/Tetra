@@ -12,7 +12,7 @@ Info = (c) ->
   client.Notice c, "   Nick:       #{c.Nick}"
   client.Notice c, "   User:       #{c.User}"
   client.Notice c, "   Gecos:      #{c.Gecos}"
-  client.Notice c, "   IP Address: #{c.Host}"
+  client.Notice c, "   IP Address: #{c.Ip}"
   "   Account     #{c.Account}"
 
 DoCloak = (c) ->

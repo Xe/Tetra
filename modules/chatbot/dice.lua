@@ -26,6 +26,14 @@ Command("ROLL", function(source, destination, message)
 
   result = 0
 
+  if number > 50 then
+    return "Too many dice"
+  end
+
+  if kind > 50 then
+    return "Too many sides"
+  end
+
   for i = 1,number do
     result = result + math.random(kind)
   end

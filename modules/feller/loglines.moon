@@ -14,7 +14,16 @@ db\exec [[
   );
 ]]
 
+db\exec [[ BEGIN TRANSACTION; ]]
+
+Hook "CRON-HEARTBEAT", ->
+  db\exec [[
+    COMMIT;
+    BEGIN TRANSACTION;
+  ]]
+
 Hook "SHUTDOWN", ->
+  db\exec [[ COMMIT; ]]
   db\close!
 
 insert_stmt = assert db\prepare "INSERT INTO Chatlines VALUES(NULL, ?, ?, ?, ?, ?, ?)"

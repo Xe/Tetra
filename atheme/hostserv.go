@@ -44,6 +44,20 @@ func (hs *HostServ) Reject(account, message string) (err error) {
 	return
 }
 
+// Revoke revokes a vhost from an account or returns an error.
+func (hs *HostServ) Revoke(account string) (err error) {
+	_, err = hs.a.Command("HostServ", "VHOST", account)
+
+	return
+}
+
+// Assign assigns a vhost to an account or returns an error.
+func (hs *HostServ) Assign(account, vhost string) (err error) {
+	_, err = hs.a.Command("HostServ", "VHOST", account, vhost)
+
+	return
+}
+
 // List returns a list of all the vhosts Atheme is keeping track of.
 func (hs *HostServ) List() ([]VHost, error) {
 	return hs.ListPattern("*")

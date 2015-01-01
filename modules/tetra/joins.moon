@@ -1,7 +1,24 @@
-require "lib/etcd"
+sqlite3 = require "lsqlite3"
 
-export db = etcd.Store "joins"
+export db = sqlite3.open "var/tetra.db"
 export done = false
+
+db\exec [[
+  CREATE TABLE IF NOT EXISTS Joins (
+    id       INTEGER PRIMARY KEY,
+    name     TEXT,
+    service  TEXT
+  );
+]]
+
+db\trace (ud, sql) ->
+  log.Printf "SQL: %s", sql
+
+insert_stmt = assert db\prepare "INSERT INTO Joins VALUES (NULL, ?, ?)"
+select_stmt = assert db\prepare "SELECT * FROM Joins"
+
+delete = (name, service) ->
+  db\exec "DELETE FROM Joins WHERE name='#{name}' AND service='#{service}';"
 
 Command "JOIN", true, (source, destination, message) ->
   parc = #message
@@ -38,10 +55,10 @@ Command "JOIN", true, (source, destination, message) ->
 
   service.Join(chan)
 
-  if db.data[service.Kind] == nil
-    db.data[service.Kind] = {chan}
-  else
-    table.insert db.data[service.Kind], chan
+  do
+    insert_stmt\bind_values chan, service.Kind
+    insert_stmt\step!
+    insert_stmt\reset!
 
   return "Joined #{service.Nick} to #{chan}"
 
@@ -80,9 +97,7 @@ Command "PART", true, (source, destination, message) ->
 
   service.Part(chan)
 
-  do
-    idx = find db.data[service.Kind], chan
-    table.remove db.data[service.Kind], idx
+  delete chan, service.Kind
 
   return "Parted #{service.Nick} from #{chan}"
 
@@ -90,11 +105,13 @@ Protohook "PING", (line) ->
   if done
     return
 
-  for name, channels in pairs db.data
-    service = tetra.Services[name]
+  for row in select_stmt\nrows!
+    svc = tetra.Services[row.service]
 
-    for i, chan in pairs channels
-      print "#{service.Kind} joining #{chan}"
-      service.Join(chan)
+    print "#{svc.Nick} is joining #{row.name}"
+    svc.Join row.name
 
   done = true
+
+Hook "SHUTDOWN", ->
+  db\close!

@@ -17,9 +17,6 @@ db\exec [[
 Hook "SHUTDOWN", ->
   db\close!
 
-db\trace (ud, sql) ->
-  log.Printf "SQL: %s", sql
-
 insert_stmt = assert db\prepare "INSERT INTO Chatlines VALUES(NULL, ?, ?, ?, ?, ?, ?)"
 
 log = (channel, source, message) ->

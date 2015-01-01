@@ -391,6 +391,10 @@ func UnloadScript(name string) error {
 	}
 
 	for _, hook := range script.Hooks {
+		if hook.Verb == "SHUTDOWN" {
+			hook.impl()
+		}
+
 		DelHook(hook)
 	}
 

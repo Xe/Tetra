@@ -30,7 +30,7 @@ Command("ROLL", function(source, destination, message)
     return "Too many dice"
   end
 
-  if kind > 50 then
+  if kind > 150 then
     return "Too many sides"
   end
 

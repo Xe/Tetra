@@ -125,7 +125,13 @@ func NewTetra(cpath string) {
 
 	Cron.AddFunc("0 30 * * * *", func() {
 		debug("Keeping us logged into Atheme...")
-		Atheme.MemoServ.List()
+		_, err := Atheme.MemoServ.List()
+		if err != nil {
+			err = Atheme.Login(ActiveConfig.Atheme.Username, ActiveConfig.Atheme.Password)
+			if err != nil {
+				Log.Fatalf("Atheme error: %s", err.Error())
+			}
+		}
 	})
 
 	Cron.AddFunc("@every 5m", func() {

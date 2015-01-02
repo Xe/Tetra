@@ -38,8 +38,7 @@ package:
 	@echo "Packing modules..."
 	@cp -rf modules build
 	@rm build/modules/doc.go
-	@mkdir -p build/doc/go/bot
-	@mkdir -p build/doc/go/external
+	@mkdir -p build/doc/go/bot/script
 	@mkdir -p build/lib
 	@cp -rf lib build
 	@echo "Bundling documentation..."
@@ -50,6 +49,9 @@ package:
 	@godoc ./bot                          > build/doc/go/tetra
 	@godoc ./bot/modes                    > build/doc/go/bot/modes
 	@godoc ./bot/web                      > build/doc/go/bot/web
+	@godoc ./bot/script/crypto            > build/doc/go/bot/script/crypto
+	@godoc ./bot/script/charybdis         > build/doc/go/bot/script/charybdis
+	@godoc ./bot/script/strings           > build/doc/go/bot/script/strings
 	@cp -rf doc/* build/doc/
 	@mkdir build/etc
 	@cp etc/config.yaml.example build/etc

@@ -95,60 +95,36 @@ func LoadScript(name string) (script *Script, err error) {
 
 	go func() {
 		for args := range script.Trigger {
-			if len(args) == 2 {
-				// Protocol hook
-				debug("Protocol hook!")
-				line, ok := args[1].(*r1459.RawLine)
-				if !ok {
-					debugf("Arg is %t, not *rfc1459.RawLine", args[1])
-					return
-				}
-				debug(line.Raw)
-
-				function, ok := args[0].(*luar.LuaObject)
-				if !ok {
-					debugf("Arg is %t, not *luar.LuaObject", args[0])
-					return
-				}
-				debug(function.Type)
-
-				res, err := function.Call(line)
-				if err != nil {
-					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-					script.Log.Printf("%#v", err)
-					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
-				}
-				debug(res)
-
-			} else {
+			switch args[0] {
+			case INV_COMMAND:
 				// Command
 				debug("command")
 
-				function, ok := args[0].(*luar.LuaObject)
+				function, ok := args[1].(*luar.LuaObject)
 				if !ok {
 					debugf("Arg is %t, not *luar.LuaObject", args[0])
 					return
 				}
 
-				client, ok := args[1].(*Client)
+				client, ok := args[2].(*Client)
 				if !ok {
 					debugf("Arg is %t, not *Client", args[0])
 					return
 				}
 
-				target, ok := args[2].(Targeter)
+				target, ok := args[3].(Targeter)
 				if !ok {
 					debugf("Arg is %t, not Targeter", args[0])
 					return
 				}
 
-				cmdargs, ok := args[3].([]string)
+				cmdargs, ok := args[4].([]string)
 				if !ok {
 					debugf("Arg is %t, not []string", args[0])
 					return
 				}
 
-				reschan, ok := args[4].(chan string)
+				reschan, ok := args[5].(chan string)
 				if !ok {
 					debugf("Arg is %t, not chan string", args[0])
 					return
@@ -164,6 +140,52 @@ func LoadScript(name string) (script *Script, err error) {
 				}
 
 				reschan <- fmt.Sprintf("%s", reply)
+			case INV_PROHOOK:
+				// Protocol hook
+				debug("Protocol hook!")
+				line, ok := args[2].(*r1459.RawLine)
+				if !ok {
+					debugf("Arg is %t, not *rfc1459.RawLine", args[1])
+					return
+				}
+				debug(line.Raw)
+
+				function, ok := args[1].(*luar.LuaObject)
+				if !ok {
+					debugf("Arg is %t, not *luar.LuaObject", args[0])
+					return
+				}
+				debug(function.Type)
+
+				res, err := function.Call(line)
+				if err != nil {
+					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+					script.Log.Printf("%#v", err)
+					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+				}
+				debug(res)
+			case INV_NAMHOOK:
+				debug("named hook")
+
+				function, ok := args[1].(*luar.LuaObject)
+				if !ok {
+					debugf("Arg is %t, not *luar.LuaObject", args[1])
+					return
+				}
+				debug(function.Type)
+
+				funargs, ok := args[2].([]interface{})
+				if !ok {
+					debugf("Arg is %t, not []interface{}", args[2])
+					return
+				}
+
+				_, err := function.Call(funargs...)
+				if err != nil {
+					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+					script.Log.Printf("%#v", err)
+					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+				}
 			}
 		}
 	}()
@@ -316,7 +338,7 @@ func (script *Script) AddLuaProtohook(verb string, name string) error {
 
 	handler, err := AddHandler(verb, func(line *r1459.RawLine) {
 		debugf("sending %s", verb)
-		script.Trigger <- []interface{}{function, line}
+		script.Trigger <- []interface{}{INV_PROHOOK, function, line}
 	})
 	if err != nil {
 		return err
@@ -337,7 +359,7 @@ func (script *Script) AddLuaCommand(verb string, name string) error {
 		defer close(reschan)
 
 		script.Trigger <- []interface{}{
-			function, client, target, args, reschan,
+			INV_COMMAND, function, client, target, args, reschan,
 		}
 
 		return <-reschan
@@ -359,11 +381,8 @@ func (script *Script) AddLuaHook(verb string, name string) error {
 	function := luar.NewLuaObjectFromName(script.L, name)
 
 	hook := NewHook(verb, func(args ...interface{}) {
-		_, err := function.Call(args...)
-		if err != nil {
-			script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-			script.Log.Printf("%#v", err)
-			script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+		script.Trigger <- []interface{}{
+			INV_NAMHOOK, function, args,
 		}
 	})
 

@@ -1,0 +1,30 @@
+Usage: CONNLOG <subcommand> [args]
+
+CONNLOG is an interface to Tetra's automatic logging of new client connections
+to its internal sqlite database. This can be used to search for information
+about previous clients that have connected to the network to establish
+patterns.
+
+Subcommands:
+    GREP <field> <search terms...>
+
+GREP:
+    GREP lets an oper search through Tetra connection logs by a field for a
+    matching parameter. Valid fields are:
+
+     | name        | description                            |
+     |:------------|:---------------------------------------|
+     | ip          | ip address of the client               |
+     | nick        | nickname of the client                 |
+     | server      | server the client connected to         |
+     | ident       | user name the client connected with    |
+     | reversedns  | reverse DNS of the client's IP         |
+     | cloakedhost | cloaked vhost assigned on connect (+x) |
+     | gecos       | "real name" of the client              |
+
+    Usage:
+        CONNLOG GREP <field> <terms>
+
+    Examples:
+        CONNLOG GREP ip 8.8.8.8
+        CONNLOG GREP gecos foo bang

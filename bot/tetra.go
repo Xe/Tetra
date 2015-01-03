@@ -189,7 +189,7 @@ func Connect(host, port string) (err error) {
 // Auth authenticates over TS6.
 func Auth() {
 	Conn.SendLine("PASS " + ActiveConfig.Uplink.Password + " TS 6 :" + ActiveConfig.Server.Sid)
-	Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID EOPMO")
+	Conn.SendLine("CAPAB :QS EX IE KLN UNKLN ENCAP SERVICES EUID RSFNC SAVE MLOCK CHW TB CLUSTER BAN")
 	Conn.SendLine("SERVER " + ActiveConfig.Server.Name + " 1 :" + ActiveConfig.Server.Gecos)
 }
 

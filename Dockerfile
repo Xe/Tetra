@@ -2,7 +2,7 @@ FROM flitter/init
 
 RUN apt-get update &&\
     apt-get upgrade -yq &&\
-    apt-get install -yq gcc make lua5.1-dev lua5.1 luarocks libyaml-dev libsqlite3-dev
+    apt-get install -yq gcc make lua5.1-dev lua5.1 luarocks libyaml-dev libsqlite3-dev golang
 RUN luarocks install --server=http://rocks.moonscript.org moonrocks &&\
     moonrocks install yaml &&\
     moonrocks install moonscript &&\

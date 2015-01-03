@@ -1,4 +1,4 @@
-VERSION="Tetra-0.3-`git rev-parse --short HEAD`-`uname`-`uname -m`"
+VERSION="Tetra-0.4-`git rev-parse --short HEAD`-`uname`-`uname -m`"
 
 .PHONY: build clean run package docker-build docker-run test pull debug
 
@@ -41,6 +41,7 @@ package:
 	@mkdir -p build/doc/go/bot/script
 	@mkdir -p build/lib
 	@cp -rf lib build
+	@cp Dockerfile build
 	@echo "Bundling documentation..."
 	@godoc .                              > build/doc/go/main
 	@godoc ./modules                      > build/doc/go/modules

@@ -35,8 +35,12 @@ Command "PING", ->
 
 You need the following buildtime dependencies:
 
-- `lua5.1`
+- `liblua5.1-dev`
 - `golang`
+- `libsqlite3-dev`
+
+Example commands to set up the global environment needed for Tetra are in the 
+included `Dockerfile`.
 
 ```console
 $ go get github.com/Xe/Tetra
@@ -65,7 +69,8 @@ You need the following lua rocks:
 
 - `luasocket`
 - `moonscript`
-- `etlua`
-- `lua_json`
+- `yaml`
+- `json4lua`
+- `lsqlite3`
 
 All are available in [moonrocks](http://rocks.moonscript.org).

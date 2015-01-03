@@ -13,4 +13,16 @@ Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
       else
         client.Privmsg dest, res
 
--- TODO: implement ping-prefixing
+Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
+  if msg[1]\upper!\match client.Nick\upper!
+    command = msg[2]\upper!
+
+    if client.Commands[command]
+      args = [i for i in *msg[3,]]
+
+      res, err = script.Call command, source, dest, args
+
+      if command == "HELP"
+        client.Notice source, res
+      else
+        client.Privmsg dest, res

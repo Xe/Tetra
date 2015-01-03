@@ -473,9 +473,9 @@ func seedHandlers() {
 	})
 
 	AddHandler("KICK", func(line *r1459.RawLine) {
-		// <<< :42FAAAAAB KICK #help 42FAAAAAB :foo
+		// <<< :00AAAAAAE KICK #BAR 7521002BC :User is banned from this channel
 		channelname := strings.ToUpper(line.Args[0])
-		client, ok := Clients.ByUID[line.Source]
+		client, ok := Clients.ByUID[line.Args[1]]
 		if !ok {
 			panic(fmt.Errorf("Unknown client %s", line.Source))
 		}
@@ -486,6 +486,8 @@ func seedHandlers() {
 		}
 
 		channel.DelChanUser(client)
+
+		RunHook("KICKED", channel, client, line.Args[2])
 	})
 
 	AddHandler("CHGHOST", func(line *r1459.RawLine) {

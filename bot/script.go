@@ -54,6 +54,39 @@ type Invocation struct {
 	Line     *r1459.RawLine
 }
 
+var (
+	Libraries map[string]luar.Map
+)
+
+func init() {
+	Libraries = map[string]luar.Map{
+		"crypto": luar.Map{
+			"hash": crypto.Hash,
+			"fnv":  crypto.Fnv,
+		},
+
+		"strings": luar.Map{
+			"join":  strings.Join,
+			"split": strings.Split,
+			"first": tstrings.First,
+			"rest":  tstrings.Rest,
+			"format": func(format string, args ...interface{}) string {
+				return fmt.Sprintf(format, args...)
+			},
+			"scan":  fmt.Sscanf,
+			"shuck": tstrings.Shuck,
+			"hassuffix": func(s, pattern string) bool {
+				return strings.HasSuffix(s, pattern)
+			},
+		},
+
+		"charybdis": luar.Map{
+			"cloakhost": charybdis.CloakHost,
+			"cloakip":   charybdis.CloakIP,
+		},
+	}
+}
+
 // LoadScript finds and loads the appropriate script by a given short name (tetra/die).
 func LoadScript(name string) (script *Script, err error) {
 	kind := strings.Split(name, "/")[0]
@@ -250,6 +283,14 @@ func (script *Script) seed() {
 		"print":  script.Log.Print,
 		"script": script,
 		"log":    script.Log,
+		"use": func(library string) bool {
+			if funcs, ok := Libraries[library]; ok {
+				luar.Register(script.L, library, funcs)
+				return true
+			} else {
+				return false
+			}
+		},
 	})
 
 	luar.Register(script.L, "tetra", luar.Map{
@@ -294,30 +335,7 @@ func (script *Script) seed() {
 		"byte2string": byteSliceToString,
 	})
 
-	luar.Register(script.L, "crypto", luar.Map{
-		"hash": crypto.Hash,
-		"fnv":  crypto.Fnv,
-	})
-
-	luar.Register(script.L, "strings", luar.Map{
-		"join":  strings.Join,
-		"split": strings.Split,
-		"first": tstrings.First,
-		"rest":  tstrings.Rest,
-		"format": func(format string, args ...interface{}) string {
-			return fmt.Sprintf(format, args...)
-		},
-		"scan":  fmt.Sscanf,
-		"shuck": tstrings.Shuck,
-		"hassuffix": func(s, pattern string) bool {
-			return strings.HasSuffix(s, pattern)
-		},
-	})
-
-	luar.Register(script.L, "charybdis", luar.Map{
-		"cloakhost": charybdis.CloakHost,
-		"cloakip":   charybdis.CloakIP,
-	})
+	//luar.Register(script.L, "strings", Libraries["strings"])
 }
 
 // Call calls a command in a Script.

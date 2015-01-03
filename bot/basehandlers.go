@@ -50,8 +50,6 @@ func seedHandlers() {
 		delete(Servers, sid)
 
 		for _, link := range server.Links {
-			debugf("%#v", link)
-
 			if link.Hops > server.Hops {
 				for uid, client := range Clients.ByUID {
 					if strings.HasPrefix(uid, link.Sid) {

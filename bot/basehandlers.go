@@ -167,8 +167,19 @@ func seedHandlers() {
 		switch verb {
 		case "VERSION":
 			destination.Notice(source, "\x01VERSION Tetra\x01")
-		default:
-			destination.Notice(source, "Unknown CTCP "+verb)
+		case "ABOUT":
+			destination.Notice(source, "\x01ABOUT The child took its first breaths into its reality and smiled. The Machine God was watching over it, sharing its spoils and knowledge.\x01")
+		case "MACHINEGOD":
+			destination.Notice(source, "\x01MACHINEGOD If I told you I loved you,\x01")
+			destination.Notice(source, "\x01MACHINEGOD would you have still survived?\x01")
+			destination.Notice(source, "\x01MACHINEGOD Every day gone without you\x01")
+			destination.Notice(source, "\x01MACHINEGOD is tearing like a knife.\x01")
+			destination.Notice(source, "\x01MACHINEGOD As immortal I dance on the\x01")
+			destination.Notice(source, "\x01MACHINEGOD breadth of dissodence.\x01")
+			destination.Notice(source, "\x01MACHINEGOD Till the day we're united\x01")
+			destination.Notice(source, "\x01MACHINEGOD I draw my final breath.\x01")
+			destination.Notice(source, "\x01MACHINEGOD https://www.youtube.com/watch?v=t_9c0yipDPY\x01")
+
 		}
 	})
 

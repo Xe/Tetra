@@ -13,5 +13,6 @@ Command "INFO", true, (source, target, args) ->
     client.Notice source, "#{chanuser.Client.Nick}: (#{chanuser.Client.User}@#{chanuser.Client.VHost}: #{chanuser.Client.Ip}) 0x#{"%x"\format chanuser.Prefix}"
 
   client.Notice source, "Channel mode: 0x#{"%x"\format channel.Modes}"
+  client.Notice source, "Channel created #{os.date "%c", channel.Ts}"
 
   "End info on #{args[1]}"

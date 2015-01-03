@@ -1,3 +1,5 @@
+use "strings"
+
 Command "SENDFILE", true, (source, dest, message) ->
   if #message < 2
     return "Need a destination and file to send."

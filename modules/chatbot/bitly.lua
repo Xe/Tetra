@@ -1,6 +1,8 @@
 -- Shortens long URL's with bit.ly
 -- Needs a bit.ly api key
 
+use "strings"
+
 function scrapeurl(str)
   return str:match("https?://[%w-_%.%?%.:/%+=&]+")
 end

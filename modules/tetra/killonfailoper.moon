@@ -1,3 +1,5 @@
+use "strings"
+
 Hook "ENCAP-SNOTE-S", (message) ->
   if not message\match "host mismatch"
     return

@@ -1,5 +1,7 @@
 require "lib/bayes"
 
+use "strings"
+
 export ^
 
 Scores = {}

@@ -1,3 +1,5 @@
+use "strings"
+
 -- :6YK ENCAP * METADATA SET 7RT100001 CLOAKEDHOST :yolo-swag.com
 Hook "ENCAP-METADATA", (source, args) ->
   action = args[1]

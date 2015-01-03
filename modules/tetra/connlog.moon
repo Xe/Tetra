@@ -1,5 +1,7 @@
 sqlite3 = require "lsqlite3"
 
+use "strings"
+
 export db = sqlite3.open "var/tetra.db"
 export done = false
 

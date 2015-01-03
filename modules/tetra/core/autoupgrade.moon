@@ -1,3 +1,5 @@
+use "strings"
+
 -- Takes in a string and outputs a trimmed string
 trim = (str) ->
   str\gsub "^%s*(.-)%s*$", "%1"

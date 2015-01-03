@@ -1,5 +1,7 @@
 require "lib/etcd"
 
+use "strings"
+
 -- Allow policy for vhosts to be automatically rejected or activated
 --
 -- table for each vhost will look like:

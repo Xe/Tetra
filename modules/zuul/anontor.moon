@@ -1,3 +1,6 @@
+use "crypto"
+use "strings"
+
 Hash = (foo) ->
   crypto.fnv(foo)
 

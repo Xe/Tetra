@@ -1,5 +1,7 @@
 local json = require "json"
 
+use "strings"
+
 function dblookup(id)
   local url = "http://derpiboo.ru/"..id..".json?nocomments"
 

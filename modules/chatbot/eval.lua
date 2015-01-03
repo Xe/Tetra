@@ -1,5 +1,7 @@
 ld = nil
 
+use "strings"
+
 Hook("CHATBOT-CHANMSG", function(source, destination, message)
   if not source.IsOper() then
     return

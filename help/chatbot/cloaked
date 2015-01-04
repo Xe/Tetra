@@ -1,0 +1,8 @@
+Usage: CLOAKED <nick>
+
+CLOAKED looks up the cloaked hosts of a client. This can be useful
+when trying to look up if a newer user in a channel could be evading
+a ban.
+
+Example:
+    CLOAKED incog

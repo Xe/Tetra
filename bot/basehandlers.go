@@ -179,7 +179,10 @@ func seedHandlers() {
 			destination.Notice(source, "\x01MACHINEGOD Till the day we're united\x01")
 			destination.Notice(source, "\x01MACHINEGOD I draw my final breath.\x01")
 			destination.Notice(source, "\x01MACHINEGOD https://www.youtube.com/watch?v=t_9c0yipDPY\x01")
-
+		case "BOTINFO":
+			destination.Notice(source, "\x01BOTINFO category:services\x01")
+			destination.Notice(source, "\x01BOTINFO type:Tetra Extended Services\x01")
+			destination.Notice(source, "\x01BOTINFO\x01")
 		}
 	})
 

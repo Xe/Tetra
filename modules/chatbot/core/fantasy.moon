@@ -8,6 +8,10 @@ Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
     if client.Commands[command] ~= nil
       args = [i for i in *msg[2,]]
 
+      if not source.IsOper! and command.NeedsOper
+        client.Notice source, "Permission denied"
+        return
+
       res, err = script.Call command, source, dest, args
 
       if command == "HELP"
@@ -20,6 +24,10 @@ Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
     command = msg[2]\upper!
 
     if client.Commands[command]
+      if not source.IsOper! and command.NeedsOper
+        client.Notice source, "Permission denied"
+        return
+
       args = [i for i in *msg[3,]]
 
       res, err = script.Call command, source, dest, args

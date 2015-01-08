@@ -8,7 +8,7 @@ Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
     if client.Commands[command] ~= nil
       args = [i for i in *msg[2,]]
 
-      if not source.IsOper! and command.NeedsOper
+      if command.NeedsOper and not source.IsOper!
         client.Notice source, "Permission denied"
         return
 
@@ -24,7 +24,7 @@ Hook "CHATBOT-CHANMSG", (source, dest, msg) ->
     command = msg[2]\upper!
 
     if client.Commands[command]
-      if not source.IsOper! and command.NeedsOper
+      if command.NeedsOper and not source.isOper!
         client.Notice source, "Permission denied"
         return
 

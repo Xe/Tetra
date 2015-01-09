@@ -43,6 +43,10 @@ func (c *Client) showHelp(target *Client, service, command string) {
 		return
 	}
 
+	if _, ok := c.Commands[command]; !ok {
+		c.Notice(target, "No such command")
+	}
+
 	data := struct {
 		Me     *Client
 		Target *Client

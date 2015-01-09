@@ -1,6 +1,7 @@
 package atheme
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -115,6 +116,20 @@ func (ns *NickServ) ListAccess(target string) (res NickServFlagset, err error) {
 	res = ns.parseAccess(temp)
 
 	return
+}
+
+// Uid returns the Atheme UID of an account.
+func (ns *NickServ) Uid(account string) (res string, err error) {
+	uidstring, err := ns.a.Command("NickServ", "ACC", account)
+	if err != nil {
+		return "", err
+	}
+
+	if len(strings.Split(uidstring, " ")) != 4 {
+		return "", fmt.Errorf("Insufficient permissions")
+	}
+
+	return strings.Split(uidstring, " ")[3], nil
 }
 
 // SetPassword sets the password for an account.

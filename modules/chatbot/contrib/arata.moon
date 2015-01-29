@@ -1,6 +1,6 @@
 Command "ARATA", (source, destination, args) ->
-  if #args == 0
-    return "need module name to lookup"
+  if #args ~= 2
+    return "need stuff to lookup"
 
   kind = args[1]\lower!
 
@@ -21,4 +21,4 @@ Command "ARATA", (source, destination, args) ->
   if res == "Not Found"
     return "no such #{kind} #{args[2]}"
 
-  return "> #{url}"
+  return "> https://github.com/shockkolate/arata/blob/master/#{kind}/#{path}"

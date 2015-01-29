@@ -8,7 +8,11 @@ Command "ARATA", (source, destination, args) ->
   if not (args[2]\lower!)\match "nickserv"
     return "can only look up plugins for nickserv"
 
-  url = "https://github.com/shockkolate/arata/blob/master/plugins/#{args[2]\gsub "%.", "%/", 1}.hs"
+  path = args[2]\gsub "%.", "%/", 1
+  print path
+
+  url = "https://raw.githubusercontent.com/shockkolate/arata/master/plugins/#{path}.hs"
+  print url
 
   _, err = geturl url
 

@@ -5,18 +5,26 @@ Command "ARATA", (source, destination, args) ->
   if args[1]\lower! ~= "plugin"
     return "can only look up plugins"
 
-  if not (args[2]\lower!)\match "nickserv"
-    return "can only look up plugins for nickserv"
+  kind = args[1]\lower!
 
-  path = args[2]\gsub "%.", "%/", 1
+  if kind ~= "plugin" or kind ~= "src"
+    return "unsupported operation"
+
+  if kind == "plugin"
+    kind = "plugins"
+
+  path = args[2]\gsub "%.", "%/"
   print path
 
-  url = "https://raw.githubusercontent.com/shockkolate/arata/master/plugins/#{path}.hs"
+  url = "https://raw.githubusercontent.com/shockkolate/arata/master/#{kind}/#{path}.hs"
   print url
 
-  _, err = geturl url
+  res, err = geturl url
 
   if err ~= nil
-    return "no such plugin #{args[2]}"
+    return "no such #{kind} #{args[2]}"
+
+  if res == "Not Found"
+    return "no such #{kind} #{args[2]}
 
   return "> #{url}"

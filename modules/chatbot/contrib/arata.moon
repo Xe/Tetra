@@ -4,9 +4,6 @@ Command "ARATA", (source, destination, args) ->
 
   kind = args[1]\lower!
 
-  if kind ~= "plugin" or kind ~= "src"
-    return "unsupported operation"
-
   if kind == "plugin"
     kind = "plugins"
 

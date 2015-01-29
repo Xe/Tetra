@@ -2,9 +2,6 @@ Command "ARATA", (source, destination, args) ->
   if #args == 0
     return "need module name to lookup"
 
-  if args[1]\lower! ~= "plugin"
-    return "can only look up plugins"
-
   kind = args[1]\lower!
 
   if kind ~= "plugin" or kind ~= "src"

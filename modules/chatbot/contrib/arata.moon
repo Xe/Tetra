@@ -21,4 +21,4 @@ Command "ARATA", (source, destination, args) ->
   if res == "Not Found"
     return "no such #{kind} #{args[2]}"
 
-  return "> https://github.com/shockkolate/arata/blob/master/#{kind}/#{path}"
+  return "> https://github.com/shockkolate/arata/blob/master/#{kind}/#{path}.hs"

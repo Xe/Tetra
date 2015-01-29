@@ -25,6 +25,6 @@ Command "ARATA", (source, destination, args) ->
     return "no such #{kind} #{args[2]}"
 
   if res == "Not Found"
-    return "no such #{kind} #{args[2]}
+    return "no such #{kind} #{args[2]}"
 
   return "> #{url}"

@@ -9,7 +9,7 @@ import (
 	"github.com/Xe/Tetra/atheme/xmlrpc"
 )
 
-// An Atheme context. This contains everything a client needs to access Atheme
+// Atheme is an Atheme context. This contains everything a client needs to access Atheme
 // data remotely.
 type Atheme struct {
 	Privset     []string // Privilege set of the user
@@ -26,7 +26,7 @@ type Atheme struct {
 	LastUsed    time.Time // When the last RPC call was made
 }
 
-// Returns a new Atheme instance or raises an error.
+// NewAtheme returns a new Atheme instance or raises an error.
 func NewAtheme(url string) (atheme *Atheme, err error) {
 	var serverproxy *xmlrpc.Client
 	serverproxy, err = xmlrpc.NewClient(url, nil)

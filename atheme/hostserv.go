@@ -5,12 +5,12 @@ import (
 	"strings"
 )
 
-// Struct HostServ wraps Atheme's HostServ for use in Go programs.
+// HostServ wraps Atheme's HostServ for use in Go programs.
 type HostServ struct {
 	a *Atheme
 }
 
-// A VHost listing or request.
+// VHost is a vhost listing or request.
 type VHost struct {
 	Nick  string `json:"nick"`
 	VHost string `json:"vhost"`
@@ -23,21 +23,21 @@ func (v *VHost) String() string {
 		v.Nick, v.VHost, v.Date)
 }
 
-// Activates a VHost request for account.
+// Activate activates a VHost request for account.
 func (hs *HostServ) Activate(account string) (err error) {
 	_, err = hs.a.Command("HostServ", "ACTIVATE", account)
 
 	return
 }
 
-// Requests a vhost for the logged in account.
+// Request requests a vhost for the logged in account.
 func (hs *HostServ) Request(vhost string) (err error) {
 	_, err = hs.a.Command("HostServ", "REQUEST", vhost)
 
 	return
 }
 
-// Rejects a vhost request for an account.
+// Reject rejects a vhost request for an account.
 func (hs *HostServ) Reject(account, message string) (err error) {
 	_, err = hs.a.Command("HostServ", "REJECT", account, message)
 

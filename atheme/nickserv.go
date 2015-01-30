@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Struct NickServ implements a Golang client to Atheme's NickServ. This is
+// NickServ implements a Golang client to Atheme's NickServ. This is
 // mostly a port of Cod's Atheme parsing code
 type NickServ struct {
 	a *Atheme
@@ -118,8 +118,8 @@ func (ns *NickServ) ListAccess(target string) (res NickServFlagset, err error) {
 	return
 }
 
-// Uid returns the Atheme UID of an account.
-func (ns *NickServ) Uid(account string) (res string, err error) {
+// UID returns the Atheme UID of an account.
+func (ns *NickServ) UID(account string) (res string, err error) {
 	uidstring, err := ns.a.Command("NickServ", "ACC", account)
 	if err != nil {
 		return "", err

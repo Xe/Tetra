@@ -9,6 +9,7 @@ import (
 	"net/url"
 )
 
+// Client is a wrapper to rpc.Client for XMLRPC use.
 type Client struct {
 	*rpc.Client
 }

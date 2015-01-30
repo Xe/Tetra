@@ -15,7 +15,7 @@ type Memo struct {
 	From    string `json:"from"`
 	Date    string `json:"date"`
 	Message string `json:"message"`
-	Id      int    `json:"id"`
+	ID      int    `json:"id"`
 }
 
 // Send figures out what send command to use and sends a memo to that target.
@@ -59,7 +59,7 @@ func (ms *MemoServ) List() (memos []Memo, err error) {
 		memos = append(memos, Memo{
 			From: from,
 			Date: date,
-			Id:   id,
+			ID:   id,
 		})
 	}
 

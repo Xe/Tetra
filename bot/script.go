@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 
@@ -115,11 +116,7 @@ func LoadScript(name string) (script *Script, err error) {
 
 	script, err = loadLuaScript(script)
 	if err != nil {
-		script, err = loadMoonScript(script)
-
-		if err != nil {
-			return nil, errors.New("No such script " + name)
-		}
+		return nil, errors.New("No such script " + name)
 	}
 
 	Scripts[name] = script
@@ -232,47 +229,34 @@ func loadLuaScript(script *Script) (*Script, error) {
 	err := script.L.DoFile("modules/" + script.Name + ".lua")
 
 	if err != nil {
+		_, err = os.Stat("modules/" + script.Name + ".moon")
+		if err == nil {
+			debugf("compiling moonscript code for %s", script.Name)
+
+			cmd := exec.Command("moonc", "-t", "var/compiled", "modules/"+script.Name+".moon")
+
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				script.Log.Printf("%s", string(out))
+				script.Log.Printf("%s", err.Error())
+				return script, err
+			}
+
+			script.Log.Printf("%s", string(out))
+			err = script.L.DoFile("var/compiled/modules/" + script.Name + ".lua")
+			if err != nil {
+				return script, err
+			}
+
+			script.Kind = "moonscript"
+			debugf("compiled moonscript script %s loaded at %s", script.Name, script.Uuid)
+		}
 		return script, err
 	}
 
 	debugf("lua script %s loaded at %s", script.Name, script.Uuid)
 
 	script.Kind = "lua"
-
-	return script, nil
-}
-
-func loadMoonScript(script *Script) (*Script, error) {
-	contents, failed := ioutil.ReadFile("modules/" + script.Name + ".moon")
-
-	if failed != nil {
-		return script, errors.New("Could not read " + script.Name + ".moon")
-	}
-
-	luar.Register(script.L, "", luar.Map{
-		"moonscript_code_from_file": string(contents),
-	})
-
-	/*
-		moonscript = require "moonscript"
-		xpcall = unsafe_xpcall
-		pcall = unsafe_pcall
-		local func, err = moonscript.loadstring(moonscript_code_from_file)
-		if err ~= nil then
-			tetra.log.Printf("Moonscript error, %#v", err)
-			error(err)
-		end
-		func()
-	*/
-	err := script.L.DoString(`moonscript = require "moonscript" xpcall = unsafe_xpcall pcall = unsafe_pcall local func, err = moonscript.loadstring(moonscript_code_from_file) if err ~= nil then log.Printf("Moonscript error, %#v", err) error(err) end func()`)
-	if err != nil {
-		script.Log.Print(err)
-		return nil, err
-	}
-
-	debugf("moonscript script %s loaded at %s", script.Name, script.Uuid)
-
-	script.Kind = "moonscript"
 
 	return script, nil
 }

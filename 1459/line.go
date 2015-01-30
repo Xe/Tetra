@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// IRC line
+// RawLine represents an IRC line.
 type RawLine struct {
 	Source string            `json:"source"`
 	Verb   string            `json:"verb"`
@@ -16,8 +16,8 @@ type RawLine struct {
 	Raw    string            `json:"-"` // Deprecated
 }
 
-// Create a new line and split out an RFC 1459 frame to a RawLine. This will
-// not return an error if it fails. TODO: fix this.
+// NewRawLine creates a new line and split out an RFC 1459 frame to a RawLine. This will
+// not return an error if it fails.
 func NewRawLine(input string) (line *RawLine) {
 	line = &RawLine{
 		Raw: input,

@@ -5,20 +5,20 @@ import (
 	"strings"
 )
 
-// Struct ChanServ implements a Golang client to Atheme's ChanServ. This is
+// ChanServ implements a Golang client to Atheme's ChanServ. This is
 // mostly a port of Cod's string parsing code.
 type ChanServ struct {
 	a *Atheme
 }
 
-// Struct Flagset is a simple flagset wrapper.
+// Flagset is a simple flagset wrapper.
 type Flagset struct {
 	Id    int    `json:"id"`
 	Nick  string `json:"nick"`
 	Flags string `json:"flags"`
 }
 
-// Struct ChannelInfo is the information Atheme has on a channel.
+// ChannelInfo is the information Atheme has on a channel.
 type ChannelInfo struct {
 	Name        string   `json:"name"`        // Channel name
 	Mlock       string   `json:"mlock"`       // Channel mode lock

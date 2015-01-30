@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Struct OperServ models Atheme's OperServ to Golang programs.
+// OperServ models Atheme's OperServ to Golang programs.
 type OperServ struct {
 	a *Atheme
 }

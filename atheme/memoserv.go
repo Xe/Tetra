@@ -68,7 +68,7 @@ func (ms *MemoServ) List() (memos []Memo, err error) {
 
 // Forward forwards a Memo to another account.
 func (ms *MemoServ) Forward(memo Memo, target string) (err error) {
-	_, err = ms.a.Command("MemoServ", "FORWARD", target, strconv.Itoa(memo.Id))
+	_, err = ms.a.Command("MemoServ", "FORWARD", target, strconv.Itoa(memo.ID))
 
 	return
 }

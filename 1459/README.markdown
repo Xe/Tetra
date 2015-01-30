@@ -11,11 +11,11 @@ frame in high level Go code.
 
 ```go
 type RawLine struct {
-	Source    string
-	Verb      string
-	Args      []string
-	Processed bool
-	Raw       string
+	Source string            `json: "source"`
+	Verb   string            `json:"verb"`
+	Args   []string          `json:"args"`
+	Tags   map[string]string `json:"tags"`
+	Raw    string            `json:"-"` // Deprecated
 }
 ```
 
@@ -28,3 +28,10 @@ func NewRawLine(input string) (line *RawLine)
 ```
 Create a new line and split out an RFC 1459 frame to a RawLine. This will not
 return an error if it fails. TODO: fix this.
+
+#### func (*RawLine) String
+
+```go
+func (r *RawLine) String() (res string)
+```
+String returns the serialized form of a RawLine as an RFC 1459 frame.

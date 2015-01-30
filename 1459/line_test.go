@@ -54,3 +54,26 @@ func TestPreviouslyBreakingLine(t *testing.T) {
 		t.Fatalf("Line verb expected to be AWAY, it is %s", lineStruct.Verb)
 	}
 }
+
+func TestStringWithSource(t *testing.T) {
+	line := &RawLine{
+		Source: "Foo",
+		Verb:   "BAR",
+		Args:   []string{"#bar", "fozbroz arg with spaces"},
+	}
+
+	if res := line.String(); res != ":Foo BAR #bar :fozbroz arg with spaces" {
+		t.Fatalf("Expected :Foo BAR #bar :fozbroz arg with spaces and got %s", res)
+	}
+}
+
+func TestStringWithoutSource(t *testing.T) {
+	line := &RawLine{
+		Verb: "BAR",
+		Args: []string{"#bar", "fozbroz arg with spaces"},
+	}
+
+	if res := line.String(); res != "BAR #bar :fozbroz arg with spaces" {
+		t.Fatalf("Expected BAR #bar :fozbroz arg with spaces and got %s", res)
+	}
+}

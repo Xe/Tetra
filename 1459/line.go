@@ -2,15 +2,18 @@
 // frame in high level Go code.
 package r1459
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // IRC line
 type RawLine struct {
-	Source    string
-	Verb      string
-	Args      []string
-	Processed bool
-	Raw       string
+	Source string            `json: "source"`
+	Verb   string            `json:"verb"`
+	Args   []string          `json:"args"`
+	Tags   map[string]string `json:"tags"`
+	Raw    string            `json:"-"` // Deprecated
 }
 
 // Create a new line and split out an RFC 1459 frame to a RawLine. This will
@@ -48,6 +51,27 @@ func NewRawLine(input string) (line *RawLine) {
 		line.Args = []string{""}
 	} else if line.Args[0][0] == ':' {
 		line.Args[0] = strings.TrimPrefix(line.Args[0], ":")
+	}
+
+	return
+}
+
+// String returns the serialized form of a RawLine as an RFC 1459 frame.
+func (r *RawLine) String() (res string) {
+	if r.Source != "" {
+		res = res + fmt.Sprintf(":%s ", r.Source)
+	}
+
+	res = res + fmt.Sprintf("%s", r.Verb)
+
+	for i, arg := range r.Args {
+		res = res + " "
+
+		if i == len(r.Args)-1 { // Make the last part of the line an extparam
+			res = res + ":"
+		}
+
+		res = res + arg
 	}
 
 	return

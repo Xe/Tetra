@@ -60,12 +60,12 @@ var (
 
 func init() {
 	Libraries = map[string]luar.Map{
-		"crypto": luar.Map{
+		"crypto": {
 			"hash": crypto.Hash,
 			"fnv":  crypto.Fnv,
 		},
 
-		"strings": luar.Map{
+		"strings": {
 			"join":  strings.Join,
 			"split": strings.Split,
 			"first": tstrings.First,
@@ -80,7 +80,7 @@ func init() {
 			},
 		},
 
-		"charybdis": luar.Map{
+		"charybdis": {
 			"cloakhost": charybdis.CloakHost,
 			"cloakip":   charybdis.CloakIP,
 		},

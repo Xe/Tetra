@@ -28,4 +28,3 @@ func (l *Logger) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.Ha
 	res := rw.(negroni.ResponseWriter)
 	l.Printf("%s %s %s %v %s in %v", r.RemoteAddr, r.Method, r.URL.Path, res.Status(), http.StatusText(res.Status()), time.Since(start))
 }
-

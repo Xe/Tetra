@@ -9,7 +9,7 @@ import (
 
 // IRC line
 type RawLine struct {
-	Source string            `json: "source"`
+	Source string            `json:"source"`
 	Verb   string            `json:"verb"`
 	Args   []string          `json:"args"`
 	Tags   map[string]string `json:"tags"`

@@ -209,7 +209,7 @@ func Burst() {
 	}
 
 	for _, channel := range Channels {
-		for uid, _ := range channel.Clients {
+		for uid := range channel.Clients {
 			if !strings.HasPrefix(uid, Info.Sid) {
 				continue
 			}

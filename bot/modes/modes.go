@@ -68,13 +68,13 @@ const (
 
 // This is a handy lookup table from channel mode letters to bitmasks.
 var CHANMODES = []map[string]int{
-	map[string]int{
+	{
 		"q": LIST_QUIET,
 		"b": LIST_BAN,
 		"e": LIST_EXCEPT,
 		"I": LIST_INVEX,
 	},
-	map[string]int{
+	{
 		"C": PROP_NOCTCP,
 		"D": PROP_NOACTION,
 		"E": PROP_NOKICKS,
@@ -100,7 +100,7 @@ var CHANMODES = []map[string]int{
 		"u": PROP_HIDEBANS,
 		"z": PROP_OPMOD,
 	},
-	map[string]int{
+	{
 		"h": CHFL_HALFOP,
 		"o": CHFL_CHANOP,
 		"v": CHFL_VOICE,

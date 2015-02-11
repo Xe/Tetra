@@ -89,6 +89,16 @@ func WebApp() {
 		fmt.Fprintf(res, "error: No method chosen.")
 	})
 
+	mux.Get("/info.json", func(w http.ResponseWriter, req *http.Request) {
+		r.JSON(w, http.StatusOK, struct {
+			Usercount    int `json:"usercount"`
+			Channelcount int `json:"channelcount"`
+		}{
+			Usercount:    len(Clients.ByNick),
+			Channelcount: len(Channels),
+		})
+	})
+
 	mux.Get("/channels.json", func(w http.ResponseWriter, req *http.Request) {
 		var channels []channel
 

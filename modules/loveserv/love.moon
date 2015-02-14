@@ -63,19 +63,19 @@ BaseMessage = (source, destination, message, anonymous=false) ->
 Command "HUG", (source, destination, args) ->
   BaseMessage source, args[1], " sent you a darling hug! Adorable!"
 
-Command "ADMIRER", (source, destination, args) ->
+Command "ADMIRE", (source, destination, args) ->
   BaseMessage source, args[1], "You have a secret admirer!", true
 
 Command "LOVENOTE", (source, destination, args) ->
   BaseMessage source, args[1], " sent you a love note! Awwwwww!"
 
-Command "APOLOGY", (source, destination, args) ->
+Command "SORRY", (source, destination, args) ->
   BaseMessage source, args[1], " sent you an apology! Forgiveness is key!"
 
 Command "FORGIVE", (source, destination, args) ->
   BaseMessage source, args[1], " forgave you! Be sure to thank them!"
 
-Command "THANKYOU", (source, destination, args) ->
+Command "THANKS", (source, destination, args) ->
   BaseMessage source, args[1], " sent thanks! They rock!"
 
 Command "CONTRACT", (source, destination, args) ->

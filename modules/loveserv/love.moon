@@ -51,6 +51,8 @@ BaseMessage = (source, args, message, anonymous=false) ->
   if #args != 1
     return strings.format RPL_INSUFFICENT
 
+  destination = args[1]
+
   if CheckRates source
     AddDing source
 

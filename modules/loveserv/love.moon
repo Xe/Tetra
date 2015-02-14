@@ -5,6 +5,7 @@ export ^ -- Go style exporting
 RPL_LOAD2HI = "Oops! You're using that command too often! Wait a while to spread the love some more!"
 RPL_UNKNOWN = "Oops! I don't know who that is!"
 RPL_SUCCESS = "Your message has been sent!"
+RPL_INSUFFICENT = "Oops! Please try /msg LoveServ <action> <person> (omit the brackets)"
 
 -- Rate limiting
 -- Rate limiting will be up to 5 valentine messages per IP address per hour
@@ -43,10 +44,13 @@ Hook "CRON-HEARTBEAT", ->
         table.remove userdings, i
         print strings.format "Removed ding at %v for %s", ding, uid
 
-BaseMessage = (source, destination, message, anonymous=false) ->
+BaseMessage = (source, args, message, anonymous=false) ->
+  if #args != 1
+    return strings.format RPL_INSUFFICENT
+
   if CheckRates source
     AddDing source
-    -- TODO: send message
+
     if not tetra.Clients.ByNick[destination\upper!]
       return RPL_UNKNOWN
 
@@ -61,25 +65,25 @@ BaseMessage = (source, destination, message, anonymous=false) ->
   RPL_LOAD2HI
 
 Command "HUG", (source, destination, args) ->
-  BaseMessage source, args[1], " sent you a darling hug! Adorable!"
+  BaseMessage source, args, " sent you a darling hug! Adorable!"
 
 Command "ADMIRE", (source, destination, args) ->
-  BaseMessage source, args[1], "You have a secret admirer!", true
+  BaseMessage source, args, "You have a secret admirer!", true
 
 Command "LOVENOTE", (source, destination, args) ->
-  BaseMessage source, args[1], " sent you a love note! Awwwwww!"
+  BaseMessage source, args, " sent you a love note! Awwwwww!"
 
 Command "SORRY", (source, destination, args) ->
-  BaseMessage source, args[1], " sent you an apology! Forgiveness is key!"
+  BaseMessage source, args, " sent you an apology! Forgiveness is key!"
 
 Command "FORGIVE", (source, destination, args) ->
-  BaseMessage source, args[1], " forgave you! Be sure to thank them!"
+  BaseMessage source, args, " forgave you! Be sure to thank them!"
 
 Command "THANKS", (source, destination, args) ->
-  BaseMessage source, args[1], " sent thanks! They rock!"
+  BaseMessage source, args, " sent thanks! They rock!"
 
 Command "NOTICE", (source, destination, args) ->
-  BaseMessage source, args[1], "SENPAI NOTICED YOU!!!!!", true
+  BaseMessage source, args, "SENPAI NOTICED YOU!!!!!", true
 
 Command "CONTRACT", (source, destination, args) ->
-  BaseMessage source, args[1], " wants to know if you will sign a contract with them and become a magical girl! ／人◕ ‿‿ ◕人＼"
+  BaseMessage source, args, " wants to know if you will sign a contract with them and become a magical girl! ／人◕ ‿‿ ◕人＼"

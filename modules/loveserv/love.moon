@@ -17,6 +17,9 @@ export rates = {}
 --
 --  Returns true if the user is allowed and false if they are not allowed.
 CheckRates = (user) ->
+  if user.IsOper!
+    return true
+
   if not rates[user.Uid] -- If the user is not enrolled into LoveServ
     rates[user.Uid] = {} -- Initialise their entry.
     return true

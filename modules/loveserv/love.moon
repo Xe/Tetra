@@ -78,5 +78,8 @@ Command "FORGIVE", (source, destination, args) ->
 Command "THANKS", (source, destination, args) ->
   BaseMessage source, args[1], " sent thanks! They rock!"
 
+Command "NOTICE", (source, destination, args) ->
+  BaseMessage source, args[1], "SENPAI NOTICED YOU!!!!!", true
+
 Command "CONTRACT", (source, destination, args) ->
   BaseMessage source, args[1], " wants to know if you will sign a contract with them and become a magical girl! ／人◕ ‿‿ ◕人＼"

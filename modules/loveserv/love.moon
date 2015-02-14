@@ -39,7 +39,7 @@ Hook "CRON-HEARTBEAT", ->
 
   for uid, userdings in pairs rates
     for i, ding in pairs userdings
-      if now - ding > 30 -- 3600 seconds in an hour, TODO fix
+      if now - ding > 3600 -- 3600 seconds in an hour
         table.remove userdings, i
         print strings.format "Removed ding at %v for %s", ding, uid
 

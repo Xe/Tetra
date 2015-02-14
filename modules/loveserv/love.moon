@@ -6,19 +6,6 @@ RPL_LOAD2HI = "Oops! You're using that command too often! Wait a while to spread
 RPL_UNKNOWN = "Oops! I don't know who that is!"
 RPL_SUCCESS = "Your message has been sent!"
 
-[[
-[X] service_bind_command(loveserv, &ls_admirer);
-[ ] service_bind_command(loveserv, &ls_rose);
-[ ] service_bind_command(loveserv, &ls_chocolate);
-[ ] service_bind_command(loveserv, &ls_candy);
-[X] service_bind_command(loveserv, &ls_hug);
-[ ] service_bind_command(loveserv, &ls_kiss);
-[X] service_bind_command(loveserv, &ls_lovenote);
-[X] service_bind_command(loveserv, &ls_apology);
-[ ] service_bind_command(loveserv, &ls_thankyou);
-[ ] service_bind_command(loveserv, &ls_chocobo);
-]]
-
 -- Rate limiting
 -- Rate limiting will be up to 5 valentine messages per IP address per hour
 
@@ -54,7 +41,7 @@ Hook "CRON-HEARTBEAT", ->
     for i, ding in pairs userdings
       if now - ding > 30 -- 3600 seconds in an hour, TODO fix
         table.remove userdings, i
-        print strings.format "Removed ding at %d for %s", ding, uid
+        print strings.format "Removed ding at %v for %s", ding, uid
 
 BaseMessage = (source, destination, message, anonymous=false) ->
   if CheckRates source
@@ -87,3 +74,9 @@ Command "APOLOGY", (source, destination, args) ->
 
 Command "FORGIVE", (source, destination, args) ->
   BaseMessage source, args[1], " forgave you! Be sure to thank them!"
+
+Command "THANKYOU", (source, destination, args) ->
+  BaseMessage source, args[1], " sent thanks! They rock!"
+
+Command "CONTRACT", (source, destination, args) ->
+  BaseMessage source, args[1], " wants to know if you will sign a contract with them and become a magical girl! ／人◕ ‿‿ ◕人＼"

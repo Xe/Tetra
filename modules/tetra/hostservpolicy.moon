@@ -25,7 +25,7 @@ if store.data.pc == nil
   store.data.num = 0
 
 Hook "HOSTSERV-REQUEST", (nick, vhost) ->
-  client.OperLog "HostServ: #{nick} requested #{vhost}"
+  --client.OperLog "HostServ: #{nick} requested #{vhost}"
 
   --info = tetra.Atheme.NickServ.Info nick
 

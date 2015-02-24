@@ -123,6 +123,8 @@ func LoadScript(name string) (script *Script, err error) {
 
 	Etcd.CreateDir("/tetra/scripts/"+name, 0)
 
+	RunHook("SCRIPTLOAD", script)
+
 	go func() {
 		for args := range script.Trigger {
 			switch args[0] {
@@ -400,6 +402,8 @@ func UnloadScript(name string) error {
 	}
 
 	script := Scripts[name]
+
+	RunHook("SCRIPTUNLOAD", script)
 
 	for _, handler := range script.Handlers {
 		DelHandler(handler.Verb, handler.Uuid)

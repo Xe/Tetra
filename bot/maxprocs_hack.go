@@ -4,7 +4,7 @@ import (
 	"runtime"
 )
 
-func init() {
+func AddHacks() {
 	NewHook("SCRIPTLOAD", func(i ...interface{}) {
 		runtime.GOMAXPROCS(len(Scripts))
 	})

@@ -7,10 +7,11 @@ pull:
 	godep go get -v .
 
 build:
+	godep go clean ./...
 	godep go build
 
 debug:
-	godep go clean
+	godep go clean ./...
 	godep go build -tags debug
 
 clean:

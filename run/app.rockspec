@@ -16,7 +16,7 @@ package = "Tetra"
 description = {
   license = "Zlib",
   summary = "Extended services for TS6 IRC daemons.",
-  maintainer = "Sam Dodrill <xena@yolo-swag.com>",
+  maintainer = "Christine Dodrill <xena@yolo-swag.com>",
 }
 
 source = {

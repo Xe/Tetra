@@ -154,7 +154,6 @@ func NewTetra(cpath string) {
 	}()
 
 	seedHandlers()
-	go AddHacks()
 
 	startWorkers(config.General.Workers)
 

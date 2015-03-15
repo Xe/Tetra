@@ -125,104 +125,108 @@ func LoadScript(name string) (script *Script, err error) {
 
 	RunHook("SCRIPTLOAD", script)
 
-	go func() {
-		for args := range script.Trigger {
-			switch args[0] {
-			case INV_COMMAND:
-				// Command
-				debug("command")
-
-				function, ok := args[1].(*luar.LuaObject)
-				if !ok {
-					debugf("Arg is %t, not *luar.LuaObject", args[0])
-					return
-				}
-
-				client, ok := args[2].(*Client)
-				if !ok {
-					debugf("Arg is %t, not *Client", args[0])
-					return
-				}
-
-				target, ok := args[3].(Targeter)
-				if !ok {
-					debugf("Arg is %t, not Targeter", args[0])
-					return
-				}
-
-				cmdargs, ok := args[4].([]string)
-				if !ok {
-					debugf("Arg is %t, not []string", args[0])
-					return
-				}
-
-				reschan, ok := args[5].(chan string)
-				if !ok {
-					debugf("Arg is %t, not chan string", args[0])
-					return
-				}
-
-				reply, err := function.Call(client, target, cmdargs)
-				if err != nil {
-					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-					script.Log.Printf("%#v", err)
-					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
-					reschan <- ""
-					return
-				}
-
-				reschan <- fmt.Sprintf("%s", reply)
-			case INV_PROHOOK:
-				// Protocol hook
-				debug("Protocol hook!")
-				line, ok := args[2].(*r1459.RawLine)
-				if !ok {
-					debugf("Arg is %t, not *rfc1459.RawLine", args[1])
-					return
-				}
-				debug(line.Raw)
-
-				function, ok := args[1].(*luar.LuaObject)
-				if !ok {
-					debugf("Arg is %t, not *luar.LuaObject", args[0])
-					return
-				}
-				debug(function.Type)
-
-				res, err := function.Call(line)
-				if err != nil {
-					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-					script.Log.Printf("%#v", err)
-					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
-				}
-				debug(res)
-			case INV_NAMHOOK:
-				debug("named hook")
-
-				function, ok := args[1].(*luar.LuaObject)
-				if !ok {
-					debugf("Arg is %t, not *luar.LuaObject", args[1])
-					return
-				}
-				debug(function.Type)
-
-				funargs, ok := args[2].([]interface{})
-				if !ok {
-					debugf("Arg is %t, not []interface{}", args[2])
-					return
-				}
-
-				_, err := function.Call(funargs...)
-				if err != nil {
-					script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
-					script.Log.Printf("%#v", err)
-					script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
-				}
-			}
-		}
-	}()
+	go script.trigger()
 
 	return
+}
+
+// trigger listens to the trigger channel and does things based on the triggered events.
+func (script *Script) trigger() {
+	for args := range script.Trigger {
+		switch args[0] {
+		case INV_COMMAND:
+			// Command
+			debug("command")
+
+			function, ok := args[1].(*luar.LuaObject)
+			if !ok {
+				debugf("Arg is %t, not *luar.LuaObject", args[0])
+				return
+			}
+
+			client, ok := args[2].(*Client)
+			if !ok {
+				debugf("Arg is %t, not *Client", args[0])
+				return
+			}
+
+			target, ok := args[3].(Targeter)
+			if !ok {
+				debugf("Arg is %t, not Targeter", args[0])
+				return
+			}
+
+			cmdargs, ok := args[4].([]string)
+			if !ok {
+				debugf("Arg is %t, not []string", args[0])
+				return
+			}
+
+			reschan, ok := args[5].(chan string)
+			if !ok {
+				debugf("Arg is %t, not chan string", args[0])
+				return
+			}
+
+			reply, err := function.Call(client, target, cmdargs)
+			if err != nil {
+				script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+				script.Log.Printf("%#v", err)
+				script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+				reschan <- ""
+				return
+			}
+
+			reschan <- fmt.Sprintf("%s", reply)
+		case INV_PROHOOK:
+			// Protocol hook
+			debug("Protocol hook!")
+			line, ok := args[2].(*r1459.RawLine)
+			if !ok {
+				debugf("Arg is %t, not *rfc1459.RawLine", args[1])
+				return
+			}
+			debug(line.Raw)
+
+			function, ok := args[1].(*luar.LuaObject)
+			if !ok {
+				debugf("Arg is %t, not *luar.LuaObject", args[0])
+				return
+			}
+			debug(function.Type)
+
+			res, err := function.Call(line)
+			if err != nil {
+				script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+				script.Log.Printf("%#v", err)
+				script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+			}
+			debug(res)
+		case INV_NAMHOOK:
+			debug("named hook")
+
+			function, ok := args[1].(*luar.LuaObject)
+			if !ok {
+				debugf("Arg is %t, not *luar.LuaObject", args[1])
+				return
+			}
+			debug(function.Type)
+
+			funargs, ok := args[2].([]interface{})
+			if !ok {
+				debugf("Arg is %t, not []interface{}", args[2])
+				return
+			}
+
+			_, err := function.Call(funargs...)
+			if err != nil {
+				script.Log.Printf("Lua error %s: %s", script.Name, err.Error())
+				script.Log.Printf("%#v", err)
+				script.Client.ServicesLog(fmt.Sprintf("%s: %s", script.Name, err.Error()))
+			}
+		}
+	}
+
 }
 
 func loadLuaScript(script *Script) (*Script, error) {

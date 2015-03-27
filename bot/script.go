@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/ip"
 	"net/url"
 	"os"
 	"os/exec"
@@ -88,7 +89,8 @@ func init() {
 		},
 
 		"geoip": {
-			"new": geoip2.Open,
+			"new":   geoip2.Open,
+			"parse": ip.Parse,
 		},
 	}
 }

@@ -7,7 +7,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 
 	"github.com/Xe/Tetra/bot"
 )
@@ -31,6 +33,14 @@ func main() {
 	}
 
 	fmt.Printf("Using config file %s\n", confloc)
+
+	cmd := exec.Command("moonc", ".")
+	cmd.Dir = "./lib"
+
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	tetra.NewTetra(confloc)
 

@@ -4,14 +4,6 @@ sqlite3 = require "lsqlite3"
 
 export sdb = assert sqlite3.open "var/tetra.db"
 
-db = etcd.Store "modules"
-
-if db.data.loads == nil
-  db.data.loads = {}
-else
-  for _, script in pairs db.data.loads
-    tetra.LoadScript(script)
-
 sdb\exec [[
   CREATE TABLE IF NOT EXISTS Scripts (
     id   INTEGER PRIMARY KEY,
@@ -23,10 +15,9 @@ select_stmt = assert sdb\prepare "SELECT * FROM Scripts"
 insert_stmt = assert sdb\prepare "INSERT INTO Scripts VALUES (NULL, ?)"
 delete_stmt = assert sdb\prepare "DELETE FROM Scripts WHERE name = ?"
 
--- NOTYET
---for row in select_stmt\nrows!
---    tetra.LoadScript row.name
---    log.Printf "loaded %s", row.name
+for row in select_stmt\nrows!
+    tetra.LoadScript row.name
+    log.Printf "loaded %s", row.name
 
 Command "LOAD", true, (src, dest, msg) ->
   if #msg == 0

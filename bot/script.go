@@ -18,6 +18,7 @@ import (
 	"github.com/Xe/Tetra/bot/script/crypto"
 	tstrings "github.com/Xe/Tetra/bot/script/strings"
 	lua "github.com/aarzilli/golua/lua"
+	"github.com/oschwald/geoip2-golang"
 	"github.com/sjkaliski/go-yo"
 	"github.com/stevedonovan/luar"
 )
@@ -84,6 +85,10 @@ func init() {
 		"charybdis": {
 			"cloakhost": charybdis.CloakHost,
 			"cloakip":   charybdis.CloakIP,
+		},
+
+		"geoip": {
+			"new": geoip2.Open,
 		},
 	}
 }

@@ -37,17 +37,6 @@ Command "LOAD", true, (src, dest, msg) ->
 
   "#{name} loaded."
 
-Command "SCRIPTDUMP", true, ->
-  for _, script in pairs db.data.loads
-    do
-      insert_stmt\bind_values script
-      insert_stmt\step!
-      insert_stmt\reset!
-
-    client.ServicesLog "synched #{script} to internal database"
-
-  "Done"
-
 Command "UNLOAD", true, (src, dest, msg) ->
   if #msg == 0
     return "Need a script name"

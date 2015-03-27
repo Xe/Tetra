@@ -1,6 +1,5 @@
 require "json"
 require "socket"
-require "moonscript"
 
 -- http://stackoverflow.com/a/12674376
 function keys(tab)

@@ -3,7 +3,6 @@ Command("SCRIPTS", true, function(source, message)
     local res = ""
 
     local res = name
-    res = res .. " (" .. script.Uuid:sub(1,8) .. ")"
 
     if #script.Handlers > 0 then
       res = res .. " handlers: " .. #script.Handlers

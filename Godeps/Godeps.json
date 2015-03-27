@@ -31,16 +31,6 @@
 			"Rev": "87ef0d13e940f753a5966b6f0cdd94afc9f57b07"
 		},
 		{
-			"ImportPath": "github.com/oschwald/geoip2-golang",
-			"Comment": "v0.1.0-10-gc327514",
-			"Rev": "c327514c17ca3431a79e9c4d1d46a9f208e8b97d"
-		},
-		{
-			"ImportPath": "github.com/oschwald/maxminddb-golang",
-			"Comment": "v0.2.0-22-g339f38b",
-			"Rev": "339f38bd3d04f4a2d842b63c35db8e62eb616618"
-		},
-		{
 			"ImportPath": "github.com/phyber/negroni-gzip/gzip",
 			"Rev": "0b2752a07f05079c716e4409134b1f4c385f63ea"
 		},

@@ -1,5 +1,9 @@
 require "lib/etcd"
 
+sqlite3 = require "lsqlite3"
+
+export sdb = assert sqlite3.open "var/tetra.db"
+
 db = etcd.Store "modules"
 
 if db.data.loads == nil
@@ -7,6 +11,22 @@ if db.data.loads == nil
 else
   for _, script in pairs db.data.loads
     tetra.LoadScript(script)
+
+sdb\exec [[
+  CREATE TABLE IF NOT EXISTS Scripts (
+    id   INTEGER PRIMARY KEY,
+    name TEXT UNIQUE
+  );
+]]
+
+select_stmt = assert sdb\prepare "SELECT * FROM Scripts"
+insert_stmt = assert sdb\prepare "INSERT INTO Scripts VALUES (NULL, ?)"
+delete_stmt = assert sdb\prepare "DELETE FROM Scripts WHERE name = ?"
+
+-- NOTYET
+--for row in select_stmt\nrows!
+--    tetra.LoadScript row.name
+--    log.Printf "loaded %s", row.name
 
 Command "LOAD", true, (src, dest, msg) ->
   if #msg == 0
@@ -19,9 +39,23 @@ Command "LOAD", true, (src, dest, msg) ->
     tetra.log.Printf("Can't load script " .. name .. ": %#v", err)
     return "Script #{name} failed load: #{err}"
 
-  table.insert db.data.loads, 1, name
+  do
+    insert_stmt\bind_values name
+    insert_stmt\step!
+    insert_stmt\reset!
 
   "#{name} loaded."
+
+Command "SCRIPTDUMP", true, ->
+  for _, script in pairs db.data.loads
+    do
+      insert_stmt\bind_values script
+      insert_stmt\step!
+      insert_stmt\reset!
+
+    client.ServicesLog "synched #{script} to internal database"
+
+  "Done"
 
 Command "UNLOAD", true, (src, dest, msg) ->
   if #msg == 0
@@ -35,7 +69,10 @@ Command "UNLOAD", true, (src, dest, msg) ->
   if name == script.Name
     return "Cannot unload this script!"
 
-  table.remove db.data, find(db.data, name)
+  do
+    delete_stmt\bind_values name
+    delete_stmt\step!
+    delete_stmt\reset!
 
   sleep(0.5)
 

@@ -26,4 +26,4 @@ RUN go get github.com/tools/godep
 
 EXPOSE 3000
 
-ENTRYPOINT /sbin/my_init
+CMD /sbin/my_init

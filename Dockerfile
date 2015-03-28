@@ -18,7 +18,7 @@ RUN cd /usr/local && wget https://storage.googleapis.com/golang/go1.4.2.linux-am
 ADD . /go/src/github.com/Xe/Tetra
 ADD run/runit /etc/service/tetra
 
-ENV PATH $PATH:/usr/local/go:/go/bin
+ENV PATH $PATH:/usr/local/go/bin:/go/bin
 ENV GOPATH /go
 ENV PORT 3000
 

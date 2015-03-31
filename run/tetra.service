@@ -1,0 +1,14 @@
+[Unit]
+Description=Tetra Services
+Requires=docker.service
+Requires=ircd.service
+After=network.target
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill tetra
+ExecStartPre=-/usr/bin/docker rm tetra
+ExecStart=/usr/bin/docker run --name tetra -v /var/lib/tetra/config.yaml:/go/src/github.com/Xe/Tetra/etc/config.yaml:ro -v /var/lib/tetra/var:/go/src/github.com/Xe/Tetra/var xena/tetra
+ExecStop=/usr/bin/docker stop tetra
+
+[Install]
+WantedBy=multi-user.target

@@ -293,6 +293,7 @@ func (script *Script) seed() {
 		"Services":     Services,
 		"Config":       ActiveConfig,
 		"ActiveConfig": ActiveConfig,
+		"Servers":      Servers,
 		"Log":          script.Log,
 		"Etcd":         Etcd,
 		"Atheme":       Atheme,

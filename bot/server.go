@@ -10,7 +10,7 @@ type Server struct {
 	Name    string
 	Gecos   string
 	Links   []*Server
-	count   int
+	Count   int
 	Counter metrics.Gauge
 	Hops    int
 	Capab   []string
@@ -18,10 +18,10 @@ type Server struct {
 
 // AddClient increments the server client counter.
 func (s *Server) AddClient() {
-	s.count++
+	s.Count++
 }
 
 // DelClient decrements the server client counter.
 func (s *Server) DelClient() {
-	s.count--
+	s.Count--
 }

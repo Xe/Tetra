@@ -14,7 +14,7 @@ func GetNetworkStats(...interface{}) {
 			continue
 		}
 
-		server.Counter.Update(int64(server.count))
+		server.Counter.Update(int64(server.Count))
 	}
 
 	debug("Logged stats for network and server populations")

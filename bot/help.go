@@ -44,8 +44,9 @@ func (c *Client) showHelp(target *Client, service, command string) {
 	}
 
 	if _, ok := c.Commands[command]; !ok {
-		if command != "help" {
+		if command != "help" && command != "_index" {
 			c.Notice(target, "No such command")
+			return
 		}
 	}
 

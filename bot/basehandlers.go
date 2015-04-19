@@ -9,6 +9,7 @@ import (
 
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/modes"
+	"github.com/rcrowley/go-metrics"
 )
 
 func handleNICK(line *r1459.RawLine) {

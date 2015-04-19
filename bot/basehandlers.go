@@ -9,7 +9,6 @@ import (
 
 	"github.com/Xe/Tetra/1459"
 	"github.com/Xe/Tetra/bot/modes"
-	"github.com/rcrowley/go-metrics"
 )
 
 func handleNICK(line *r1459.RawLine) {
@@ -497,6 +496,8 @@ func handleCHGHOST(line *r1459.RawLine) {
 	if !ok {
 		Log.Fatalf("Unknown client %s, desync", line.Source)
 	}
+
+	RunHook("CHGHOST", client, line.Args[1])
 
 	client.VHost = line.Args[1]
 }

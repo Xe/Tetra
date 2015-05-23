@@ -279,8 +279,8 @@ func handleBMASK(line *r1459.RawLine) {
 	var channel *Channel
 
 	if mychannel, ok := Channels[channame]; !ok {
-		Log.Printf("Unknown channel %s", channame)
-		return
+		Log.Printf("Unknown channel %s, creating it now...", channame)
+		channel = NewChannel(channame, line.args[0])
 	} else {
 		channel = mychannel
 	}
@@ -291,7 +291,7 @@ func handleBMASK(line *r1459.RawLine) {
 func handleSJOIN(line *r1459.RawLine) {
 	// :47G SJOIN 1404424869 #test +nt :@47GAAAABL
 	ts := line.Args[0]
-	name := line.Args[1]
+	name := strings.ToUpper(line.Args[1])
 	cmodes := line.Args[2]
 
 	if line.Raw[len(line.Raw)-1] == ':' {
@@ -380,7 +380,7 @@ func handleTMODE(line *r1459.RawLine) {
 
 	channel, ok := Channels[strings.ToUpper(channame)]
 	if !ok {
-		panic(fmt.Errorf("Unknown channel name %s", channame))
+		channel = NewChannel(channame, line.args[0])
 	}
 
 	for _, modechar := range modestring {

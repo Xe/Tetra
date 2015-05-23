@@ -280,7 +280,8 @@ func handleBMASK(line *r1459.RawLine) {
 
 	if mychannel, ok := Channels[channame]; !ok {
 		Log.Printf("Unknown channel %s, creating it now...", channame)
-		channel = NewChannel(channame, line.args[0])
+		numberts, _ := strconv.ParseInt(line.Args[0], 10, 64)
+		channel = NewChannel(channame, numberts)
 	} else {
 		channel = mychannel
 	}
@@ -380,7 +381,8 @@ func handleTMODE(line *r1459.RawLine) {
 
 	channel, ok := Channels[strings.ToUpper(channame)]
 	if !ok {
-		channel = NewChannel(channame, line.args[0])
+		numberts, _ := strconv.ParseInt(line.Args[0], 10, 64)
+		channel = NewChannel(channame, numberts)
 	}
 
 	for _, modechar := range modestring {
@@ -450,7 +452,8 @@ func handleJOIN(line *r1459.RawLine) {
 
 	channel, ok := Channels[strings.ToUpper(line.Args[1])]
 	if !ok {
-		Log.Fatalf("Unknown channel %s, desync", strings.ToUpper(line.Args[1]))
+		numberts, _ := strconv.ParseInt(line.Args[0], 10, 64)
+		channel = NewChannel(line.Args[1], numberts)
 	}
 
 	cu := channel.AddChanUser(client)

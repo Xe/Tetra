@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"errors"
+	"log"
 	"strings"
 	"sync"
 
@@ -41,6 +42,17 @@ func RunHook(verb string, args ...interface{}) (err error) {
 		wg := sync.WaitGroup{}
 
 		wg.Add(len(Hooks[verb]))
+
+		for i, arg := range args {
+			if arg == nil {
+				log.Printf(
+					"Wtf, arg %d is nil for hook %s args %#v",
+					i,
+					verb,
+					args,
+				)
+			}
+		}
 
 		for _, hook := range Hooks[verb] {
 			hook := hook

@@ -14,6 +14,9 @@ Hook "ENCAP-METADATA", (source, args) ->
       else
         target = tetra.Clients.ByUID[target]
 
+      if target == nil
+        return
+
       target.Metadata[key] = value
 
     when "DELETE", "CLEAR"
@@ -21,6 +24,9 @@ Hook "ENCAP-METADATA", (source, args) ->
         target = tetra.Channels[target\upper!]
       else
         target = tetra.Clients.BuUID[target]
+
+      if target == nil
+        return
 
       target.Metadata[key] = nil
 

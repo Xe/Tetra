@@ -16,9 +16,6 @@ import (
 func handleNICK(line *r1459.RawLine) {
 	source := Clients.ByUID[line.Source]
 
-	source.Lock.Lock()
-	defer source.Lock.Unlock()
-
 	Clients.ChangeNick(source, line.Args[0])
 
 	source.Nick = line.Args[0]
@@ -78,9 +75,6 @@ func handlePmCommands(line *r1459.RawLine) {
 		panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
 	}
 
-	source.Lock.Lock()
-	defer source.Lock.Unlock()
-
 	destination := line.Args[0]
 	message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
@@ -101,9 +95,6 @@ func handlePmCommands(line *r1459.RawLine) {
 
 	client := Clients.ByUID[destination]
 	verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
-
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
 
 	go func() {
 		if command, ok := client.Commands[verb]; ok {
@@ -131,9 +122,6 @@ func handleChannelMessages(line *r1459.RawLine) {
 		panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
 	}
 
-	source.Lock.Lock()
-	defer source.Lock.Unlock()
-
 	destination := line.Args[0]
 	text := line.Args[1]
 
@@ -146,8 +134,11 @@ func handleChannelMessages(line *r1459.RawLine) {
 		Log.Panicf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
 	}
 
-	channel.Lock.Lock()
-	defer channel.Lock.Unlock()
+	channel.lock()
+	defer channel.unlock()
+
+	source.lock()
+	defer source.unlock()
 
 	if strings.ToUpper(channel.Name) == strings.ToUpper(ActiveConfig.General.SnoopChan) {
 		if strings.HasSuffix(source.Nick, "Serv") {
@@ -176,14 +167,8 @@ func handleCTCP(line *r1459.RawLine) {
 		panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
 	}
 
-	source.Lock.Lock()
-	defer source.Lock.Unlock()
-
 	destination := Clients.ByUID[line.Args[0]]
 	text := line.Args[1]
-
-	destination.Lock.Lock()
-	defer destination.Lock.Unlock()
 
 	verb := strings.Split(text, " ")[0]
 	verb = verb[1 : len(verb)-1]
@@ -241,7 +226,7 @@ func handleUID(line *r1459.RawLine) {
 		Channels: make(map[string]*Channel),
 		Server:   Servers[line.Source],
 		Metadata: make(map[string]string),
-		Lock:     &sync.Mutex{},
+		slock:    &sync.Mutex{},
 	}
 
 	Clients.AddClient(client)
@@ -282,7 +267,7 @@ func handleEUID(line *r1459.RawLine) {
 		Channels: make(map[string]*Channel),
 		Server:   Servers[line.Source],
 		Metadata: make(map[string]string),
-		Lock:     &sync.Mutex{},
+		slock:    &sync.Mutex{},
 	}
 
 	client.Server.AddClient()
@@ -302,9 +287,6 @@ func handleBMASK(line *r1459.RawLine) {
 		return
 	}
 
-	lock.Lock()
-	defer lock.Unlock()
-
 	masks := strings.Split(line.Args[3], " ")
 	var channel *Channel
 
@@ -316,7 +298,11 @@ func handleBMASK(line *r1459.RawLine) {
 		channel = mychannel
 	}
 
+	channel.lock()
+
 	channel.Lists[bankind] = append(channel.Lists[bankind], masks...)
+
+	channel.unlock()
 }
 
 func handleSJOIN(line *r1459.RawLine) {
@@ -355,9 +341,6 @@ func handleSJOIN(line *r1459.RawLine) {
 		channel.Modes = modeflags
 	}
 
-	channel.Lock.Lock()
-	defer channel.Lock.Unlock()
-
 	for _, user := range strings.Split(users, " ") {
 		var uid string
 		length := len(user)
@@ -368,8 +351,8 @@ func handleSJOIN(line *r1459.RawLine) {
 
 		client := Clients.ByUID[uid]
 
-		client.Lock.Lock()
-		defer client.Lock.Unlock()
+		client.lock()
+		defer client.unlock()
 
 		cu := channel.AddChanUser(client)
 
@@ -390,8 +373,8 @@ func handleMODE(line *r1459.RawLine) {
 	client := Clients.ByUID[line.Args[0]]
 	modeflags := client.Umodes
 
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
+	client.lock()
+	defer client.unlock()
 
 	umodes := line.Args[1]
 
@@ -426,6 +409,9 @@ func handleTMODE(line *r1459.RawLine) {
 		numberts, _ := strconv.ParseInt(line.Args[0], 10, 64)
 		channel = NewChannel(channame, numberts)
 	}
+
+	channel.lock()
+	defer channel.unlock()
 
 	for _, modechar := range modestring {
 		mode := string(modechar)
@@ -486,9 +472,6 @@ func handleJOIN(line *r1459.RawLine) {
 		panic(fmt.Errorf("Unknown client %s", line.Source))
 	}
 
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
-
 	if line.Args[0] == "0" {
 		for _, channel := range client.Channels {
 			channel.DelChanUser(client)
@@ -530,9 +513,6 @@ func handleKICK(line *r1459.RawLine) {
 		panic(fmt.Errorf("Unknown client %s", line.Source))
 	}
 
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
-
 	channel, ok := Channels[channelname]
 	if !ok {
 		panic(fmt.Errorf("Unknown channel %s", line.Source))
@@ -548,9 +528,6 @@ func handleCHGHOST(line *r1459.RawLine) {
 	if !ok {
 		Log.Panicf("Unknown client %s, desync", line.Source)
 	}
-
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
 
 	RunHook("CHGHOST", client, line.Args[1])
 

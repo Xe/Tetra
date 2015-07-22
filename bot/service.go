@@ -24,7 +24,7 @@ func AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
 		Commands: make(map[string]*Command),
 		Certfp:   certfp,
 		Metadata: make(map[string]string),
-		Lock:     &sync.Mutex{},
+		slock:    &sync.Mutex{},
 	}
 
 	Services[service] = cli

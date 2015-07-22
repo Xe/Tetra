@@ -29,7 +29,7 @@ type Client struct {
 	Certfp      string
 	Metadata    map[string]string
 
-	Lock *sync.Mutex
+	slock *sync.Mutex
 }
 
 // Interface Targeter wraps around Client and Channel to make messaging to them
@@ -37,6 +37,18 @@ type Client struct {
 type Targeter interface {
 	Target() string  // Targetable version of name
 	IsChannel() bool // Is this a channel?
+}
+
+// lock locks the client for changes
+func (r *Client) lock() {
+	debugf("locking mutex for %s:%s", r.Nick, r.Uid)
+	r.slock.Lock()
+}
+
+// unlock unlocks the client for changes
+func (r *Client) unlock() {
+	debugf("unlocking mutex for %s:%s", r.Nick, r.Uid)
+	r.slock.Unlock()
 }
 
 // Euid returns an EUID burst.
@@ -100,6 +112,9 @@ func (r *Client) IsChannel() bool {
 func (r *Client) Join(channame string) {
 	var channel *Channel
 
+	r.lock()
+	defer r.unlock()
+
 	upperchan := strings.ToUpper(channame)
 
 	if _, ok := Channels[upperchan]; !ok {
@@ -121,6 +136,9 @@ func (r *Client) Join(channame string) {
 // Part makes the client leave a channel.
 func (r *Client) Part(channame string) bool {
 	upperchan := strings.ToUpper(channame)
+
+	r.lock()
+	defer r.unlock()
 
 	channel, err := Channels[upperchan]
 	if !err {
@@ -148,12 +166,18 @@ func (r *Client) Kill(target *Client, reason string) {
 	str := fmt.Sprintf(":%s KILL %s :%s!%s (%s)", r.Uid, target.Uid,
 		ActiveConfig.Server.Name, r.Nick, reason)
 
+	r.lock()
+	defer r.unlock()
+
 	Conn.SendLine(str)
 	Clients.DelClient(target)
 }
 
 // Chghost changes a client's visible host
 func (r *Client) Chghost(target *Client, newhost string) (err error) {
+	r.lock()
+	defer r.unlock()
+
 	strings.Replace(newhost, "_", "--", -1)
 
 	target.VHost = newhost

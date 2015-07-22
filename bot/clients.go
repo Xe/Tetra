@@ -22,8 +22,8 @@ func (c *ClientSet) AddClient(client *Client) {
 
 // DelClient deletes a Client from the Clients structure.
 func (c *ClientSet) DelClient(client *Client) (err error) {
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
+	client.lock()
+	defer client.unlock()
 
 	delete(c.ByNick, strings.ToUpper(client.Nick))
 	delete(c.ByUID, client.Uid)
@@ -37,12 +37,13 @@ func (c *ClientSet) ChangeNick(client *Client, newnick string) (err error) {
 		Log.Fatalf("Client %s does not exist in Clients.ByNick. We are desynched. Exiting.", client.Nick)
 	}
 
-	client.Lock.Lock()
-	defer client.Lock.Unlock()
+	client.lock()
+	defer client.unlock()
 
 	delete(c.ByNick, client.Nick)
 
 	c.ByNick[strings.ToUpper(newnick)] = client
+	client.Nick = newnick
 
 	return
 }

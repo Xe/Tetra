@@ -28,7 +28,7 @@ type Channel struct {
 	Gauge    metrics.Gauge
 	Metadata map[string]string
 
-	Lock *sync.Mutex
+	slock *sync.Mutex
 }
 
 // NewChannel creates a new channel with a given name and ts.
@@ -41,7 +41,7 @@ func NewChannel(name string, ts int64) (c *Channel) {
 		Modes:    0,
 		Gauge:    metrics.NewGauge(),
 		Metadata: make(map[string]string),
-		Lock:     &sync.Mutex{},
+		slock:    &sync.Mutex{},
 	}
 
 	Etcd.CreateDir("/tetra/channels/"+c.Name, 0)
@@ -53,10 +53,22 @@ func NewChannel(name string, ts int64) (c *Channel) {
 	return
 }
 
+// lock locks the channel for changes.
+func (c *Channel) lock() {
+	debugf("locking mutex for %s", c.Name)
+	c.slock.Lock()
+}
+
+// unlock unlocks the channel.
+func (c *Channel) unlock() {
+	debugf("unlocking mutex for %s", c.Name)
+	c.slock.Unlock()
+}
+
 // AddChanUser adds a client to the channel, returning the membership.
 func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
-	c.Lock.Lock()
-	defer c.Lock.Unlock()
+	c.lock()
+	defer c.unlock()
 
 	cu = &ChanUser{
 		Client:  client,
@@ -73,8 +85,8 @@ func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 
 // DelChanUser deletes a client from a channel or returns an error.
 func (c *Channel) DelChanUser(client *Client) (err error) {
-	c.Lock.Lock()
-	defer c.Lock.Unlock()
+	c.lock()
+	defer c.unlock()
 
 	if _, ok := c.Clients[client.Uid]; !ok {
 		err = errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid + " from " + c.Name)

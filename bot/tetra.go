@@ -49,6 +49,7 @@ var (
 	Etcd         *etcd.Client
 	Atheme       *atheme.Atheme
 	Cron         *cron.Cron
+	lock         *sync.Mutex
 )
 
 // NewTetra returns a new instance of Tetra based on a config file located at cpath.
@@ -156,6 +157,8 @@ func NewTetra(cpath string) {
 	seedHandlers()
 
 	startWorkers(config.General.Workers)
+
+	lock = &sync.Mutex{}
 
 	go Conn.sendLinesWait()
 

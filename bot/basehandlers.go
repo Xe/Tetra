@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Xe/Tetra/1459"
@@ -15,12 +16,18 @@ import (
 func handleNICK(line *r1459.RawLine) {
 	source := Clients.ByUID[line.Source]
 
+	source.Lock.Lock()
+	defer source.Lock.Unlock()
+
 	Clients.ChangeNick(source, line.Args[0])
 
 	source.Nick = line.Args[0]
 }
 
 func handleSQUIT(line *r1459.RawLine) {
+	lock.Lock()
+	defer lock.Unlock()
+
 	if line.Args[0] == Info.Sid {
 		RunHook("SHUTDOWN")
 
@@ -71,6 +78,9 @@ func handlePmCommands(line *r1459.RawLine) {
 		panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
 	}
 
+	source.Lock.Lock()
+	defer source.Lock.Unlock()
+
 	destination := line.Args[0]
 	message := strings.Split(line.Args[1], " ")[1:] // Don't repeat the verb
 
@@ -91,6 +101,9 @@ func handlePmCommands(line *r1459.RawLine) {
 
 	client := Clients.ByUID[destination]
 	verb := strings.ToUpper(strings.Split(line.Args[1], " ")[0])
+
+	client.Lock.Lock()
+	defer client.Lock.Unlock()
 
 	go func() {
 		if command, ok := client.Commands[verb]; ok {
@@ -118,6 +131,9 @@ func handleChannelMessages(line *r1459.RawLine) {
 		panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
 	}
 
+	source.Lock.Lock()
+	defer source.Lock.Unlock()
+
 	destination := line.Args[0]
 	text := line.Args[1]
 
@@ -129,6 +145,9 @@ func handleChannelMessages(line *r1459.RawLine) {
 	if !ok {
 		Log.Fatalf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
 	}
+
+	channel.Lock.Lock()
+	defer channel.Lock.Unlock()
 
 	if strings.ToUpper(channel.Name) == strings.ToUpper(ActiveConfig.General.SnoopChan) {
 		if strings.HasSuffix(source.Nick, "Serv") {
@@ -157,8 +176,14 @@ func handleCTCP(line *r1459.RawLine) {
 		panic(fmt.Errorf("Cannot find client by UID %s", line.Source))
 	}
 
+	source.Lock.Lock()
+	defer source.Lock.Unlock()
+
 	destination := Clients.ByUID[line.Args[0]]
 	text := line.Args[1]
+
+	destination.Lock.Lock()
+	defer destination.Lock.Unlock()
 
 	verb := strings.Split(text, " ")[0]
 	verb = verb[1 : len(verb)-1]
@@ -216,6 +241,7 @@ func handleUID(line *r1459.RawLine) {
 		Channels: make(map[string]*Channel),
 		Server:   Servers[line.Source],
 		Metadata: make(map[string]string),
+		Lock:     &sync.Mutex{},
 	}
 
 	Clients.AddClient(client)
@@ -256,6 +282,7 @@ func handleEUID(line *r1459.RawLine) {
 		Channels: make(map[string]*Channel),
 		Server:   Servers[line.Source],
 		Metadata: make(map[string]string),
+		Lock:     &sync.Mutex{},
 	}
 
 	client.Server.AddClient()
@@ -274,6 +301,9 @@ func handleBMASK(line *r1459.RawLine) {
 	if !ok {
 		return
 	}
+
+	lock.Lock()
+	defer lock.Unlock()
 
 	masks := strings.Split(line.Args[3], " ")
 	var channel *Channel
@@ -294,6 +324,9 @@ func handleSJOIN(line *r1459.RawLine) {
 	ts := line.Args[0]
 	name := strings.ToUpper(line.Args[1])
 	cmodes := line.Args[2]
+
+	lock.Lock()
+	defer lock.Unlock()
 
 	if line.Raw[len(line.Raw)-1] == ':' {
 		return
@@ -322,6 +355,9 @@ func handleSJOIN(line *r1459.RawLine) {
 		channel.Modes = modeflags
 	}
 
+	channel.Lock.Lock()
+	defer channel.Lock.Unlock()
+
 	for _, user := range strings.Split(users, " ") {
 		var uid string
 		length := len(user)
@@ -331,6 +367,9 @@ func handleSJOIN(line *r1459.RawLine) {
 		prefixes := user[:pfxcount]
 
 		client := Clients.ByUID[uid]
+
+		client.Lock.Lock()
+		defer client.Lock.Unlock()
 
 		cu := channel.AddChanUser(client)
 
@@ -350,6 +389,9 @@ func handleMODE(line *r1459.RawLine) {
 	var give bool = true
 	client := Clients.ByUID[line.Args[0]]
 	modeflags := client.Umodes
+
+	client.Lock.Lock()
+	defer client.Lock.Unlock()
 
 	umodes := line.Args[1]
 
@@ -444,6 +486,9 @@ func handleJOIN(line *r1459.RawLine) {
 		panic(fmt.Errorf("Unknown client %s", line.Source))
 	}
 
+	client.Lock.Lock()
+	defer client.Lock.Unlock()
+
 	if line.Args[0] == "0" {
 		for _, channel := range client.Channels {
 			channel.DelChanUser(client)
@@ -466,12 +511,12 @@ func handlePART(line *r1459.RawLine) {
 	channelname := strings.ToUpper(line.Args[0])
 	client, ok := Clients.ByUID[line.Source]
 	if !ok {
-		Log.Fatalf("Unknown client %s, desync", line.Source)
+		Log.Printf("Unknown client %s, desync", line.Source)
 	}
 
 	channel, ok := Channels[channelname]
 	if !ok {
-		Log.Fatalf("Unknown channel %s, desync", channelname)
+		Log.Printf("Unknown channel %s, desync", channelname)
 	}
 
 	channel.DelChanUser(client)
@@ -484,6 +529,9 @@ func handleKICK(line *r1459.RawLine) {
 	if !ok {
 		panic(fmt.Errorf("Unknown client %s", line.Source))
 	}
+
+	client.Lock.Lock()
+	defer client.Lock.Unlock()
 
 	channel, ok := Channels[channelname]
 	if !ok {
@@ -500,6 +548,9 @@ func handleCHGHOST(line *r1459.RawLine) {
 	if !ok {
 		Log.Fatalf("Unknown client %s, desync", line.Source)
 	}
+
+	client.Lock.Lock()
+	defer client.Lock.Unlock()
 
 	RunHook("CHGHOST", client, line.Args[1])
 

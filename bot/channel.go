@@ -3,6 +3,7 @@ package tetra
 import (
 	"errors"
 	"strings"
+	"sync"
 
 	"github.com/rcrowley/go-metrics"
 )
@@ -26,6 +27,8 @@ type Channel struct {
 	Lists    map[int][]string
 	Gauge    metrics.Gauge
 	Metadata map[string]string
+
+	Lock *sync.Mutex
 }
 
 // NewChannel creates a new channel with a given name and ts.
@@ -38,6 +41,7 @@ func NewChannel(name string, ts int64) (c *Channel) {
 		Modes:    0,
 		Gauge:    metrics.NewGauge(),
 		Metadata: make(map[string]string),
+		Lock:     &sync.Mutex{},
 	}
 
 	Etcd.CreateDir("/tetra/channels/"+c.Name, 0)
@@ -51,6 +55,9 @@ func NewChannel(name string, ts int64) (c *Channel) {
 
 // AddChanUser adds a client to the channel, returning the membership.
 func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
+	c.Lock.Lock()
+	defer c.Lock.Unlock()
+
 	cu = &ChanUser{
 		Client:  client,
 		Channel: c,
@@ -66,6 +73,9 @@ func (c *Channel) AddChanUser(client *Client) (cu *ChanUser) {
 
 // DelChanUser deletes a client from a channel or returns an error.
 func (c *Channel) DelChanUser(client *Client) (err error) {
+	c.Lock.Lock()
+	defer c.Lock.Unlock()
+
 	if _, ok := c.Clients[client.Uid]; !ok {
 		err = errors.New("Tried to delete nonexistent chanuser with uid " + client.Uid + " from " + c.Name)
 		debug(err)

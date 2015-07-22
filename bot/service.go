@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"errors"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,7 @@ func AddService(service, nick, user, host, gecos, certfp string) (cli *Client) {
 		Commands: make(map[string]*Command),
 		Certfp:   certfp,
 		Metadata: make(map[string]string),
+		Lock:     &sync.Mutex{},
 	}
 
 	Services[service] = cli

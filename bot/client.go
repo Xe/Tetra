@@ -3,6 +3,7 @@ package tetra
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Xe/Tetra/bot/modes"
@@ -27,6 +28,8 @@ type Client struct {
 	Commands    map[string]*Command
 	Certfp      string
 	Metadata    map[string]string
+
+	Lock *sync.Mutex
 }
 
 // Interface Targeter wraps around Client and Channel to make messaging to them

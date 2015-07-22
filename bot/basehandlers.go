@@ -43,7 +43,7 @@ func handleSQUIT(line *r1459.RawLine) {
 	sid := line.Args[0]
 	server, ok := Servers[sid]
 	if !ok {
-		Log.Fatalf("Unknown server by ID %s", sid)
+		Log.Panicf("Unknown server by ID %s", sid)
 	}
 
 	// Remove all clients from the split server
@@ -91,7 +91,7 @@ func handlePmCommands(line *r1459.RawLine) {
 		_, ok = Clients.ByUID[destination]
 
 		if !ok {
-			Log.Fatal("got a message from a ghost client. We are out of sync.")
+			Log.Panic("got a message from a ghost client. We are out of sync.")
 		}
 	}
 
@@ -143,7 +143,7 @@ func handleChannelMessages(line *r1459.RawLine) {
 
 	channel, ok := Channels[strings.ToUpper(destination)]
 	if !ok {
-		Log.Fatalf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
+		Log.Panicf("Recieved CHANMSG from %s which is unknown. Panic.", destination)
 	}
 
 	channel.Lock.Lock()
@@ -546,7 +546,7 @@ func handleKICK(line *r1459.RawLine) {
 func handleCHGHOST(line *r1459.RawLine) {
 	client, ok := Clients.ByUID[line.Args[0]]
 	if !ok {
-		Log.Fatalf("Unknown client %s, desync", line.Source)
+		Log.Panicf("Unknown client %s, desync", line.Source)
 	}
 
 	client.Lock.Lock()
@@ -560,7 +560,7 @@ func handleCHGHOST(line *r1459.RawLine) {
 func handleQUIT(line *r1459.RawLine) {
 	client, ok := Clients.ByUID[line.Source]
 	if !ok {
-		Log.Fatalf("Unknown client %s, desync", line.Source)
+		Log.Panicf("Unknown client %s, desync", line.Source)
 	}
 
 	RunHook("CLIENTQUIT", client)
@@ -578,7 +578,7 @@ func handleSID(line *r1459.RawLine) {
 	// <<< :42F SID cod.int 2 752 :Cod fishy
 	parent, ok := Servers[line.Source]
 	if !ok {
-		Log.Fatal("No server by ID " + line.Source + ", desync")
+		Log.Panic("No server by ID " + line.Source + ", desync")
 	}
 
 	server := &Server{
@@ -700,7 +700,7 @@ func seedHandlers() {
 
 		server, ok := Servers[sid]
 		if !ok {
-			Log.Fatalf("Unknown server by ID %s. We are out of sync.", sid)
+			Log.Panicf("Unknown server by ID %s. We are out of sync.", sid)
 		}
 
 		server.Capab = caps

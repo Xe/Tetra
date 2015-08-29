@@ -14,14 +14,6 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
-func handleNICK(line *r1459.RawLine) {
-	source := Clients.ByUID[line.Source]
-
-	Clients.ChangeNick(source, line.Args[0])
-
-	source.Nick = line.Args[0]
-}
-
 func handleSQUIT(line *r1459.RawLine) {
 	lock.Lock()
 	defer lock.Unlock()
@@ -525,34 +517,6 @@ func handleKICK(line *r1459.RawLine) {
 	RunHook("KICKED", channel, client, line.Args[2])
 }
 
-func handleCHGHOST(line *r1459.RawLine) {
-	client, ok := Clients.ByUID[line.Args[0]]
-	if !ok {
-		Log.Panicf("Unknown client %s, desync", line.Source)
-	}
-
-	RunHook("CHGHOST", client, line.Args[1])
-
-	client.VHost = line.Args[1]
-}
-
-func handleQUIT(line *r1459.RawLine) {
-	client, ok := Clients.ByUID[line.Source]
-	if !ok {
-		Log.Panicf("Unknown client %s, desync", line.Source)
-	}
-
-	RunHook("CLIENTQUIT", client)
-
-	Clients.DelClient(client)
-
-	for _, channel := range client.Channels {
-		channel.DelChanUser(client)
-	}
-
-	client.Server.DelClient()
-}
-
 func handleSID(line *r1459.RawLine) {
 	// <<< :42F SID cod.int 2 752 :Cod fishy
 	parent, ok := Servers[line.Source]
@@ -637,7 +601,6 @@ func handleENCAP(line *r1459.RawLine) {
 }
 
 func seedHandlers() {
-	AddHandler("NICK", handleNICK)
 	AddHandler("SQUIT", handleSQUIT)
 	AddHandler("ERROR", handleERROR)
 	AddHandler("PRIVMSG", handlePmCommands)
@@ -652,66 +615,9 @@ func seedHandlers() {
 	AddHandler("JOIN", handleJOIN)
 	AddHandler("PART", handlePART)
 	AddHandler("KICK", handleKICK)
-	AddHandler("CHGHOST", handleCHGHOST)
-	AddHandler("QUIT", handleQUIT)
 	AddHandler("SID", handleSID)
 	AddHandler("PASS", handlePASS)
 	AddHandler("SERVER", handleSERVER)
 	AddHandler("WHOIS", handleWHOIS)
 	AddHandler("ENCAP", handleENCAP)
-
-	NewHook("ENCAP-GCAP", func(args ...interface{}) {
-		if len(args) != 2 {
-			return
-		}
-
-		var sid string
-		var caps []string
-
-		if targSid, ok := args[0].(string); ok {
-			sid = targSid
-		} else {
-			return
-		}
-
-		if targCaps, ok := args[1].([]string); ok {
-			caps = targCaps
-		} else {
-			return
-		}
-
-		server, ok := Servers[sid]
-		if !ok {
-			Log.Panicf("Unknown server by ID %s. We are out of sync.", sid)
-		}
-
-		server.Capab = caps
-	})
-
-	NewHook("ENCAP-SU", func(parv ...interface{}) {
-		var args []string
-		var ok bool
-		if args, ok = parv[1].([]string); !ok {
-			return
-		}
-
-		if len(args) > 2 {
-			return
-		}
-
-		var source *Client
-		var accname string
-
-		if source, ok = Clients.ByUID[args[0]]; !ok {
-			return
-		}
-
-		if len(args) == 1 {
-			accname = "*"
-		} else {
-			accname = args[1]
-		}
-
-		source.Account = accname
-	})
 }

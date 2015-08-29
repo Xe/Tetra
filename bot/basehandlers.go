@@ -41,6 +41,7 @@ func handleSQUIT(line *r1459.RawLine) {
 	sid := line.Args[0]
 	server, ok := Servers[sid]
 	if !ok {
+		debugf("%#v", Servers)
 		Log.Panicf("Unknown server by ID %s", sid)
 	}
 
@@ -594,7 +595,7 @@ func handleSERVER(line *r1459.RawLine) {
 		log.Fatalf("Unknown server %s, desync", line.Source)
 	}
 
-	Servers[line.Source] = NewServer(parent, line.Args[0], line.Args[2], line.Args[0], line.Args[1])
+	Servers[line.Args[0]] = NewServer(parent, line.Args[0], line.Args[2], line.Args[0], line.Args[1])
 }
 
 func handleWHOIS(line *r1459.RawLine) {

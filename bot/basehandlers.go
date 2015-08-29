@@ -2,6 +2,7 @@ package tetra
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -558,22 +559,7 @@ func handleSID(line *r1459.RawLine) {
 		Log.Panic("No server by ID " + line.Source + ", desync")
 	}
 
-	server := &Server{
-		Name:    line.Args[0],
-		Gecos:   line.Args[3],
-		Sid:     line.Args[2],
-		Links:   []*Server{parent},
-		Counter: metrics.NewGauge(),
-	}
-
-	var err error
-	server.Hops, err = strconv.Atoi(line.Args[1])
-	if err != nil {
-		return
-	}
-
-	parent.Links = append(parent.Links, server)
-
+	server := NewServer(parent, line.Args[0], line.Args[3], line.Args[2], line.Args[1])
 	Servers[server.Sid] = server
 
 	metrics.Register(server.Name+"_clients", server.Counter)
@@ -587,10 +573,28 @@ func handlePASS(line *r1459.RawLine) {
 
 func handleSERVER(line *r1459.RawLine) {
 	// <<< SERVER fluttershy.yolo-swag.com 1 :shadowircd test server
-	Uplink.Name = line.Args[0]
-	Uplink.Gecos = line.Args[2]
+	if line.Source == "" {
+		Uplink.Name = line.Args[0]
+		Uplink.Gecos = line.Args[2]
 
-	metrics.Register(Uplink.Name+"_clients", Uplink.Counter)
+		metrics.Register(Uplink.Name+"_clients", Uplink.Counter)
+		return
+	}
+
+	// :services.int SERVER foo.bar 3 :(H) [Xena] test
+	var parent *Server
+
+	for _, server := range Servers {
+		if server.Name == line.Source {
+			parent = server
+		}
+	}
+
+	if parent == nil {
+		log.Fatalf("Unknown server %s, desync", line.Source)
+	}
+
+	Servers[line.Source] = NewServer(parent, line.Args[0], line.Args[2], line.Args[0], line.Args[1])
 }
 
 func handleWHOIS(line *r1459.RawLine) {

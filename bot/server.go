@@ -1,6 +1,8 @@
 package tetra
 
 import (
+	"strconv"
+
 	"github.com/rcrowley/go-metrics"
 )
 
@@ -24,4 +26,20 @@ func (s *Server) AddClient() {
 // DelClient decrements the server client counter.
 func (s *Server) DelClient() {
 	s.Count--
+}
+
+// NewServer allocates a new server struct, fitting it into the network.
+func NewServer(parent *Server, name, gecos, id, hops string) *Server {
+	s := &Server{
+		Sid:     id,
+		Name:    name,
+		Gecos:   gecos,
+		Links:   []*Server{parent},
+		Counter: metrics.NewGauge(),
+	}
+
+	s.Hops, _ = strconv.Atoi(hops)
+	parent.Links = append(parent.Links, s)
+
+	return s
 }

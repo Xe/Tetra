@@ -1,5 +1,3 @@
-require "lib/etcd"
-
 sqlite3 = require "lsqlite3"
 
 export sdb = assert sqlite3.open "var/tetra.db"
